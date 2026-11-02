@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Request detail · Yash Honda Vacancy &amp; Hiring Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .head { display: grid; grid-template-columns: 1.6fr 1fr; gap: 18px; align-items: start; }
+  .idline { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .idline .rid { font-family: var(--font-mono); font-size: 13px; color: var(--accent-ink); background: var(--accent-soft); padding: 3px 9px; border-radius: 6px; }
+  h2.title { font-size: 24px; font-weight: 600; letter-spacing: -.035em; margin: 12px 0 6px; line-height: 1.15; }
+  .meta { display: flex; gap: 16px; flex-wrap: wrap; font-size: 12.5px; color: var(--ink-2); margin-top: 10px; }
+  .meta b { font-weight: 500; color: var(--ink); }
+  .clocks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .clock { background: var(--surface); padding: 13px 14px; }
+  .clock .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
+  .clock .v { font-family: var(--font-mono); font-size: 21px; letter-spacing: -.04em; margin-top: 4px; }
+  .clock .v small { font-size: 11px; color: var(--ink-3); letter-spacing: 0 }
+  .clock.act { background: var(--accent-soft); }
+  .clock.holdc .v { color: var(--warn); }
+
+  .actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 16px; }
+  .just { display: flex; gap: 12px; padding: 14px 16px; background: var(--surface); border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: var(--r-md); font-size: 13px; color: var(--ink-2); margin-top: 16px; }
+
+  /* positions accordion */
+  .pos { border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); margin-bottom: 10px; overflow: hidden; transition: box-shadow .18s, border-color .18s; }
+  .pos:hover { border-color: #CFCFC8; box-shadow: var(--shadow); }
+  .pos.open { box-shadow: var(--shadow); }
+  .poshead { display: grid; grid-template-columns: auto 1fr auto auto; gap: 14px; align-items: center; padding: 13px 16px; cursor: pointer; }
+  .pnum { font-family: var(--font-mono); font-size: 12px; color: var(--accent-ink); background: var(--accent-soft); padding: 3px 8px; border-radius: 5px; }
+  .pstage { display: flex; flex-direction: column; gap: 4px; }
+  .pmini { display: flex; gap: 2px; margin-top: 3px; }
+  .pmini i { width: 5px; height: 5px; border-radius: 50%; background: var(--line); }
+  .pmini i.done { background: var(--accent); }
+  .pbody { padding: 0 16px 16px; border-top: 1px solid var(--line-soft); }
+  .cand { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; padding: 14px 0; border-bottom: 1px solid var(--line-soft); }
+  .cand:last-child { border-bottom: 0; }
+  .cname { font-weight: 500; font-size: 13.5px; }
+  .cmeta { font-size: 11.8px; color: var(--ink-3); display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 3px; }
+  .locked { font-size: 12px; color: var(--ink-3); display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px dashed var(--line); border-radius: var(--r-sm); background: var(--surface-alt); }
+
+  .grid2 { display: grid; grid-template-columns: 1.5fr 1fr; gap: 18px; align-items: start; }
+  .decision { display: grid; grid-template-columns: 1fr; gap: 10px; }
+  .drow { display: flex; justify-content: space-between; gap: 12px; font-size: 12.8px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); }
+  .drow:last-child { border-bottom: 0; }
+  .drow span:last-child { text-align: right; }
+  .cmt { padding: 11px 13px; border: 1px solid var(--line-soft); border-radius: var(--r-md); background: var(--surface-alt); margin-bottom: 9px; }
+  .cmt-h { display: flex; gap: 8px; align-items: center; font-size: 11.8px; color: var(--ink-3); margin-bottom: 5px; }
+  .cmt-t { font-size: 13px; color: var(--ink-2); }
+  .holdbanner { display: flex; gap: 12px; align-items: center; padding: 13px 16px; border-radius: var(--r-md);
+    background: repeating-linear-gradient(135deg,#F7F5F0 0 8px,#F1EFE8 8px 16px); border: 1px solid #E4DFD1; }
+  @media (max-width: 1100px) { .head, .grid2 { grid-template-columns: 1fr; } .clocks { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const REQ = params.get('req') || YH.requests[0].number;
+const r = YH.requests.find(x => x.number === REQ) || YH.requests[0];
+const ps = YH.posFor(r.number);
+const viewer = YH.usr(YHUI.getViewer());
+const canDecide = ['Owner', 'CEO'].includes(viewer.role);
+const canHold = ['Owner', 'CEO', 'Admin'].includes(viewer.role);
+const isHR = viewer.role === 'HR Team';
+const canSeeDocs = ['Admin', 'Owner', 'CEO', 'HR Team'].includes(viewer.role);
+
+YHUI.shell('detail', 'Vacancy request', 'Vacancy Requests · ' + r.number);
+const el = document.getElementById('content');
+const ag = (p) => YH.ageing(p);
+const reqAge = YH.days(r.submittedAt);
+
+el.innerHTML =
+  (params.get('justCreated') ? '<div class="notice info reveal" style="margin-bottom:16px">' + YHUI.svg(YHUI.ICONS.check, 16) +
+    '<div><b>Request submitted.</b> Approval task created for Owner / CEO · audit event written in the same transaction. Positions do not exist yet — they are created when an approver acts.</div></div>' : '') +
+  (YH.positions.some(YH.isHold) && r.number === 'YH-2627-0147' ? '' : '') +
+  '<div class="head"><div>' +
+  '<div class="idline"><span class="rid">' + r.number + '</span>' + YHUI.badge(r.status) +
+  (r.priority === 'Urgent' ? '<span class="badge risk">Urgent</span>' : '<span class="badge outline">Normal priority</span>') +
+  '<span class="badge outline">' + YHUI.fac(r.facility) + '</span>' +
+  '<span class="badge outline">workflow v1</span></div>' +
+  '<h2 class="title">' + YHUI.esc(r.title) + '</h2>' +
+  '<div class="meta"><span>Raised by <b>' + YH.usr(r.raisedBy).name + '</b> (' + YH.usr(r.raisedBy).role + ')</span>' +
+  '<span>Submitted <b>' + YHUI.date(r.submittedAt) + '</b></span>' +
+  '<span>Reason <b>' + YHUI.esc(r.reason) + '</b></span>' +
+  '<span>Requested headcount <b class="tnum">' + r.qty + '</b></span>' +
+  '<span>Salary <b>' + YHUI.band(r.sal[0], r.sal[1]) + '</b></span>' +
+  '<span>Incentive <b>' + YHUI.band(r.inc[0], r.inc[1]) + '</b></span>' +
+  '<span>Required by <b>' + YHUI.date(r.requiredBy) + '</b></span></div>' +
+  '<div class="just">' + YHUI.svg(YHUI.ICONS.doc, 16) + '<div>' + YHUI.esc(r.notes) + '</div></div>' +
+  '<div class="actions">' +
+  (canDecide && r.status === 'pending' ?
+    '<button class="btn primary" onclick="decide(\'approved\')">' + YHUI.svg(YHUI.ICONS.check, 15) + 'Approve vacancy</button>' +
+    '<button class="btn" onclick="decide(\'returned\')">Return for clarification</button>' +
+    '<button class="btn danger" onclick="decide(\'rejected\')">Reject</button>' : '') +
+  (canHold && r.status === 'approved' ?
+    '<button class="btn" onclick="openHold(\'request\')">' + YHUI.svg(YHUI.ICONS.hold, 14) + 'Put entire request on hold</button>' : '') +
+  (isHR ? '<button class="btn" onclick="addCandidate()">' + YHUI.svg(YHUI.ICONS.plus, 15) + 'Add candidate</button>' : '') +
+  (viewer.role === 'Employee' && r.raisedBy === viewer.id ? '<button class="btn" onclick="YHUI.toast(\'Only drafts and returned requests are editable by the requester\')">Edit and resubmit</button>' : '') +
+  '<button class="btn ghost" onclick="YHUI.toast(\'Permalink copied · access is still checked per user on open\')">Share</button>' +
+  '</div>' +
+  (r.status === 'returned' ? '<div class="notice" style="margin-top:16px">' + YHUI.svg(YHUI.ICONS.x, 16) +
+    '<div><b>Returned by ' + YHUI.esc(r.approver) + ' · ' + YHUI.date(r.decidedAt) + '</b><br>' + YHUI.esc(r.returnReason) + '</div></div>' : '') +
+  (r.status === 'rejected' ? '<div class="notice" style="margin-top:16px">' + YHUI.svg(YHUI.ICONS.x, 16) +
+    '<div><b>Rejected by ' + YHUI.esc(r.approver) + ' · ' + YHUI.date(r.decidedAt) + '</b><br>' + YHUI.esc(r.rejectReason) + '</div></div>' : '') +
+  '</div>' +
+
+  '<div class="card pad">' +
+  '<div class="section-head" style="margin-bottom:6px"><h2>Approval decision</h2><span class="note">separate from candidate decisions</span></div>' +
+  '<div class="decision">' +
+  drow('Task', r.status === 'pending' ? 'Open · assigned to Owner and CEO' : 'Closed') +
+  drow('Approver of record', r.approver || 'First to act') +
+  drow('Decision date', r.decidedAt ? YHUI.date(r.decidedAt) : '—') +
+  drow('Positions created', r.status === 'approved' ? ps.length + ' of ' + r.qty + ' requested' : '0 (on approval)') +
+  drow('Self-approval check', r.raisedBy === viewer.id ? 'blocked for you · you raised this' : 'passed') +
+  '</div>' +
+  '<div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--line-soft)">' +
+  '<div class="nav-label" style="padding:0 0 8px">Ageing clocks</div>' +
+  '<div class="clocks">' +
+  clock('Total calendar age', reqAge + 'd', 'since submission') +
+  clock('Active hiring age', (reqAge - Math.max.apply(null, ps.filter(YH.isHold).map(p => YH.days(p.holdOn)).concat([0]))) + 'd', 'hold excluded') +
+  clock('Oldest stage wait', Math.max.apply(null, ps.map(p => YH.days(p.stageOn)).concat([0])) + 'd', 'current stage') +
+  clock('Time on hold', Math.max.apply(null, ps.filter(YH.isHold).map(p => YH.days(p.holdOn)).concat([0])) + 'd', ps.some(YH.isHold) ? 'review ' + YHUI.date((ps.find(YH.isHold) || {}).holdReview) : 'none', 'holdc') +
+  '</div></div></div></div>';
+
+function drow(k, v) { return '<div class="drow"><span class="muted">' + k + '</span><span>' + v + '</span></div>'; }
+function clock(k, v, sub, cls) {
+  return '<div class="clock ' + (cls || '') + '"><div class="k">' + k + '</div><div class="v">' + v + '</div><div class="k" style="text-transform:none;letter-spacing:0;margin-top:2px">' + sub + '</div></div>';
+}
+
+// -------------------------------------------------- positions + candidates
+const flow = ['hr_searching', 'shortlisted', 'sent_for_approval', 'offer_in_progress', 'hired'];
+el.insertAdjacentHTML('beforeend',
+  '<div class="section grid2">' +
+  '<div><div class="section-head"><h2>Positions (' + ps.length + ')</h2>' +
+  '<span class="note">each record moves independently · candidate count never changes headcount</span></div>' +
+  (ps.length ? ps.map(posCard).join('') : '<div class="card pad" style="text-align:center;padding:44px">' +
+    '<div style="width:40px;height:40px;margin:0 auto 12px;border-radius:11px;border:1px dashed var(--line);display:grid;place-items:center;color:var(--ink-3)">' + YHUI.svg(YHUI.ICONS.grid, 18) + '</div>' +
+    '<div class="cell-main">No position records yet</div>' +
+    '<div class="sub" style="margin-top:4px">' + r.qty + ' positions will be created the moment this request is approved.</div></div>') +
+  '</div>' +
+  '<div><div class="section-head"><h2>Activity timeline</h2></div>' +
+  '<div class="card pad">' + timeline() + '</div>' +
+  '<div class="section-head" style="margin-top:20px"><h2>Comments</h2><span class="note">' + (viewer.role === 'Employee' ? 'requester thread' : 'internal') + '</span></div>' +
+  '<div class="card pad">' + comments() +
+  '<div class="field" style="margin-top:12px"><textarea class="textarea" style="min-height:60px" placeholder="Add a comment for people with access to this request…"></textarea>' +
+  '<div style="display:flex;gap:8px;margin-top:8px"><button class="btn sm dark" onclick="YHUI.toast(\'Comment posted · visible to permitted roles only\')">Post</button>' +
+  '<button class="btn sm" onclick="YHUI.toast(\'Mentions notify in-app only · no candidate data leaves the app\')">Notify a role</button></div></div></div>' +
+  '</div></div>');
+
+function posCard(p) {
+  const hold = YH.isHold(p);
+  const a = ag(p);
+  const idx = flow.indexOf(p.status);
+  const open = params.get('pos') === p.number;
+  return '<div class="pos' + (open ? ' open' : '') + '" id="' + p.number + '">' +
+    '<div class="poshead" onclick="this.parentNode.classList.toggle(\'open\');this.nextElementSibling.classList.toggle(\'hidden\')">' +
+    '<span class="pnum">' + p.number + '</span>' +
+    '<div class="pstage"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+    (hold ? '<span class="badge hold"><span class="dot"></span>On hold · was ' + (YH.STATUS[p.prev] || {}).label + '</span>' : YHUI.badge(p.status)) +
+    (p.cands.length ? '<span class="badge outline">' + p.cands.length + ' candidate' + (p.cands.length > 1 ? 's' : '') + '</span>' : '<span class="badge outline">no candidates</span>') +
+    '</div><div class="pmini">' + flow.map((s, i) => '<i class="' + (i <= idx ? 'done' : '') + '" title="' + (YH.STATUS[s] || {}).label + '"></i>').join('') + '</div></div>' +
+    '<div style="text-align:right">' + YHUI.ageTag(hold ? p.holdOn : p.stageOn, hold ? 21 : 14) +
+    '<div class="cmeta">HR ' + YH.usr(p.hr).name.split(' ')[0] + '</div></div>' +
+    YHUI.svg(YHUI.ICONS.chev, 15) +
+    '</div>' +
+    '<div class="pbody' + (open ? '' : ' hidden') + '">' +
+    (hold ? '<div class="holdbanner" style="margin:14px 0">' + YHUI.svg(YHUI.ICONS.hold, 16) +
+      '<div style="flex:1"><b>Held by ' + YHUI.esc(p.holdBy) + ' · ' + YHUI.date(p.holdOn) + '</b>' +
+      '<div class="sub" style="font-size:12.5px">' + YHUI.esc(p.holdReason) + '</div>' +
+      '<div class="cmeta">review date ' + YHUI.date(p.holdReview) + ' · hold age ' + YH.days(p.holdOn) + 'd · stage clock frozen</div></div>' +
+      (canHold ? '<button class="btn sm" onclick="resume(\'' + p.number + '\')">Resume</button>' : '') + '</div>' : '') +
+    '<div style="padding-top:14px">' +
+    (p.cands.length ? p.cands.map(c => candRow(p, c)).join('') :
+      '<div class="locked" style="margin-bottom:6px">' + YHUI.svg(YHUI.ICONS.user, 15) +
+      '<div>No candidate submitted' + (isHR ? ' — add one and attach resume plus photograph before sending for approval.' : ' for this position.') + '</div>' +
+      (isHR ? '<button class="btn sm" style="margin-left:auto" onclick="addCandidate(\'' + p.number + '\')">Add candidate</button>' : '') + '</div>') +
+    '</div>' +
+    (canHold && !hold && !['hired', 'closed_unfilled'].includes(p.status) ?
+      '<div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--line-soft);display:flex;gap:8px;flex-wrap:wrap">' +
+      '<button class="btn sm" onclick="openHold(\'' + p.number + '\')">' + YHUI.svg(YHUI.ICONS.hold, 13) + 'Put position on hold</button>' +
+      (p.status === 'hired' ? '' : '<button class="btn sm" onclick="YHUI.toast(\'Closing requires a reason and records the outcome on this position only\')">Close unfilled</button>') +
+      '</div>' : '') +
+    '</div></div>';
+}
+
+function candRow(p, c) {
+  const hasR = c.docs.includes('resume'), hasP = c.docs.includes('photo');
+  const blocked = !(hasR && hasP);
+  return '<div class="cand">' +
+    (canSeeDocs ? '<img class="photo" src="https://picsum.photos/seed/' + c.name.replace(/\s/g, '') + '/84/84" alt="Candidate photograph on file">' :
+      '<div class="photo" style="display:grid;place-items:center;color:var(--ink-3)">' + YHUI.svg(YHUI.ICONS.shield, 16) + '</div>') +
+    '<div><div class="cname">' + YHUI.esc(c.name) +
+      '<span class="badge outline" style="margin-left:7px">' + (YH.STATUS[c.status === 'submitted' ? 'sent_for_approval' : c.status === 'draft' ? 'hr_searching' : c.status] ? (YH.STATUS[c.status === 'submitted' ? 'sent_for_approval' : c.status === 'draft' ? 'hr_searching' : c.status]).label : YHUI.esc(c.status)) + '</span></div>' +
+    '<div class="cmeta"><span>' + c.city + '</span><span>·</span>' +
+      (canSeeDocs ? '<span class="mono">' + c.phone + '</span>' : '<span class="locked" style="padding:2px 7px">contact hidden for ' + viewer.role + '</span>') +
+      '<span>·</span><span>proposed ' + YHUI.inr(c.salary) + '</span><span>·</span><span>added ' + YHUI.ago(c.addedOn) + '</span></div>' +
+    '<div class="cmeta" style="margin-top:6px">' + YHUI.docPill(hasR, 'Resume') + YHUI.docPill(hasP, 'Photo') +
+      (c.notice.given ? '<span class="badge info">notice ' + c.notice.version + ' recorded</span>' : '<span class="badge risk">notice not recorded</span>') + '</div>' +
+    '<div class="tl-note" style="margin-top:8px;max-width:70ch">' + YHUI.esc(c.note) + '</div></div>' +
+    '<div style="text-align:right;display:flex;flex-direction:column;gap:6px;align-items:flex-end">' +
+    (canSeeDocs ? '<button class="btn sm" onclick="reviewDoc(\'' + c.name + '\',\'resume\')">View resume</button>' : '') +
+    (isHR && c.status === 'draft' ? (blocked
+      ? '<button class="btn sm" disabled title="Resume and photograph are mandatory">Send for approval</button>' +
+        '<button class="btn sm ghost" onclick="exception(\'' + c.name + '\')">Authorized exception</button>'
+      : '<button class="btn sm primary" onclick="sendForApproval(\'' + p.number + '\',\'' + c.name + '\')">Send for approval</button>') : '') +
+    '</div></div>';
+}
+
+function timeline() {
+  const ev = [];
+  ev.push({ t: r.submittedAt, w: 'Request submitted', who: YH.usr(r.raisedBy).name, cls: 'key', note: YHUI.fac(r.facility) + ' · ' + r.qty + ' positions requested · ' + YHUI.band(r.sal[0], r.sal[1]) });
+  if (r.decidedAt) ev.push({ t: r.decidedAt, w: 'Vacancy ' + (r.status === 'approved' ? 'approved' : r.status === 'rejected' ? 'rejected' : 'returned'), who: r.approver, cls: 'decision', note: r.returnReason || r.rejectReason || (ps.length + ' position records created') });
+  ps.filter(p => p.cands.some(c => c.addedOn)).forEach(p => p.cands.forEach(c =>
+    ev.push({ t: c.addedOn, w: 'Candidate added · ' + c.name, who: c.addedBy, cls: '', note: p.number })));
+  ps.filter(p => p.status === 'sent_for_approval').forEach(p => p.cands.forEach(c =>
+    ev.push({ t: c.addedOn, w: 'Candidate sent for approval · ' + c.name, who: c.addedBy, cls: 'key', note: 'resume + photo validated before submit' })));
+  ps.filter(YH.isHold).forEach(p => ev.push({ t: p.holdOn, w: 'Position put on hold · ' + p.number, who: p.holdBy, cls: 'hold', note: p.holdReason + ' · previous stage ' + p.prev + ' preserved' }));
+  ps.filter(p => p.status === 'hired').forEach(p => p.cands.filter(c => c.status === 'approved').forEach(c =>
+    ev.push({ t: p.hiredOn, w: 'Position filled · ' + p.number, who: YH.usr(p.hr).name, cls: 'decision', note: c.name + ' joined · hire date is the joining date' })));
+  ev.push({ t: '2026-10-16', w: 'Denied document access attempt', who: 'Nilesh Patil (Finance Team)', cls: 'riskev', note: 'view_resume permission missing · logged for Admin' });
+  return '<div class="timeline">' + ev.sort((a, b) => b.t.localeCompare(a.t)).map(e =>
+    '<div class="tl-item ' + e.cls + '"><div class="tl-what">' + YHUI.esc(e.w) + '</div>' +
+    '<div class="tl-meta"><span>' + YHUI.esc(e.who) + '</span><span>·</span><span>' + YHUI.date(e.t) + '</span><span>·</span><span class="mono">' + YH.days(e.t) + 'd ago</span></div>' +
+    (e.note ? '<div class="tl-note">' + YHUI.esc(e.note) + '</div>' : '') + '</div>').join('') + '</div>';
+}
+
+function comments() {
+  const cs = [
+    { who: 'Ranjit Bhandari', role: 'CEO', at: '2026-10-15', t: 'Hold on P4 stays until we settle the counter roster with Showroom Ops. Do not resume it on your own.' },
+    { who: 'Sneha Kale', role: 'HR Team', at: '2026-10-13', t: 'P3 has one resume only — photograph session is Monday, then I will send it in.' },
+    { who: 'Amit Zode', role: 'Employee', at: '2026-09-30', t: 'We are losing walk-in conversions at the counter on weekends. Requesting urgency be kept.' }
+  ];
+  return cs.map(c => '<div class="cmt"><div class="cmt-h"><span class="avatar" style="width:20px;height:20px;font-size:9px">' + c.who.split(' ').map(x => x[0]).join('') + '</span>' +
+    '<b style="color:var(--ink)">' + c.who + '</b><span>·</span><span>' + c.role + '</span><span>·</span><span>' + YHUI.date(c.at) + '</span></div>' +
+    '<div class="cmt-t">' + YHUI.esc(c.t) + '</div></div>').join('');
+}
+
+// -------------------------------------------------- interactions
+function decide(outcome) {
+  const labels = { approved: 'Approve vacancy', rejected: 'Reject vacancy', returned: 'Return for clarification' };
+  const needsReason = outcome !== 'approved';
+  YHUI.openModal('<div class="modal-head"><h3>' + labels[outcome] + ' · ' + r.number + '</h3>' +
+    '<div class="qsub" style="margin-top:4px">' + YHUI.fac(r.facility) + ' · raised by ' + YH.usr(r.raisedBy).name + '</div></div>' +
+    '<div class="modal-body">' +
+    (outcome === 'approved' ? '<div class="notice info">' + YHUI.svg(YHUI.ICONS.grid, 16) +
+      '<div><b>' + r.qty + ' position records</b> will be created as ' +
+      '<span class="mono">' + r.number + '-P1…P' + r.qty + '</span> and handed to HR as <span class="mono">approved_created</span>. This cannot be silently rewritten later.</div></div>'
+      : '<div class="field"><label class="req">Reason (required, shown to the requester and HR)</label>' +
+        '<textarea class="textarea" id="rz" placeholder="Be specific — this becomes part of the permanent record."></textarea>' +
+        '<div class="err-msg hidden" data-for="rz">A reason is mandatory for this decision.</div></div>') +
+    '<div class="field" style="margin-top:14px"><label>Notify</label>' +
+    '<div style="display:flex;gap:6px;flex-wrap:wrap"><span class="chip on">' + YH.usr(r.raisedBy).name + '</span><span class="chip on">HR Team</span><span class="chip">Finance</span></div>' +
+    '<div class="hint">In-app notification only. No email is sent and no candidate data is ever included.</div></div>' +
+    '</div><div class="modal-foot"><button class="btn" data-close>Cancel</button>' +
+    '<button class="btn ' + (outcome === 'approved' ? 'primary' : 'danger') + '" onclick="commitDecision(\'' + outcome + '\')">Confirm decision</button></div>');
+}
+function commitDecision(outcome) {
+  if (outcome !== 'approved') {
+    const v = document.getElementById('rz').value.trim();
+    if (!v) { flag('rz', true); YHUI.toast('A reason is mandatory'); return; }
+  }
+  YHUI.closeAll();
+  YHUI.toast(outcome === 'approved' ? 'Approved · ' + r.qty + ' positions created and assigned to HR' :
+    outcome === 'rejected' ? 'Rejected with reason recorded · no positions created' : 'Returned to ' + YH.usr(r.raisedBy).name + ' for clarification');
+}
+function openHold(scope) {
+  const affected = scope === 'request' ? ps.filter(p => !['hired', 'closed_unfilled'].includes(p.status)) : [scope];
+  YHUI.openModal('<div class="modal-head"><h3>Put on hold · ' + (scope === 'request' ? 'entire request' : scope) + '</h3>' +
+    '<div class="qsub" style="margin-top:4px">Stage clocks freeze, calendar age keeps running, previous stage is preserved for resume.</div></div>' +
+    '<div class="modal-body">' +
+    '<div class="field"><label class="req">Reason</label><input class="input" id="hr" placeholder="e.g. Counter headcount under review with Showroom Ops">' +
+    '<div class="err-msg hidden" data-for="hr">A hold must carry a reason.</div></div>' +
+    '<div class="fgrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px">' +
+    '<div class="field"><label>Review date</label><input class="input" type="date" id="hrev" value="2026-11-02"><div class="hint">Recommended. Overdue holds appear in the reviewer queue.</div></div>' +
+    '<div class="field"><label>Notify</label><select class="select"><option>Requester + HR + approver</option><option>HR only</option><option>Nobody</option></select></div></div>' +
+    '<div class="stacknote" style="margin-top:14px"><b style="font-size:12.5px">' + affected.length + ' position' + (affected.length > 1 ? 's' : '') + ' affected</b>' +
+    '<div class="cmeta" style="margin-top:6px">' + affected.map(p => typeof p === 'string' ? '<span class="badge outline">' + p + ' → ' + (YH.STATUS[p.status || (YH.positions.find(x => x.number === p) || {}).status] || {}).label + '</span>' :
+      '<span class="badge outline">' + p.number + ' → ' + (YH.STATUS[p.status] || {}).label + '</span>').join(' ') + '</div>' +
+    '<div class="hint" style="margin-top:6px;font-size:11.8px;color:var(--ink-3)">Confirm the list — a request-level hold is explicit, never implied.</div></div>' +
+    '</div><div class="modal-foot"><button class="btn" data-close>Cancel</button>' +
+    '<button class="btn dark" onclick="commitHold()">' + YHUI.svg(YHUI.ICONS.hold, 14) + 'Place on hold</button></div>');
+}
+function commitHold() {
+  const v = document.getElementById('hr').value.trim();
+  if (!v) { flag('hr', true); YHUI.toast('Reason required'); return; }
+  YHUI.closeAll(); YHUI.toast('Held · previous stage stored, hold age starts at 0, audit event written');
+}
+function resume(num) {
+  YHUI.openModal('<div class="modal-head"><h3>Resume ' + num + '</h3></div>' +
+    '<div class="modal-body"><div class="notice warn">' + YHUI.svg(YHUI.ICONS.hold, 16) +
+    '<div>Returns to <b>' + ((YH.STATUS[(YH.positions.find(p => p.number === num) || {}).prev] || {}).label || 'previous stage') + '</b> by default. Choose a different stage only if that is genuinely correct.</div></div>' +
+    '<div class="field" style="margin-top:14px"><label>Resume into</label><select class="select"><option>Previous stage (recommended)</option><option>HR searching</option><option>Sent for candidate approval</option></select></div>' +
+    '<div class="field" style="margin-top:12px"><label>Note for the record</label><input class="input" placeholder="Optional, but useful for the hold history"></div></div>' +
+    '<div class="modal-foot"><button class="btn" data-close>Cancel</button><button class="btn primary" onclick="YHUI.closeAll();YHUI.toast(\'Resumed · hold window closed, active hiring age recalculated\')">Resume position</button></div>');
+}
+function addCandidate(posNum) {
+  YHUI.openDrawer('<div class="drawer-head"><div style="flex:1"><div class="crumb">' + (posNum || ps[0].number) + '</div><h3>Add candidate</h3>' +
+    '<div class="qsub" style="margin-top:6px">Minimum data for recruitment. No Aadhaar, PAN, bank details, home address or date of birth.</div></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body">' +
+    '<div class="notice warn">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Candidate privacy notice must be given at collection.</b> Record how and when it was shared. Never record that a candidate accepted terms just because you uploaded their resume.</div></div>' +
+    '<div class="fgrid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px">' +
+    '<div class="field"><label class="req">Candidate name</label><input class="input" placeholder="Full name as on resume"></div>' +
+    '<div class="field"><label>Contact number</label><input class="input" placeholder="+91 …"></div>' +
+    '<div class="field"><label>Email</label><input class="input" placeholder="optional"></div>' +
+    '<div class="field"><label>City</label><input class="input" placeholder="e.g. Chinchwad"></div>' +
+    '<div class="field"><label>Proposed salary (INR)</label><input class="input tnum" placeholder="22000"></div>' +
+    '<div class="field"><label>Proposed incentive</label><input class="input tnum" placeholder="0"></div></div>' +
+    '<div class="field" style="margin-top:14px"><label class="req">HR note / recommendation</label><textarea class="textarea" placeholder="Objective, role-relevant facts only. No protected-characteristic commentary, no appearance judgements."></textarea></div>' +
+    '<div class="formsec" style="font-size:11px;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);padding:18px 0 4px;border-bottom:1px solid var(--line-soft);margin:18px 0 14px">Documents</div>' +
+    '<div style="display:grid;gap:10px">' +
+    '<div class="doc"><div class="doc-ico">' + YHUI.svg(YHUI.ICONS.doc, 17) + '</div>' +
+    '<div style="flex:1"><div class="doc-name">Resume / CV</div><div class="doc-meta">PDF, DOC or DOCX · max 5 MB · content type verified</div></div>' +
+    '<button class="btn sm" onclick="markUploaded(this)">Upload</button></div>' +
+    '<div class="doc missing"><div class="doc-ico">' + YHUI.svg(YHUI.ICONS.user, 17) + '</div>' +
+    '<div style="flex:1"><div class="doc-name">Photograph</div><div class="doc-meta">JPEG / PNG / WebP · max 2 MB · EXIF stripped on upload</div></div>' +
+    '<div style="display:flex;gap:6px"><button class="btn sm" onclick="markUploaded(this,true)">Camera</button><button class="btn sm" onclick="markUploaded(this,true)">Upload</button></div></div>' +
+    '</div>' +
+    '<div class="field" style="margin-top:16px"><label>Notice delivery</label>' +
+    '<div style="display:flex;gap:8px;flex-wrap:wrap"><span class="chip on">Shared on phone</span><span class="chip">Printed copy</span><span class="chip">WhatsApp</span><span class="chip">Not yet</span></div>' +
+    '<div class="hint">Stored as notice version v1.2 with date and the recording user. The candidate never has to touch this app.</div></div>' +
+    '<div class="notice warn" id="gate" style="margin-top:16px">' + YHUI.svg(YHUI.ICONS.clock, 16) +
+    '<div><b>Send for approval is locked.</b> Both a resume and a candidate photograph must be on file. Upload the photograph to unlock it — that is the mandatory rule working, not a bug.</div></div>' +
+    '</div>' +
+    '<div class="drawer-foot"><button class="btn" data-close>Cancel</button>' +
+    '<button class="btn ghost" onclick="YHUI.toast(\'Candidate saved as draft. Documents can be added later.\')">Save draft</button>' +
+    '<button class="btn primary" id="sendbtn" disabled>Send for approval</button>' +
+    '<button class="btn danger sm" onclick="exception(\'this candidate\')">Exception</button></div>');
+}
+function markUploaded(btn, isPhoto) {
+  const doc = btn.closest('.doc');
+  doc.classList.remove('missing');
+  doc.querySelector('.doc-meta').textContent = isPhoto
+    ? 'captured 16 Oct 2026 · image/jpeg · 0.9 MB · EXIF stripped · checksum recorded'
+    : 'uploaded · application/pdf · 1.8 MB · content type verified · checksum recorded';
+  btn.outerHTML = '<span class="badge ok">' + YHUI.svg(YHUI.ICONS.check, 12) + ' on file</span>';
+  if (!document.querySelector('.doc.missing')) {
+    const s = document.getElementById('sendbtn');
+    if (s) { s.disabled = false; s.onclick = () => sendForApproval('gate', 'New candidate'); }
+    const g = document.getElementById('gate');
+    if (g) { g.className = 'notice info'; g.style.marginTop = '16px'; g.innerHTML = YHUI.svg(YHUI.ICONS.check, 16) + '<div>Both mandatory documents validated. The approval task will be created for Owner / CEO.</div>'; }
+    YHUI.toast('Document requirement satisfied');
+  }
+}
+function exception(name) {
+  YHUI.openModal('<div class="modal-head"><h3>Authorized exception · missing documents</h3>' +
+    '<div class="qsub" style="margin-top:4px">' + YHUI.esc(name) + ' · restricted permission, never a workflow setting</div></div>' +
+    '<div class="modal-body"><div class="notice">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div>This bypasses a <b>mandatory</b> business rule. It cannot be disabled by workflow config, it is written as an immutable audit event, and Admin review flags it on the dashboard.</div></div>' +
+    '<div class="field" style="margin-top:14px"><label class="req">Reason</label><textarea class="textarea" id="ez" placeholder="Why is the candidate going for approval without the photograph?"></textarea>' +
+    '<div class="err-msg hidden" data-for="ez">Reason required.</div></div>' +
+    '<div class="field" style="margin-top:12px"><label>Your authority basis</label><select class="select"><option>Owner instruction recorded</option><option>Delegated exception permission</option></select></div></div>' +
+    '<div class="modal-foot"><button class="btn" data-close>Cancel</button>' +
+    '<button class="btn dark" onclick="if(!document.getElementById(\'ez\').value.trim()){flag(\'ez\',true);YHUI.toast(\'Reason required\');return}YHUI.closeAll();YHUI.toast(\'Exception recorded and flagged for review\')">Submit with exception</button></div>');
+}
+function reviewDoc(name, type) {
+  YHUI.openModal('<div class="modal-head"><h3>' + type + ' · ' + YHUI.esc(name) + '</h3>' +
+    '<div class="qsub" style="margin-top:4px">Access granted after a server-side permission check · 60-second private URL · entry written to the document access log</div></div>' +
+    '<div class="modal-body">' +
+    '<div class="stacknote" style="display:flex;gap:12px;align-items:center">' +
+    '<div class="doc-ico">' + YHUI.svg(YHUI.ICONS.doc, 18) + '</div>' +
+    '<div style="flex:1"><div class="doc-name">' + YHUI.esc(name) + ' — ' + type + '.pdf</div>' +
+    '<div class="doc-meta">1.8 MB · application/pdf · uploaded 02 Oct 2026 by Sneha Kale · checksum recorded</div></div>' +
+    '<button class="btn sm" onclick="YHUI.toast(\'Download logged: you, this document, timestamp, outcome\')">Download</button></div>' +
+    '<div style="margin-top:14px;height:190px;border-radius:var(--r-md);border:1px solid var(--line);background:' +
+    'repeating-linear-gradient(0deg,#FBFBF9 0 22px,#F2F2EE 22px 23px);display:grid;place-items:center;color:var(--ink-3);font-size:12.5px">' +
+    'Rendered document surface — content never enters application logs or analytics</div></div>' +
+    '<div class="modal-foot"><button class="btn" data-close>Close</button>' +
+    '<button class="btn ghost" onclick="YHUI.toast(\'Your viewing has been recorded on this candidate record\')">Who has opened this?</button></div>');
+}
+function sendForApproval(posNum, name) { YHUI.closeAll(); YHUI.toast('Sent for approval · task created for Owner / CEO · ' + name); }
+const flag = (name, isBad) => {
+  const i = document.querySelector('[id="' + name + '"]'), m = document.querySelector('[data-for="' + name + '"]');
+  if (i) i.classList.toggle('err', isBad);
+  if (m) m.classList.toggle('hidden', !isBad);
+};
+if (params.get('pos')) {
+  const p = YH.positions.find(x => x.number === params.get('pos'));
+  setTimeout(() => { const n = document.getElementById(params.get('pos')); if (n) { n.classList.add('open'); n.scrollIntoView({ block: 'center' }); } }, 60);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Yash Honda · Vacancy &amp; Hiring Tracker prototype</title>
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Internal design preview of the Yash Honda Vacancy &amp; Hiring Tracker. Synthetic demo data only.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  body { background: var(--canvas); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 64px 24px 72px; }
+  .top { display: flex; align-items: center; gap: 12px; }
+  .mark { width: 38px; height: 38px; border-radius: 10px; background: var(--ink); color: #fff; display: grid; place-items: center; font-weight: 600; letter-spacing: -.04em; font-size: 15px; }
+  .org { font-size: 19px; font-weight: 600; letter-spacing: -.035em; }
+  .orgsub { font-size: 13px; color: var(--ink-2); margin-top: 2px; }
+  h1 { font-size: 34px; font-weight: 600; letter-spacing: -.04em; line-height: 1.1; margin: 40px 0 10px; max-width: 22ch; }
+  .lead { font-size: 14.5px; color: var(--ink-2); max-width: 62ch; line-height: 1.65; }
+  .pages { display: grid; grid-template-columns: 1.35fr 1fr; gap: 12px; margin-top: 34px; }
+  .page { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg); transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s, border-color .2s; }
+  .page:hover { transform: translateY(-2px); box-shadow: var(--shadow-lift); border-color: #CFCFC8; }
+  .page .k { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+  .page b { font-size: 14.5px; font-weight: 600; letter-spacing: -.02em; display: block; }
+  .page span.d { font-size: 12.6px; color: var(--ink-2); margin-top: 4px; display: block; line-height: 1.5; }
+  .page.big { grid-row: span 2; flex-direction: column; }
+  .page.big b { font-size: 17px; }
+  .page .arrow { margin-left: auto; color: var(--accent); flex: none; }
+  .note { margin-top: 32px; display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; border: 1px solid #CBDBEB; background: var(--accent-soft); border-radius: var(--r-md); color: var(--accent-ink); font-size: 12.8px; max-width: 78ch; }
+  .rule { border: 0; border-top: 1px solid var(--line); margin: 40px 0 18px; }
+  .foot { display: flex; gap: 18px; flex-wrap: wrap; font-size: 12px; color: var(--ink-3); }
+  @media (max-width: 760px) { .wrap { padding: 34px 16px 56px; } h1 { font-size: 26px; margin-top: 28px; } .pages { grid-template-columns: 1fr; } .page.big { grid-row: auto; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top reveal">
+    <div class="mark">YH</div>
+    <div><div class="org">Yash Honda</div><div class="orgsub">Vacancy &amp; Hiring Tracker · design preview</div></div>
+  </div>
+
+  <h1 class="reveal d1">Every approved position, its stage, its documents and who is blocking it.</h1>
+  <p class="lead reveal d2">Five screens of the internal tracker, wired together on one shared dataset. Switch the signed-in identity in the top right of any page and the navigation, queues, table scope and candidate document access all change — that is the permission model, shown rather than described.</p>
+
+  <div class="pages reveal d3">
+    <a class="page big" href="dashboard.html">
+      <span class="k">01</span>
+      <b>Dashboard</b>
+      <span class="d">Role-aware action queue, position ledger, eight count tiles where every tile opens a drill-down list of exactly that count, stage pipeline, ageing and overdue, facility breakdown, live activity timeline.</span>
+      <span class="arrow">Open &rarr;</span>
+    </a>
+    <a class="page" href="requests.html">
+      <span class="k">02</span>
+      <b>Vacancy requests</b>
+      <span class="d">Scoped register plus the raise-request drawer, with a live preview of the position records the quantity will create.</span>
+      <span class="arrow">Open &rarr;</span>
+    </a>
+    <a class="page" href="my-actions.html">
+      <span class="k">04</span>
+      <b>My Actions</b>
+      <span class="d">Personal approval queue with SLA rails. Decide on a vacancy or a candidate and the item leaves the queue.</span>
+      <span class="arrow">Open &rarr;</span>
+    </a>
+    <a class="page" href="request-detail.html">
+      <span class="k">03</span>
+      <b>Request detail</b>
+      <span class="d">Positions, candidates, resume and photograph requirements, hold overlay, four ageing clocks, timeline, comments.</span>
+      <span class="arrow">Open &rarr;</span>
+    </a>
+    <a class="page" href="admin.html">
+      <span class="k">05</span>
+      <b>Admin Panel</b>
+      <span class="d">Users, role &times; permission matrix, workflow configuration, facilities, versioned legal documents, retention and the append-only audit log.</span>
+      <span class="arrow">Open &rarr;</span>
+    </a>
+  </div>
+
+  <div class="note reveal d4">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 3l7 3v5c0 5-3 8-7 10-4-2-7-5-7-10V6z"/></svg>
+    <div><b>Synthetic demo data only.</b> No real candidate names, resumes, photographs or contact details appear anywhere on this site, and nothing is stored &mdash; there is no backend behind this preview. Not for external sharing.</div>
+  </div>
+
+  <hr class="rule">
+  <div class="foot">
+    <span>Facilities: Hadapsar RedWing, Service RedWing, Service BigWing, Izeil office, BigWing Sales, Fursungi, Wadki, ESD Godown, HP Salunke Vihar</span>
+    <span class="mono">FY 2026-27</span>
+  </div>
+</div>
+</body>
+</html>

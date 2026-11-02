@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vacancy Requests · Yash Honda Vacancy &amp; Hiring Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+  .search { position: relative; flex: 1; min-width: 220px; max-width: 380px; }
+  .search svg { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--ink-3); }
+  .search input { padding-left: 34px; }
+  .fchips { display: flex; gap: 6px; flex-wrap: wrap; }
+  .tbar { height: 3px; border-radius: 2px; background: var(--neutral-soft); overflow: hidden; margin-top: 6px; width: 78px; }
+  .tbar i { display: block; height: 100%; background: var(--accent); }
+
+  .reqrow { cursor: pointer; }
+  .reqrow td:first-child { position: relative; }
+  .reqrow td:first-child::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 2px; background: transparent; transition: background .16s;
+  }
+  .reqrow:hover td:first-child::before { background: var(--accent); }
+  .ttl { font-weight: 500; letter-spacing: -.01em; }
+  .subrow { font-size: 11.8px; color: var(--ink-3); display: flex; gap: 7px; align-items: center; flex-wrap: wrap; margin-top: 3px; }
+  .posmini { display: flex; gap: 3px; }
+  .posmini i { width: 12px; height: 12px; border-radius: 3px; border: 1px solid var(--line); display: inline-block; }
+  .posmini i.hired { background: var(--ok); border-color: var(--ok); }
+  .posmini i.live { background: var(--accent-soft); border-color: #C4D7EA; }
+  .posmini i.hold { background: repeating-linear-gradient(135deg,#EFEEE9 0 3px,#DFDED7 3px 6px); }
+  .posmini i.dead { background: var(--neutral-soft); border-color: var(--line); }
+
+  /* form */
+  .fgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .fgrid .full { grid-column: span 2; }
+  .fsplit { display: grid; grid-template-columns: 1fr 68px 1fr; gap: 8px; align-items: end; }
+  .qty { display: flex; align-items: center; gap: 8px; }
+  .qty button { width: 32px; height: 34px; border: 1px solid var(--line); background: var(--surface); border-radius: var(--r-sm); font-size: 15px; color: var(--ink-2); }
+  .qty button:hover { background: var(--neutral-soft); }
+  .qty input { width: 62px; text-align: center; font-family: var(--font-mono); }
+  .posprev { display: grid; gap: 6px; margin-top: 10px; }
+  .posprev .pp { display: flex; align-items: center; gap: 9px; padding: 9px 11px; border: 1px dashed var(--line); border-radius: var(--r-sm); background: var(--surface-alt); font-size: 12.5px; animation: rise .34s cubic-bezier(.16,1,.3,1) both; }
+  .posprev .pp .cell-id { color: var(--accent-ink); }
+  .formsec { font-size: 11px; text-transform: uppercase; letter-spacing: .09em; color: var(--ink-3); padding: 18px 0 4px; border-bottom: 1px solid var(--line-soft); margin-bottom: 14px; }
+  .ack { display: flex; gap: 10px; align-items: flex-start; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface-alt); font-size: 12.5px; }
+  .ack input { margin-top: 2px; width: 15px; height: 15px; accent-color: var(--accent); }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+YHUI.shell('requests', 'Vacancy requests');
+const el = document.getElementById('content');
+const viewer = YH.usr(YHUI.getViewer());
+const scoped = (fid) => viewer.scope === 'all' || viewer.scope.includes(fid);
+const canSeeAll = ['Admin', 'Owner', 'CEO', 'HR Team', 'Finance Team'].includes(viewer.role);
+let filter = 'all', query = '';
+
+el.innerHTML =
+  '<div class="tools reveal">' +
+  '<div class="search">' + YHUI.svg(YHUI.ICONS.search, 15) +
+  '<input class="input" id="q" placeholder="Search request number, title, candidate name…"></div>' +
+  '<div class="fchips" id="tabs"></div>' +
+  '<div style="margin-left:auto;display:flex;gap:8px;align-items:center">' +
+  '<button class="btn sm" onclick="YHUI.toast(\'Facility filter · server-side scope applied to the same rule set as the UI\')">' +
+  YHUI.svg(YHUI.ICONS.filter, 14) + 'Facility</button>' +
+  '<button class="btn sm" onclick="YHUI.toast(\'CSV export logged: your name, filter set, row count, timestamp\')">' +
+  YHUI.svg(YHUI.ICONS.doc, 14) + 'Export</button>' +
+  '<button class="btn primary" onclick="openForm()">' + YHUI.svg(YHUI.ICONS.plus, 15) + 'New vacancy request</button></div></div>' +
+  '<div class="card reveal d1" style="overflow:hidden"><table class="reg" id="reg"></table></div>' +
+  '<div class="section reveal d2" style="display:grid;grid-template-columns:1fr auto;gap:14px;align-items:center;border-top:1px solid var(--line);padding-top:14px;font-size:12.3px;color:var(--ink-3)">' +
+  '<div id="footnote"></div><div class="tnum" id="pager">Page 1 of 1 · 25 rows</div></div>';
+
+const TABS = [
+  ['all', 'All requests'], ['pending', 'Pending approval'], ['approved', 'Approved &amp; hiring'],
+  ['returned', 'Returned'], ['closed', 'Closed / rejected']
+];
+document.getElementById('tabs').innerHTML = TABS.map(([k, l]) =>
+  '<button class="chip' + (k === 'all' ? ' on' : '') + '" data-tab="' + k + '" onclick="setTab(\'' + k + '\')">' + l + '</button>').join('');
+
+function setTab(k) {
+  filter = k;
+  document.querySelectorAll('[data-tab]').forEach(b => b.classList.toggle('on', b.dataset.tab === k));
+  render();
+}
+document.getElementById('q').oninput = (e) => { query = e.target.value.toLowerCase(); render(); };
+
+function visibleRequests() {
+  return YH.requests.filter(r => {
+    if (!canSeeAll && !(scoped(r.facility) || r.raisedBy === viewer.id)) return false;
+    if (filter === 'pending' && r.status !== 'pending') return false;
+    if (filter === 'approved' && !['approved'].includes(r.status)) return false;
+    if (filter === 'returned' && r.status !== 'returned') return false;
+    if (filter === 'closed' && !['closed', 'rejected'].includes(r.status)) return false;
+    if (query) {
+      const cands = YH.posFor(r.number).flatMap(p => p.cands.map(c => c.name));
+      const hay = (r.number + ' ' + r.title + ' ' + YHUI.fac(r.facility) + ' ' + YH.usr(r.raisedBy).name + ' ' + cands.join(' ')).toLowerCase();
+      if (!hay.includes(query)) return false;
+    }
+    return true;
+  });
+}
+
+function render() {
+  const rows = visibleRequests();
+  const t = document.getElementById('reg');
+  t.innerHTML = '<thead><tr><th>Request</th><th>Facility</th><th>Headcount</th><th>Salary &amp; incentive band</th>' +
+    '<th>Raised by</th><th>Ageing</th><th>Status</th><th></th></tr></thead><tbody>' +
+    (rows.length ? rows.map(row).join('') : emptyRow()) + '</tbody>';
+  t.querySelectorAll('tbody tr[data-open]').forEach(tr => tr.onclick = () => location.href = 'request-detail.html?req=' + tr.dataset.open);
+  document.getElementById('footnote').innerHTML =
+    (canSeeAll ? 'Showing all facilities permitted to ' + viewer.role + '.'
+      : 'Scoped view · ' + viewer.role + ' sees only ' + viewer.scope.map(f => YHUI.fac(f)).join(', ') + ' and requests they raised.') +
+    ' Candidate names appear in search results only for users holding <span class="mono">view_candidates</span>.';
+  document.getElementById('pager').textContent = 'Page 1 of 1 · ' + rows.length + ' rows';
+}
+const emptyRow = () => '<tr><td colspan="8"><div style="text-align:center;padding:52px 20px">' +
+  '<div style="width:44px;height:44px;margin:0 auto 12px;border-radius:12px;border:1px dashed var(--line);display:grid;place-items:center;color:var(--ink-3)">' +
+  YHUI.svg(YHUI.ICONS.search, 19) + '</div>' +
+  '<div class="ttl">No requests match this view</div>' +
+  '<div class="sub" style="margin-top:4px">Clear the search or raise the first request for this facility.</div>' +
+  '<button class="btn sm" style="margin-top:12px" onclick="openForm()">New vacancy request</button></div></td></tr>';
+
+function row(r) {
+  const ps = YH.posFor(r.number);
+  const live = YH.livePos(r.number).length;
+  const days_ = YH.days(r.submittedAt);
+  const sla = r.status === 'pending' ? 5 : null;
+  return '<tr class="reqrow" data-open="' + r.number + '">' +
+    '<td style="min-width:260px"><div class="ttl">' + YHUI.esc(r.title) + '</div>' +
+    '<div class="subrow"><span class="cell-id">' + r.number + '</span><span>·</span><span>' + YHUI.esc(r.reason) + '</span>' +
+    (r.priority === 'Urgent' ? '<span class="badge risk">Urgent</span>' : '') +
+    (r.requiredBy ? '<span>·</span><span>needed by ' + YHUI.date(r.requiredBy) + '</span>' : '') + '</div></td>' +
+    '<td class="sub nowrap">' + YHUI.fac(r.facility) + '</td>' +
+    '<td><div style="display:flex;align-items:center;gap:9px"><span class="tnum" style="font-size:15px">' + r.qty + '</span>' +
+    '<div class="posmini">' + mini(ps) + '</div></div>' +
+    '<div class="subrow">' + (ps.length ? live + ' live position' + (live === 1 ? '' : 's') : r.status === 'pending' ? 'created on approval' : '—') + '</div></td>' +
+    '<td class="sub nowrap">' + YHUI.band(r.sal[0], r.sal[1]) + '<div class="subrow">' + YHUI.band(r.inc[0], r.inc[1]) + '</div></td>' +
+    '<td><div class="sub nowrap">' + YH.usr(r.raisedBy).name + '</div><div class="subrow">' + YH.usr(r.raisedBy).role + '</div></td>' +
+    '<td class="nowrap">' + YHUI.ageTag(r.submittedAt, sla) + '<div class="subrow">raised ' + YHUI.date(r.submittedAt) + '</div></td>' +
+    '<td>' + YHUI.badge(r.status) + (r.approver ? '<div class="subrow">' + YHUI.esc(r.approver) + '</div>' : '<div class="subrow">Owner / CEO</div>') + '</td>' +
+    '<td class="nowrap"><span class="qopen" style="opacity:.6;color:var(--accent);display:inline-flex;gap:4px;align-items:center;font-size:12px">Open' + YHUI.svg(YHUI.ICONS.chev, 13) + '</span></td>' +
+    '</tr>';
+}
+const mini = (ps) => ps.map(p => {
+  const cls = YH.isHold(p) ? 'hold' : p.status === 'hired' ? 'hired' : ['closed_unfilled', 'cancelled'].includes(p.status) ? 'dead' : 'live';
+  return '<i class="' + cls + '" title="' + p.number + ' · ' + (YH.STATUS[p.status] || {}).label + (YH.isHold(p) ? ' (held, was ' + p.prev + ')' : '') + '"></i>';
+}).join('');
+render();
+
+// ---------------------------------------------------- new request form (drawer)
+function openForm() {
+  YHUI.openDrawer(
+    '<div class="drawer-head"><div style="flex:1"><div class="crumb">New record · workflow v1</div>' +
+    '<h3>Raise a vacancy request</h3>' +
+    '<div class="qsub" style="margin-top:6px">Request number is generated on the server after submit. Raised by is locked to your account.</div></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body"><form id="f" novalidate>' +
+    '<div class="formsec">Position</div>' +
+    '<div class="field full" style="margin-bottom:14px"><label class="req">Position / vacancy title</label>' +
+    '<input class="input" name="title" placeholder="e.g. Sales Consultant — Two-wheeler Counter"><div class="err-msg hidden" data-for="title">A title is required.</div></div>' +
+    '<div class="fgrid">' +
+    fld('facility', 'Location / facility', '<select class="select" name="facility">' +
+      YH.facilities.filter(f => f.active && (viewer.scope === 'all' || viewer.scope.includes(f.id))).map(f => '<option value="' + f.id + '">' + f.name + '</option>').join('') +
+      '</select>', true) +
+    fld('reason', 'Reason', '<select class="select" name="reason">' + YH.REASONS.map(r => '<option>' + r + '</option>').join('') + '</select>', true) +
+    '</div>' +
+
+    '<div class="formsec">Compensation (INR, monthly gross)</div>' +
+    '<div class="fgrid">' +
+    '<div class="field"><label class="req">Salary minimum</label><input class="input tnum" name="smin" value="20000" inputmode="numeric"><div class="err-msg hidden" data-for="smin">Number expected.</div></div>' +
+    '<div class="field"><label class="req">Salary maximum</label><input class="input tnum" name="smax" value="26000" inputmode="numeric"><div class="err-msg hidden" data-for="smax">Maximum must be at or above the minimum.</div></div>' +
+    '<div class="field"><label class="req">Incentive minimum</label><input class="input tnum" name="imin" value="0" inputmode="numeric"><div class="hint">Zero is valid when no incentive applies.</div></div>' +
+    '<div class="field"><label class="req">Incentive maximum</label><input class="input tnum" name="imax" value="5000" inputmode="numeric"><div class="err-msg hidden" data-for="imax">Maximum must be at or above the minimum.</div></div>' +
+    '</div>' +
+
+    '<div class="formsec">Headcount &amp; timing</div>' +
+    '<div class="fgrid">' +
+    '<div class="field"><label class="req">Number of positions</label>' +
+    '<div class="qty"><button type="button" onclick="bump(-1)">−</button>' +
+    '<input class="input" id="qty" name="qty" value="2" inputmode="numeric"><button type="button" onclick="bump(1)">+</button></div>' +
+    '<div class="hint">Each unit becomes its own position record on approval — tracked, held and closed independently.</div>' +
+    '<div class="posprev" id="posprev"></div></div>' +
+    '<div class="field"><label>Priority</label><select class="select" name="priority"><option>Normal</option><option>Urgent</option></select></div>' +
+    '<div class="field"><label>Required-by date</label><input class="input" type="date" name="requiredby" value="2026-11-15"></div>' +
+    '<div class="field"><label>Department / team</label><input class="input" name="dept" placeholder="Optional, e.g. Counter Sales"></div>' +
+    '</div>' +
+    '<div class="field full" style="margin-top:14px"><label>Notes / justification</label>' +
+    '<textarea class="textarea" name="notes" placeholder="Why is this needed, and what happens if it is not filled? Business context here is what the approver reads."></textarea>' +
+    '<div class="hint">Do not put candidate or existing-employee personal data in notes.</div></div>' +
+
+    '<div class="formsec">Privacy</div>' +
+    '<label class="ack"><input type="checkbox" name="ack">' +
+    '<span>I have read the <b>Acceptable Use &amp; Confidentiality Rules</b> and understand that candidate documents shared later are confidential and access is logged.</span></label>' +
+    '<div class="err-msg hidden" data-for="ack" style="margin-top:6px">Acknowledgement is required before submitting.</div>' +
+
+    '<div class="notice info" style="margin-top:16px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Self-approval is blocked.</b> This request will be queued for the Owner or CEO — whichever of them acts first closes the task. You will be notified in-app.</div></div>' +
+    '</form></div>' +
+    '<div class="drawer-foot"><button class="btn" data-close>Cancel</button>' +
+    '<button class="btn ghost" onclick="YHUI.toast(\'Draft saved locally · drafts are off by default in workflow v1\')">Save draft</button>' +
+    '<button class="btn primary" onclick="submitForm()">' + YHUI.svg(YHUI.ICONS.check, 15) + 'Submit for approval</button></div>');
+  syncQty();
+  document.getElementById('f').addEventListener('input', liveValidate);
+}
+
+function fld(key, label, control, req, hint) {
+  return '<div class="field"><label' + (req ? ' class="req"' : '') + '>' + label + '</label>' + control +
+    (hint ? '<div class="hint">' + hint + '</div>' : '') + '</div>';
+}
+function bump(d) {
+  const i = document.getElementById('qty');
+  i.value = Math.min(20, Math.max(1, (parseInt(i.value, 10) || 1) + d));
+  syncQty();
+}
+function syncQty() {
+  const q = parseInt(document.getElementById('qty').value, 10) || 1;
+  const r = YH.requests.length + 1;
+  const next = 'YH-' + YH.FY.short + '-' + String(163 + r - 10).padStart(4, '0');
+  document.getElementById('posprev').innerHTML =
+    '<div class="pp"><span class="cell-id">' + next + '</span><span class="muted">request · positions created only after approval</span></div>' +
+    Array.from({ length: q }, (_, i) =>
+      '<div class="pp" style="animation-delay:' + (i * 40) + 'ms">' + YHUI.svg(YHUI.ICONS.grid, 14) +
+      '<span class="cell-id">' + next + '-P' + (i + 1) + '</span>' +
+      '<span class="muted">independent stage, hold and outcome</span></div>').join('');
+}
+function liveValidate() {
+  const f = document.getElementById('f');
+  const smin = num(f.smin.value), smax = num(f.smax.value), imin = num(f.imin.value), imax = num(f.imax.value);
+  flag('smax', !(smin <= smax));
+  flag('imax', !(imin <= imax));
+  flag('title', !f.title.value.trim());
+  if (!document.getElementById('posprev')) return;
+}
+const num = (v) => Number(String(v).replace(/[^\d.]/g, '')) || 0;
+const flag = (name, isBad) => {
+  const input = document.querySelector('[name="' + name + '"]');
+  const msg = document.querySelector('[data-for="' + name + '"]');
+  if (input) input.classList.toggle('err', isBad);
+  if (msg) msg.classList.toggle('hidden', !isBad);
+};
+function submitForm() {
+  const f = document.getElementById('f');
+  const errs = [];
+  if (!f.title.value.trim()) errs.push('title');
+  if (num(f.smin.value) > num(f.smax.value)) errs.push('smax');
+  if (num(f.imin.value) > num(f.imax.value)) errs.push('imax');
+  if (!f.ack.checked) errs.push('ack');
+  errs.forEach(n => flag(n, true));
+  if (errs.length) {
+    YHUI.toast(errs.length + ' field' + (errs.length > 1 ? 's need' : ' needs') + ' attention');
+    document.querySelector('[data-for="' + errs[0] + '"]').scrollIntoView({ block: 'center', behavior: 'smooth' });
+    return;
+  }
+  const q = parseInt(f.qty.value, 10);
+  YHUI.closeAll();
+  YHUI.toast('Submitted · ' + q + ' position record' + (q > 1 ? 's' : '') + ' will be created on approval');
+  setTimeout(() => location.href = 'request-detail.html?req=' + YH.requests[0].number + '&justCreated=1', 700);
+}
+</script>
+</body>
+</html>

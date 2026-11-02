@@ -1,0 +1,28 @@
+/*
+ * The on-hold register. There is no prototype for this screen, so it borrows the
+ * register vocabulary of the vacancy list and adds only what a paused position
+ * needs: the reason, the pause clock and the review date.
+ */
+
+/* .reason and .pcell are shared register atoms and live in globals.css */
+
+/* A pause is not a delay in progress, so it is drawn differently from the ageing
+   bar: a hatched rail that fills as the pause outlives its own review date. */
+.pausebar {
+  height: 3px;
+  width: 76px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(135deg, #efeee9 0 3px, #dfded7 3px 6px);
+  overflow: hidden;
+}
+.pausebar i {
+  display: block;
+  height: 100%;
+  background: var(--ink-3);
+}
+
+@media (max-width: 900px) {
+  .reason {
+    max-width: none;
+  }
+}

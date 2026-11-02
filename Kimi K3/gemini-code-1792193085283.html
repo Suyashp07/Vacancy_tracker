@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YASH HONDA — Luminous Prismatic Edition v4.0 | Design Ankur Master</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            serif: ['"Instrument Serif"', 'serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            honda: {
+              red: '#E40521',
+              crimson: '#BE0019',
+              glow: '#FF2A44'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --honda-red: #E40521;
+    }
+    body {
+      background-color: #F4F6FB;
+      color: #090D16;
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+      overflow-x: hidden;
+    }
+    .tabular-nums { font-variant-numeric: tabular-nums; }
+
+    /* ===================================================================== */
+    /* 1. ANIMATED LUMINOUS AURORA MESH + ARCHITECTURAL DOT MATRIX           */
+    /* ===================================================================== */
+    .aurora-stage {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(135deg, #FAFBFD 0%, #F1F5F9 50%, #F6F4F8 100%);
+      overflow: hidden;
+    }
+    .aurora-orb {
+      position: absolute;
+      border-radius: 9999px;
+      filter: blur(90px);
+      opacity: 0.55;
+      animation: floatOrb 18s ease-in-out infinite alternate;
+    }
+    .orb-crimson {
+      width: 560px; height: 560px;
+      top: -140px; left: -80px;
+      background: radial-gradient(circle, rgba(228, 5, 33, 0.16) 0%, rgba(251, 113, 133, 0.04) 70%, transparent 100%);
+    }
+    .orb-sapphire {
+      width: 640px; height: 640px;
+      top: 40px; right: -160px;
+      background: radial-gradient(circle, rgba(14, 165, 233, 0.14) 0%, rgba(99, 102, 241, 0.06) 70%, transparent 100%);
+      animation-delay: -6s;
+    }
+    .orb-amber {
+      width: 520px; height: 520px;
+      bottom: -160px; left: 28%;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.12) 0%, rgba(16, 185, 129, 0.05) 70%, transparent 100%);
+      animation-delay: -11s;
+    }
+    @keyframes floatOrb {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(35px, 25px) scale(1.06); }
+      100% { transform: translate(-25px, 40px) scale(0.96); }
+    }
+
+    .dot-matrix {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background-image: radial-gradient(rgba(15, 23, 42, 0.075) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(ellipse at 50% 35%, black 60%, transparent 98%);
+    }
+
+    /* ===================================================================== */
+    /* 2. DOUBLE-BEZEL PRISMATIC GLASSMORPHISM (COUTURE LIGHT REFRACTION)    */
+    /* ===================================================================== */
+    .prism-shell {
+      padding: 4px;
+      border-radius: 28px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.28));
+      border: 1px solid rgba(255, 255, 255, 0.92);
+      box-shadow:
+        0 20px 50px -12px rgba(15, 23, 42, 0.055),
+        0 2px 6px -1px rgba(15, 23, 42, 0.025);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    .prism-inner {
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.86) 0%, rgba(255, 255, 255, 0.62) 100%);
+      border: 1px solid rgba(226, 232, 240, 0.65);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 1);
+    }
+    .glass-nav {
+      backdrop-filter: blur(28px) saturate(190%);
+      -webkit-backdrop-filter: blur(28px) saturate(190%);
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow:
+        0 18px 42px -10px rgba(15, 23, 42, 0.065),
+        0 1px 3px 0 rgba(15, 23, 42, 0.03),
+        inset 0 1px 0 0 rgba(255, 255, 255, 1);
+    }
+
+    /* ===================================================================== */
+    /* 3. SILKY MOTION & AMBIENT HOVER GLOWS                                 */
+    /* ===================================================================== */
+    .silky-card {
+      transition: all 500ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .silky-card:hover {
+      transform: scale(1.013) translateY(-3px);
+      box-shadow:
+        0 28px 60px -12px rgba(15, 23, 42, 0.09),
+        0 0 0 1px rgba(228, 5, 33, 0.15);
+    }
+    .silky-btn {
+      transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .silky-btn:hover {
+      transform: translateY(-1px) scale(1.015);
+    }
+
+    @keyframes fadeUpEditorial {
+      from { opacity: 0; transform: translateY(18px) scale(0.99); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .reveal-1 { animation: fadeUpEditorial 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.04s both; }
+    .reveal-2 { animation: fadeUpEditorial 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.11s both; }
+    .reveal-3 { animation: fadeUpEditorial 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both; }
+    .reveal-4 { animation: fadeUpEditorial 0.6s cubic-bezier(0.16, 1, 0.3, 1) 0.25s both; }
+
+    /* Animated SVG Workflow Stream */
+    @keyframes streamDash {
+      to { stroke-dashoffset: -28; }
+    }
+    .flow-line {
+      stroke-dasharray: 7 7;
+      animation: streamDash 1s linear infinite;
+    }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(15, 23, 42, 0.16); border-radius: 9999px; }
+  </style>
+</head>
+<body class="min-h-screen selection:bg-[#E40521] selection:text-white pb-20">
+
+  <!-- Animated Iridescent Light Canvas -->
+  <div class="aurora-stage">
+    <div class="aurora-orb orb-crimson"></div>
+    <div class="aurora-orb orb-sapphire"></div>
+    <div class="aurora-orb orb-amber"></div>
+  </div>
+  <div class="dot-matrix"></div>
+
+  <!-- STUDIO TELEMETRY TOAST ENGINE -->
+  <div id="toast-stack" class="fixed bottom-6 right-6 z-[100] flex flex-col gap-3 max-w-md w-full pointer-events-none px-4"></div>
+
+  <!-- ======================================================================= -->
+  <!-- RESTORED & ELEVATED: TOP FLOATING GLASSMORPHIC NAVIGATION ARCHITECTURE  -->
+  <!-- ======================================================================= -->
+  <header class="sticky top-4 z-50 mx-auto max-w-[1480px] px-4 sm:px-6 space-y-2.5">
+    
+    <!-- Primary Top Bar: Brand + 5 Screen Switcher Pills + Command & Legal -->
+    <div class="glass-nav rounded-[24px] px-4 py-2.5 flex flex-wrap items-center justify-between gap-3">
+      
+      <!-- Left: Yash Honda Emblem & Live Pulse -->
+      <div class="flex items-center gap-3.5">
+        <div class="relative h-10 w-10 rounded-2xl bg-gradient-to-br from-[#E40521] to-[#990012] flex items-center justify-center text-white font-extrabold text-sm tracking-tight shadow-lg shadow-red-600/25">
+          YH
+          <span class="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-slate-950 text-sm tracking-tight">YASH HONDA</span>
+            <span class="text-[10px] font-mono font-semibold uppercase tracking-widest px-2 py-0.5 rounded-full bg-red-500/10 text-[#E40521] border border-red-500/20">
+              Pune · 9 Facilities
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-500 font-medium">Headcount Requisition & Position Lifecycle Governance</p>
+        </div>
+      </div>
+
+      <!-- Center: Elevated Top Pill Navigation (As Requested) -->
+      <nav class="flex items-center gap-1 bg-slate-950/[0.04] p-1.5 rounded-2xl border border-slate-900/[0.06] overflow-x-auto">
+        <button onclick="switchScreen('login')" id="top-tab-login" class="top-nav-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 flex items-center gap-1.5 text-slate-600 hover:text-slate-950">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-[#E40521]"></i>
+          <span>01 · Portal Hero</span>
+        </button>
+
+        <button onclick="switchScreen('dashboard')" id="top-tab-dashboard" class="top-nav-pill px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 bg-slate-950 text-white shadow-md shadow-slate-950/15">
+          <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+          <span>02 · Executive Bento</span>
+          <span class="font-mono text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white">18</span>
+        </button>
+
+        <button onclick="switchScreen('detail')" id="top-tab-detail" class="top-nav-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 flex items-center gap-1.5 text-slate-600 hover:text-slate-950">
+          <i data-lucide="git-Fork" class="w-3.5 h-3.5"></i>
+          <span>03 · 1-to-4 Position Split</span>
+          <span class="h-2 w-2 rounded-full bg-[#E40521]"></span>
+        </button>
+
+        <button onclick="switchScreen('newreq')" id="top-tab-newreq" class="top-nav-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 flex items-center gap-1.5 text-slate-600 hover:text-slate-950">
+          <i data-lucide="file-plus-2" class="w-3.5 h-3.5"></i>
+          <span>04 · Raise & Delta Route</span>
+        </button>
+
+        <button onclick="switchScreen('admin')" id="top-tab-admin" class="top-nav-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 flex items-center gap-1.5 text-slate-600 hover:text-slate-950">
+          <i data-lucide="sliders" class="w-3.5 h-3.5"></i>
+          <span>05 · Workflow & DPDP Vault</span>
+        </button>
+      </nav>
+
+      <!-- Right: ⌘K Spotlight + DPDP Legal Shield -->
+      <div class="flex items-center gap-2">
+        <button onclick="toggleCommandModal(true)" class="px-3 py-2 rounded-xl bg-white/80 hover:bg-white border border-slate-200/90 text-xs font-medium text-slate-700 flex items-center gap-2 shadow-sm transition">
+          <i data-lucide="search" class="w-3.5 h-3.5 text-slate-400"></i>
+          <span class="hidden xl:inline">Search ID / Facility</span>
+          <kbd class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 border border-slate-200">⌘K</kbd>
+        </button>
+
+        <button onclick="toggleLegalModal(true)" class="silky-btn px-3.5 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-semibold flex items-center gap-1.5 shadow-sm">
+          <i data-lucide="shield-check" class="w-3.5 h-3.5 text-emerald-400"></i>
+          <span>DPDP v2.1</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Secondary Floating Sub-Bar: Instant 1-Click Persona Switcher + FY Period Ribbon -->
+    <div class="glass-nav rounded-2xl px-4 py-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+      <div class="flex flex-wrap items-center gap-1.5">
+        <span class="font-mono text-[10px] uppercase tracking-wider text-slate-400 mr-1 flex items-center gap-1">
+          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          1-Click Persona Sandbox:
+        </span>
+
+        <button onclick="setPersona('Vikramaditya (CEO)', 'CEO', true, true)" id="p-CEO" class="p-pill px-2.5 py-1 rounded-lg bg-slate-950 text-white font-semibold text-[11px] transition">
+          CEO · Vikramaditya
+        </button>
+        <button onclick="setPersona('Yashvardhan (Owner)', 'OWNER', true, true)" id="p-OWNER" class="p-pill px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white text-slate-700 border border-slate-200/80 font-medium text-[11px] transition">
+          Owner · Yashvardhan
+        </button>
+        <button onclick="setPersona('Neha Kulkarni (HR Lead)', 'HR', true, false)" id="p-HR" class="p-pill px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white text-slate-700 border border-slate-200/80 font-medium text-[11px] transition">
+          HR · Neha K.
+        </button>
+        <button onclick="setPersona('Rohan Mehta (Finance)', 'FINANCE', false, false)" id="p-FINANCE" class="p-pill px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white text-slate-700 border border-slate-200/80 font-medium text-[11px] transition">
+          Finance · Rohan (No File Access)
+        </button>
+        <button onclick="setPersona('Ankur (System Admin)', 'ADMIN', true, true)" id="p-ADMIN" class="p-pill px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white text-slate-700 border border-slate-200/80 font-medium text-[11px] transition">
+          Admin · Ankur
+        </button>
+        <button onclick="setPersona('Sandeep J. (Hadapsar Mgr)', 'EMPLOYEE', false, false)" id="p-EMPLOYEE" class="p-pill px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white text-slate-700 border border-slate-200/80 font-medium text-[11px] transition">
+          Requester · Sandeep
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3 font-mono text-[11px]">
+        <span class="text-slate-500">Active Role: <strong id="header-role-readout" class="text-slate-950">Vikramaditya (CEO)</strong></span>
+        <span class="text-slate-300">|</span>
+        <span class="text-emerald-700 font-semibold">FY 2026–27 (1 Apr – 31 Mar)</span>
+      </div>
+    </div>
+
+  </header>
+
+  <!-- ======================================================================= -->
+  <!-- MAIN VIEWPORT STAGE                                                     -->
+  <!-- ======================================================================= -->
+  <main class="mx-auto max-w-[1480px] px-4 sm:px-6 pt-6">
+
+    <!-- ===================================================================== -->
+    <!-- SCREEN 01: CINEMATIC EDITORIAL PORTAL & 1-CLICK LAUNCHPAD             -->
+    <!-- ===================================================================== -->
+    <section id="screen-login" class="hidden space-y-6">
+      <div class="prism-shell reveal-1">
+        <div class="prism-inner p-8 sm:p-12 lg:p-16 relative overflow-hidden">
+          
+          <!-- Ambient Light Sculpture Inside Hero -->
+          <div class="absolute -right-24 -top-24 w-[520px] h-[520px] rounded-full bg-gradient-to-br from-[#E40521]/15 via-amber-500/10 to-transparent blur-3xl pointer-events-none"></div>
+          <div class="absolute left-1/3 -bottom-32 w-[460px] h-[460px] rounded-full bg-gradient-to-tr from-sky-500/12 via-indigo-500/8 to-transparent blur-3xl pointer-events-none"></div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center relative z-10">
+            
+            <!-- Left 7 Cols: High-Impact Editorial Narrative -->
+            <div class="lg:col-span-7 space-y-7">
+              <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/90 border border-slate-200/90 shadow-sm text-xs font-semibold text-slate-900">
+                <span class="h-2 w-2 rounded-full bg-[#E40521] animate-ping"></span>
+                <span>YASH HONDA PUNE · 9-FACILITY HIRING & POSITION LEDGER</span>
+              </div>
+
+              <h1 class="text-4xl sm:text-6xl lg:text-[64px] font-extrabold tracking-tight text-slate-950 leading-[1.02]">
+                Every requisition <br />
+                <span class="font-serif italic font-normal text-[#E40521]">orchestrated</span> to physical joining.
+              </h1>
+
+              <p class="text-slate-600 text-base sm:text-lg max-w-2xl leading-relaxed">
+                Designed exclusively for Yash Honda’s nine Pune sales, service, corporate, and godown facilities. Every approved vacancy spawns individually tracked position units with mandatory CV & WebP photo verification, dual-clock SLA telemetry, and DPDP privacy safeguards.
+              </p>
+
+              <!-- 3 Visual Telemetry Sculptures -->
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-3">
+                <div class="p-4 rounded-2xl bg-white/80 border border-slate-200/80 shadow-sm">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                    <span>POSITION TRUTH</span>
+                    <span class="text-[#E40521] font-bold">1 → N SPLIT</span>
+                  </div>
+                  <div class="text-2xl font-extrabold text-slate-950 mt-1 tabular-nums">100% Granular</div>
+                  <p class="text-[11px] text-slate-500 mt-0.5">3 candidates for 1 role remain 1 position unit</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white/80 border border-slate-200/80 shadow-sm">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                    <span>DOCUMENT GATE</span>
+                    <span class="text-emerald-700 font-bold">ENFORCED</span>
+                  </div>
+                  <div class="text-2xl font-extrabold text-slate-950 mt-1 tabular-nums">CV + WebP</div>
+                  <p class="text-[11px] text-slate-500 mt-0.5">Client-side ~140KB photo compression</p>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white/80 border border-slate-200/80 shadow-sm">
+                  <div class="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                    <span>DUAL SLA CLOCK</span>
+                    <span class="text-sky-700 font-bold">AUTO-PAUSE</span>
+                  </div>
+                  <div class="text-2xl font-extrabold text-slate-950 mt-1 tabular-nums">Hold Aware</div>
+                  <p class="text-[11px] text-slate-500 mt-0.5">Active hiring age pauses during CEO Hold</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Right 5 Cols: Tactile One-Click Persona Vault -->
+            <div class="lg:col-span-5 bg-white/85 backdrop-blur-xl rounded-3xl p-6 sm:p-7 border border-white shadow-xl space-y-4">
+              <div class="flex items-center justify-between border-b border-slate-200/70 pb-4">
+                <div>
+                  <span class="font-mono text-[10px] uppercase tracking-widest text-[#E40521] font-bold">Dev / UAT Instant Access</span>
+                  <h2 class="text-lg font-extrabold text-slate-950">One-Click Persona Launchpad</h2>
+                </div>
+                <span class="font-mono text-[11px] px-2.5 py-1 rounded-lg bg-slate-950 text-white font-semibold">6 Roles</span>
+              </div>
+
+              <div class="space-y-2.5">
+                <button onclick="setPersona('Vikramaditya (CEO)', 'CEO', true, true); switchScreen('dashboard');" class="silky-card w-full p-3.5 rounded-2xl bg-gradient-to-r from-slate-950 to-slate-800 text-white flex items-center justify-between text-left shadow-md">
+                  <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120&auto=format&fit=crop&q=80" alt="CEO" class="h-10 w-10 rounded-xl object-cover ring-2 ring-white/30" />
+                    <div>
+                      <div class="text-sm font-bold">Vikramaditya Deshmukh · CEO</div>
+                      <div class="text-[11px] text-slate-300">Parallel Approver · Candidate Decisions · Global Hold</div>
+                    </div>
+                  </div>
+                  <span class="font-mono text-xs px-2.5 py-1 rounded-lg bg-white/15 text-white">Enter →</span>
+                </button>
+
+                <button onclick="setPersona('Yashvardhan (Owner)', 'OWNER', true, true); switchScreen('dashboard');" class="silky-card w-full p-3.5 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between text-left">
+                  <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=120&auto=format&fit=crop&q=80" alt="Owner" class="h-10 w-10 rounded-xl object-cover ring-2 ring-red-500/20" />
+                    <div>
+                      <div class="text-sm font-bold text-slate-950">Yashvardhan Patil · Owner</div>
+                      <div class="text-[11px] text-slate-500">Executive Oversight · Hold/Resume Any Request</div>
+                    </div>
+                  </div>
+                  <span class="font-mono text-xs px-2.5 py-1 rounded-lg bg-red-50 text-[#E40521] font-semibold">Enter →</span>
+                </button>
+
+                <button onclick="setPersona('Neha Kulkarni (HR Lead)', 'HR', true, false); switchScreen('detail');" class="silky-card w-full p-3.5 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between text-left">
+                  <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=120&auto=format&fit=crop&q=80" alt="HR" class="h-10 w-10 rounded-xl object-cover ring-2 ring-sky-500/20" />
+                    <div>
+                      <div class="text-sm font-bold text-slate-950">Neha Kulkarni · HR Lead</div>
+                      <div class="text-[11px] text-slate-500">Sourcing, CV + WebP Photo Gate & Joining</div>
+                    </div>
+                  </div>
+                  <span class="font-mono text-xs px-2.5 py-1 rounded-lg bg-sky-50 text-sky-700 font-semibold">Enter →</span>
+                </button>
+
+                <button onclick="setPersona('Rohan Mehta (Finance)', 'FINANCE', false, false); switchScreen('detail');" class="silky-card w-full p-3.5 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between text-left">
+                  <div class="flex items-center gap-3">
+                    <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=120&auto=format&fit=crop&q=80" alt="Finance" class="h-10 w-10 rounded-xl object-cover ring-2 ring-emerald-500/20" />
+                    <div>
+                      <div class="text-sm font-bold text-slate-950">Rohan Mehta · Finance Team</div>
+                      <div class="text-[11px] text-slate-500">Salary Awareness Only · Blocked from CV/Photos</div>
+                    </div>
+                  </div>
+                  <span class="font-mono text-xs px-2.5 py-1 rounded-lg bg-amber-50 text-amber-800 font-semibold">Test 403 →</span>
+                </button>
+
+                <button onclick="setPersona('Ankur (System Admin)', 'ADMIN', true, true); switchScreen('admin');" class="silky-card w-full p-3.5 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between text-left">
+                  <div class="flex items-center gap-3">
+                    <div class="h-10 w-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-mono font-bold text-xs">ADM</div>
+                    <div>
+                      <div class="text-sm font-bold text-slate-950">Ankur · System Administrator</div>
+                      <div class="text-[11px] text-slate-500">Visual Workflow Simulator, RBAC & DPDP Vault</div>
+                    </div>
+                  </div>
+                  <span class="font-mono text-xs px-2.5 py-1 rounded-lg bg-indigo-50 text-indigo-700 font-semibold">Config →</span>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SCREEN 02: EXECUTIVE MICRO-BENTO DASHBOARD (RICH DATA VISUALIZATION)  -->
+    <!-- ===================================================================== -->
+    <section id="screen-dashboard" class="space-y-6">
+      
+      <!-- Top Editorial Context Row + Period & Facility Selector -->
+      <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 reveal-1">
+        <div>
+          <div class="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#E40521] font-bold">
+            <span class="h-2 w-2 rounded-full bg-[#E40521]"></span>
+            <span>Deterministic Position Telemetry · FY 2026–27</span>
+          </div>
+          <h1 class="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-950 mt-1">
+            Executive Hiring <span class="font-serif italic font-normal text-slate-700">Command</span>
+          </h1>
+        </div>
+
+        <!-- Reporting Window & Facility Controls -->
+        <div class="flex flex-wrap items-center gap-2.5">
+          <div class="glass-nav p-1 rounded-2xl flex items-center gap-1 text-xs font-semibold">
+            <button onclick="notifyStudio('Reporting Period Updated', 'Filtered period metrics to This Week (Asia/Kolkata).', 'info')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-950">Week</button>
+            <button onclick="notifyStudio('Reporting Period Updated', 'Filtered period metrics to October 2026.', 'info')" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-950">Month</button>
+            <button onclick="notifyStudio('Indian Financial Year Active', '1 April 2026 – 31 March 2027 active. Open positions show live state; Hired counts reflect joining timestamps inside period.', 'success')" class="px-3.5 py-1.5 rounded-xl bg-slate-950 text-white shadow-sm">FY 2026–27 (1 Apr–31 Mar)</button>
+          </div>
+
+          <select onchange="openDrilldown('Facility Scope: ' + this.value, 'Permission-scoped position records and active SLA timers')" class="glass-nav px-4 py-2.5 rounded-2xl text-xs font-bold text-slate-900 focus:outline-none cursor-pointer">
+            <option value="All 9 Facilities">All 9 Pune Facilities</option>
+            <option value="Hadapsar RedWing">01 · Hadapsar RedWing (4 Open)</option>
+            <option value="Service RedWing">02 · Service RedWing (3 Open)</option>
+            <option value="Service BigWing">03 · Service BigWing (2 Open)</option>
+            <option value="Izeil office">04 · Izeil office (1 Open)</option>
+            <option value="BigWing Sales">05 · BigWing Sales (3 Open)</option>
+            <option value="Fursungi">06 · Fursungi (2 Open)</option>
+            <option value="Wadki">07 · Wadki (1 Open)</option>
+            <option value="ESD Godown">08 · ESD Godown (1 Open)</option>
+            <option value="HP Salunke Vihar">09 · HP Salunke Vihar (1 Open)</option>
+          </select>
+
+          <button onclick="switchScreen('newreq')" class="silky-btn px-4 py-2.5 rounded-2xl bg-gradient-to-r from-[#E40521] to-[#BE0019] text-white text-xs font-bold shadow-lg shadow-red-600/25 flex items-center gap-2">
+            <i data-lucide="plus-circle" class="w-4 h-4"></i>
+            <span>Raise Vacancy</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- BENTO ROW 1: HERO SCULPTURE + RADIAL SLA GAUGE + SPARKLINE CARDS    -->
+      <!-- =================================================================== -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 reveal-2">
+        
+        <!-- BENTO CARD 1 (5 COLS): MONUMENTAL OPEN POSITIONS + SVG VELOCITY WAVE -->
+        <div onclick="openDrilldown('18 Open Individual Position Units', 'Spawned across 9 facilities. Never conflated with candidate submission count.')" class="lg:col-span-5 prism-shell silky-card cursor-pointer group">
+          <div class="prism-inner p-6 h-full flex flex-col justify-between relative overflow-hidden">
+            <div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-gradient-to-br from-red-500/12 via-amber-500/5 to-transparent blur-2xl pointer-events-none"></div>
+
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#E40521] font-bold">Live Position Snapshot</span>
+                <h2 class="text-base font-extrabold text-slate-950 mt-0.5">Open Individual Positions</h2>
+              </div>
+              <span class="h-9 w-9 rounded-2xl bg-slate-950/5 group-hover:bg-slate-950 group-hover:text-white flex items-center justify-center transition">
+                <i data-lucide="arrow-up-right" class="w-4 h-4"></i>
+              </span>
+            </div>
+
+            <div class="grid grid-cols-12 items-end gap-4 my-4">
+              <div class="col-span-6">
+                <div class="text-6xl sm:text-7xl font-extrabold tracking-tighter text-slate-950 tabular-nums leading-none">18</div>
+                <div class="mt-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-rose-500/10 text-rose-700 border border-rose-500/20">
+                  <span class="h-1.5 w-1.5 rounded-full bg-rose-600 animate-ping"></span>
+                  4 Overdue SLA (&gt;5d)
+                </div>
+              </div>
+
+              <!-- Custom SVG Area Sparkline -->
+              <div class="col-span-6">
+                <svg viewBox="0 0 180 65" class="w-full h-16 overflow-visible">
+                  <defs>
+                    <linearGradient id="crimsonWave" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#E40521" stop-opacity="0.28"/>
+                      <stop offset="100%" stop-color="#E40521" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,52 C25,48 40,22 68,28 C96,34 115,12 142,18 C160,22 170,8 180,6 L180,65 L0,65 Z" fill="url(#crimsonWave)" />
+                  <path d="M0,52 C25,48 40,22 68,28 C96,34 115,12 142,18 C160,22 170,8 180,6" fill="none" stroke="#E40521" stroke-width="2.5" stroke-linecap="round" />
+                  <circle cx="180" cy="6" r="4" fill="#E40521" />
+                </svg>
+                <div class="text-[10px] font-mono text-right text-slate-500 mt-1">Active Sourcing Velocity · +24%</div>
+              </div>
+            </div>
+
+            <!-- Multi-Segment Stage Progress Pill Bar -->
+            <div class="pt-3 border-t border-slate-200/70 space-y-2">
+              <div class="flex justify-between text-[11px] font-mono font-semibold">
+                <span class="text-sky-700">HR Sourcing: 07</span>
+                <span class="text-indigo-700">Shortlisted: 06</span>
+                <span class="text-[#E40521]">Approval Gate: 05</span>
+              </div>
+              <div class="h-2.5 w-full rounded-full bg-slate-900/[0.06] p-0.5 flex gap-1">
+                <div class="h-full rounded-l-full bg-sky-500" style="width: 39%"></div>
+                <div class="h-full bg-indigo-500" style="width: 33%"></div>
+                <div class="h-full rounded-r-full bg-[#E40521]" style="width: 28%"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BENTO CARD 2 (4 COLS): RADIAL SLA & APPROVAL BOTTLENECK GAUGE -->
+        <div onclick="openDrilldown('Pending Approvals Breakdown', '4 Vacancy Requests + 5 Candidate Submissions awaiting Owner/CEO decision')" class="lg:col-span-4 prism-shell silky-card cursor-pointer group">
+          <div class="prism-inner p-6 h-full flex flex-col justify-between">
+            <div class="flex items-start justify-between">
+              <div>
+                <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-amber-700 font-bold">Executive Bottlenecks</span>
+                <h2 class="text-base font-extrabold text-slate-950 mt-0.5">Pending Decisions & SLA Ring</h2>
+              </div>
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-mono font-bold bg-amber-500/15 text-amber-900">Parallel Routing</span>
+            </div>
+
+            <div class="flex items-center gap-5 my-3">
+              <!-- Bespoke SVG Radial Gauge -->
+              <div class="relative h-28 w-28 flex-shrink-0 flex items-center justify-center">
+                <svg class="w-full h-full -rotate-90" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="rgba(15,23,42,0.07)" stroke-width="10" />
+                  <circle cx="50" cy="50" r="40" fill="none" stroke="#E40521" stroke-width="10" stroke-linecap="round" stroke-dasharray="251.2" stroke-dashoffset="75" />
+                  <circle cx="50" cy="50" r="28" fill="none" stroke="rgba(14,165,233,0.15)" stroke-width="7" />
+                  <circle cx="50" cy="50" r="28" fill="none" stroke="#0EA5E9" stroke-width="7" stroke-linecap="round" stroke-dasharray="175.8" stroke-dashoffset="65" />
+                </svg>
+                <div class="absolute inset-0 flex flex-col items-center justify-center text-center">
+                  <span class="text-2xl font-extrabold text-slate-950 tabular-nums leading-none">09</span>
+                  <span class="text-[9px] font-mono uppercase text-slate-500 mt-0.5">Total Queue</span>
+                </div>
+              </div>
+
+              <div class="space-y-2.5 flex-1 text-xs">
+                <div class="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 flex items-center justify-between">
+                  <span class="flex items-center gap-2 font-semibold text-slate-800">
+                    <span class="h-2.5 w-2.5 rounded-full bg-[#E40521]"></span>
+                    Candidate Gate
+                  </span>
+                  <span class="font-mono font-bold text-slate-950">05 (2 Overdue)</span>
+                </div>
+                <div class="p-2.5 rounded-xl bg-white/90 border border-slate-200/80 flex items-center justify-between">
+                  <span class="flex items-center gap-2 font-semibold text-slate-800">
+                    <span class="h-2.5 w-2.5 rounded-full bg-sky-500"></span>
+                    Vacancy Reqs
+                  </span>
+                  <span class="font-mono font-bold text-slate-950">04 (1 Delta)</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-mono text-slate-500">
+              <span>100% CV + WebP Photo Verified</span>
+              <span class="text-slate-950 font-semibold group-hover:text-[#E40521] transition">Open Queue →</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- BENTO CARD 3 (3 COLS): HIRED OUTCOME + ON-HOLD DUAL CLOCK -->
+        <div class="lg:col-span-3 flex flex-col gap-5">
+          
+          <!-- Top Half: Hired & Joined -->
+          <div onclick="openDrilldown('14 Hired & Physically Joined Positions (FY 2026–27)', 'Triggered strictly by verified joined_at date — not offer acceptance.')" class="prism-shell silky-card cursor-pointer flex-1">
+            <div class="prism-inner p-5 h-full flex flex-col justify-between">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10px] uppercase tracking-wider text-emerald-700 font-bold">Joined Outcome · FY27</span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-emerald-500/15 text-emerald-900">Avg 14.2d</span>
+              </div>
+              <div class="flex items-baseline justify-between my-1">
+                <span class="text-4xl font-extrabold text-emerald-700 tabular-nums">14</span>
+                <span class="text-xs font-semibold text-slate-600">Physically Joined</span>
+              </div>
+              <div class="text-[11px] font-mono text-slate-500">3 Closed Unfilled · 2 Maybe Eval</div>
+            </div>
+          </div>
+
+          <!-- Bottom Half: Paused On-Hold Clock -->
+          <div onclick="openDrilldown('3 On-Hold Positions (Active Ageing Clock Paused)', 'Owner/CEO hold preserves previous active stage and freezes SLA penalty timer.')" class="prism-shell silky-card cursor-pointer flex-1">
+            <div class="prism-inner p-5 h-full flex flex-col justify-between bg-gradient-to-br from-slate-900/[0.03] to-transparent">
+              <div class="flex items-center justify-between">
+                <span class="font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold">Hold Overlay</span>
+                <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-900 text-white flex items-center gap-1">
+                  <i data-lucide="pause" class="w-2.5 h-2.5"></i> Clock Paused
+                </span>
+              </div>
+              <div class="flex items-baseline justify-between my-1">
+                <span class="text-4xl font-extrabold text-slate-950 tabular-nums">03</span>
+                <span class="text-xs font-semibold text-slate-600">Positions On Hold</span>
+              </div>
+              <div class="text-[11px] font-mono text-amber-800 font-medium">1 Hold Review Due Today →</div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+      <!-- =================================================================== -->
+      <!-- BENTO ROW 2: TACTILE "MY ACTIONS" CARDS + 9-FACILITY VISUAL BARS    -->
+      <!-- =================================================================== -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 reveal-3">
+        
+        <!-- Left 5 Cols: Rich Tactile "My Actions" Queue -->
+        <div class="lg:col-span-5 prism-shell">
+          <div class="prism-inner p-6 h-full flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-200/80 pb-4">
+                <div>
+                  <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#E40521] font-bold">Immediate Decision Queue</span>
+                  <h2 class="text-lg font-extrabold text-slate-950 mt-0.5">My Actions · <span id="bento-persona-label" class="font-serif italic font-normal text-slate-600">Vikramaditya (CEO)</span></h2>
+                </div>
+                <span class="font-mono text-xs font-bold px-3 py-1 rounded-full bg-slate-950 text-white shadow-sm">05 Pending</span>
+              </div>
+
+              <div class="space-y-3.5 mt-4">
+                
+                <!-- Rich Action Card 1: Candidate Approval with Portrait & SLA Pill -->
+                <div onclick="switchScreen('detail')" class="silky-card cursor-pointer p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-3">
+                  <div class="flex items-center justify-between">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-rose-500/10 text-rose-700 border border-rose-500/20">
+                      <span class="h-1.5 w-1.5 rounded-full bg-[#E40521] animate-ping"></span>
+                      Waiting 6 days · Overdue SLA
+                    </span>
+                    <span class="font-mono text-xs font-bold text-slate-500">POS-26-042-02</span>
+                  </div>
+
+                  <div class="flex items-center gap-3.5">
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=120&auto=format&fit=crop&q=80" alt="Candidate" class="h-12 w-12 rounded-2xl object-cover ring-2 ring-rose-500/20" />
+                    <div class="flex-1 min-w-0">
+                      <div class="text-sm font-extrabold text-slate-950 truncate">Candidate Approval: Rahul Deshmukh</div>
+                      <div class="text-xs text-slate-600 truncate">Senior Service Technician · <strong class="text-slate-900">Hadapsar RedWing</strong></div>
+                      <div class="text-[11px] font-mono text-emerald-700 font-semibold mt-0.5">✓ CV.pdf + 142KB WebP Photo Attached</div>
+                    </div>
+                  </div>
+
+                  <div class="pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="font-mono text-slate-500">Proposed: <strong class="text-slate-900">₹26,500/mo</strong></span>
+                    <span class="font-bold text-[#E40521] flex items-center gap-1">Review Dossier <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+                  </div>
+                </div>
+
+                <!-- Rich Action Card 2: Delta Salary Re-Approval -->
+                <div onclick="switchScreen('newreq')" class="silky-card cursor-pointer p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-amber-500/15 text-amber-900">
+                      Delta Re-Approval · Comp Band Hike
+                    </span>
+                    <span class="font-mono text-xs font-bold text-slate-500">REQ-YH-26-051</span>
+                  </div>
+                  <div>
+                    <div class="text-sm font-extrabold text-slate-950">Salary Max Revised: ₹28,000 → ₹34,000/mo</div>
+                    <div class="text-xs text-slate-600">BigWing Sales Consultant (2 Position Units) · <strong class="text-slate-900">BigWing Sales</strong></div>
+                  </div>
+                  <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="font-mono text-[11px] text-slate-500">Finance Aware · Un-hired units paused</span>
+                    <span class="font-bold text-slate-950 flex items-center gap-1">Approve Delta <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+                  </div>
+                </div>
+
+                <!-- Rich Action Card 3: Position Hold Review -->
+                <div onclick="switchScreen('detail'); selectPositionUnit(4);" class="silky-card cursor-pointer p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-2.5">
+                  <div class="flex items-center justify-between">
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-slate-900/10 text-slate-800">
+                      Hold Review Due Today · Clock Paused
+                    </span>
+                    <span class="font-mono text-xs font-bold text-slate-500">POS-26-042-04</span>
+                  </div>
+                  <div>
+                    <div class="text-sm font-extrabold text-slate-950">Workshop Hydraulic Lift Delay Hold</div>
+                    <div class="text-xs text-slate-600">Active Hiring Age frozen at <strong class="font-mono text-slate-900">9d</strong> · Hold Duration: <strong class="font-mono text-slate-900">5d</strong></div>
+                  </div>
+                  <div class="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="font-mono text-[11px] text-slate-500">Restores HR_SEARCHING on resume</span>
+                    <span class="font-bold text-slate-950 flex items-center gap-1">Resume Unit <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i></span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="pt-4 mt-4 border-t border-slate-200/70 flex items-center justify-between text-xs text-slate-500">
+              <span>Completed tasks archive to immutable ledger</span>
+              <button onclick="openDrilldown('All 5 Assigned Tasks', 'Filtered for current authenticated persona')" class="font-bold text-slate-950 hover:text-[#E40521] transition">View Full Queue →</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right 7 Cols: 9-Facility Visual Capacity & SLA Telemetry Matrix -->
+        <div class="lg:col-span-7 prism-shell">
+          <div class="prism-inner p-6 h-full flex flex-col justify-between">
+            <div>
+              <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-4">
+                <div>
+                  <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500 font-bold">Pune 9-Location Network</span>
+                  <h2 class="text-lg font-extrabold text-slate-950 mt-0.5">Facility Headcount, Visual Load & SLA Status</h2>
+                </div>
+                <span class="font-mono text-[11px] px-3 py-1 rounded-full bg-white border border-slate-200 text-slate-700 shadow-sm">
+                  Click any facility row to drill down
+                </span>
+              </div>
+
+              <!-- Interactive 9-Facility Visual Rows -->
+              <div class="divide-y divide-slate-200/60 mt-2 text-xs tabular-nums">
+                
+                <!-- Facility 1 -->
+                <div onclick="openDrilldown('01 · Hadapsar RedWing', '4 Open Positions · 4 Joined in FY27 · 1 Overdue Candidate Decision')" class="py-3 px-2 hover:bg-white/90 rounded-xl cursor-pointer transition grid grid-cols-12 items-center gap-3">
+                  <div class="col-span-4 font-bold text-slate-950 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-[#E40521]"></span>
+                    <span>01 · Hadapsar RedWing</span>
+                  </div>
+                  <div class="col-span-4">
+                    <div class="flex justify-between text-[10px] font-mono text-slate-500 mb-1">
+                      <span>4 Open · 2 Shortlist</span>
+                      <span class="text-emerald-700 font-bold">4 Joined</span>
+                    </div>
+                    <div class="h-2 w-full rounded-full bg-slate-200/70 overflow-hidden flex">
+                      <div class="bg-emerald-500 h-full" style="width: 45%"></div>
+                      <div class="bg-indigo-500 h-full" style="width: 25%"></div>
+                      <div class="bg-[#E40521] h-full" style="width: 30%"></div>
+                    </div>
+                  </div>
+                  <div class="col-span-4 text-right">
+                    <span class="px-2.5 py-1 rounded-full font-mono text-[11px] font-bold bg-rose-500/10 text-rose-800 border border-rose-500/20">Waiting 6d · Overdue</span>
+                  </div>
+                </div>
+
+                <!-- Facility 2 -->
+                <div onclick="openDrilldown('02 · Service RedWing', '3 Open Positions · 2 Joined in FY27')" class="py-3 px-2 hover:bg-white/90 rounded-xl cursor-pointer transition grid grid-cols-12 items-center gap-3">
+                  <div class="col-span-4 font-bold text-slate-950 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-amber-500"></span>
+                    <span>02 · Service RedWing</span>
+                  </div>
+                  <div class="col-span-4">
+                    <div class="flex justify-between text-[10px] font-mono text-slate-500 mb-1">
+                      <span>3 Open · 1 Pending Appr</span>
+                      <span class="text-emerald-700 font-bold">2 Joined</span>
+                    </div>
+                    <div class="h-2 w-full rounded-full bg-slate-200/70 overflow-hidden flex">
+                      <div class="bg-emerald-500 h-full" style="width: 40%"></div>
+                      <div class="bg-amber-500 h-full" style="width: 60%"></div>
+                    </div>
+                  </div>
+                  <div class="col-span-4 text-right">
+                    <span class="px-2.5 py-1 rounded-full font-mono text-[11px] font-semibold bg-amber-500/15 text-amber-900">Stage 4d · SLA Warn</span>
+                  </div>
+                </div>
+
+                <!-- Facility 3 -->
+                <div onclick="openDrilldown('03 · Service BigWing', '2 Open Positions · 1 On Hold · 2 Joined')" class="py-3 px-2 hover:bg-white/90 rounded-xl cursor-pointer transition grid grid-cols-12 items-center gap-3">
+                  <div class="col-span-4 font-bold text-slate-950 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    <span>03 · Service BigWing</span>
+                  </div>
+                  <div class="col-span-4">
+                    <div class="flex justify-between text-[10px] font-mono text-slate-500 mb-1">
+                      <span>2 Open · 1 Hold</span>
+                      <span class="text-emerald-700 font-bold">2 Joined</span>
+                    </div>
+                    <div class="h-2 w-full rounded-full bg-slate-200/70 overflow-hidden flex">
+                      <div class="bg-emerald-500 h-full" style="width: 50%"></div>
+                      <div class="bg-sky-500 h-full" style="width: 30%"></div>
+                      <div class="bg-slate-500 h-full" style="width: 20%"></div>
+                    </div>
+                  </div>
+                  <div class="col-span-4 text-right">
+                    <span class="px-2.5 py-1 rounded-full font-mono text-[11px] font-semibold bg-emerald-500/10 text-emerald-800">Active 3d · Optimal</span>
+                  </div>
+                </div>
+
+                <!-- Facility 4 -->
+                <div onclick="openDrilldown('04 · Izeil office', '1 Open Position · 1 Pending Vacancy Approval')" class="py-3 px-2 hover:bg-white/90 rounded-xl cursor-pointer transition grid grid-cols-12 items-center gap-3">
+                  <div class="col-span-4 font-bold text-slate-950 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+                    <span>04 · Izeil office</span>
+                  </div>
+                  <div class="col-span-4">
+                    <div class="flex justify-between text-[10px] font-mono text-slate-500 mb-1">
+                      <span>1 Open · Corporate</span>
+                      <span class="text-emerald-700 font-bold">1 Joined</span>
+                    </div>
+                    <div class="h-2 w-full rounded-full bg-slate-200/70 overflow-hidden flex">
+                      <div class="bg-emerald-500 h-full" style="width: 50%"></div>
+                      <div class="bg-sky-500 h-full" style="width: 50%"></div>
+                    </div>
+                  </div>
+                  <div class="col-span-4 text-right">
+                    <span class="px-2.5 py-1 rounded-full font-mono text-[11px] font-semibold bg-emerald-500/10 text-emerald-800">Active 2d · Optimal</span>
+                  </div>
+                </div>
+
+                <!-- Facility 5 -->
+                <div onclick="openDrilldown('05 · BigWing Sales', '3 Open Positions · 1 Delta Re-Approval · 1 Overdue')" class="py-3 px-2 hover:bg-white/90 rounded-xl cursor-pointer transition grid grid-cols-12 items-center gap-3">
+                  <div class="col-span-4 font-bold text-slate-950 flex items-center gap-2">
+                    <span class="h-2 w-2 rounded-full bg-[#E40521]"></span>
+                    <span>05 · BigWing Sales</span>
+                  </div>
+                  <div class="col-span-4">
+                    <div class="flex justify-between text-[10px] font-mono text-slate-500 mb-1">
+                      <span>3 Open · 1 Delta Gate</span>
+                      <span class="text-emerald-700 font-bold">2 Joined</span>
+                    </div>
+                    <div class="h-2 w-full rounded-full bg-slate-200/70 overflow-hidden flex">
+                      <div class="bg-emerald-500 h-full" style="width: 40%"></div>
+                      <div class="bg-[#E40521] h-full" style="width: 60%"></div>
+                    </div>
+                  </div>
+                  <div class="col-span-4 text-right">
+                    <span class="px-2.5 py-1 rounded-full font-mono text-[11px] font-bold bg-rose-500/10 text-rose-800 border border-rose-500/20">Waiting 8d · Overdue</span>
+                  </div>
+                </div>
+
+                <!-- Facilities 6 to 9 Compact Strip -->
+                <div class="pt-3 grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                  <div onclick="openDrilldown('06 · Fursungi', '2 Open Positions · 1 Joined')" class="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-slate-200/80 cursor-pointer transition">
+                    <div class="font-bold text-slate-950 text-[11px]">06 · Fursungi</div>
+                    <div class="flex justify-between items-center mt-1 font-mono text-[10px]">
+                      <span class="text-slate-600">2 Open · 1 Joined</span>
+                      <span class="text-emerald-700 font-bold">Optimal</span>
+                    </div>
+                  </div>
+
+                  <div onclick="openDrilldown('07 · Wadki', '1 Position On Hold · 1 Joined')" class="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-slate-200/80 cursor-pointer transition">
+                    <div class="font-bold text-slate-950 text-[11px]">07 · Wadki</div>
+                    <div class="flex justify-between items-center mt-1 font-mono text-[10px]">
+                      <span class="text-slate-600">1 Open (Hold)</span>
+                      <span class="text-slate-700 font-bold">Paused</span>
+                    </div>
+                  </div>
+
+                  <div onclick="openDrilldown('08 · ESD Godown', '1 Open Position · No update 5d')" class="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-slate-200/80 cursor-pointer transition">
+                    <div class="font-bold text-slate-950 text-[11px]">08 · ESD Godown</div>
+                    <div class="flex justify-between items-center mt-1 font-mono text-[10px]">
+                      <span class="text-slate-600">1 Open · 0 Joined</span>
+                      <span class="text-amber-700 font-bold">5d Idle</span>
+                    </div>
+                  </div>
+
+                  <div onclick="openDrilldown('09 · HP Salunke Vihar', '1 Open Position · 1 Joined')" class="p-2.5 rounded-xl bg-white/80 hover:bg-white border border-slate-200/80 cursor-pointer transition">
+                    <div class="font-bold text-slate-950 text-[11px]">09 · HP Salunke Vihar</div>
+                    <div class="flex justify-between items-center mt-1 font-mono text-[10px]">
+                      <span class="text-slate-600">1 Open · 1 Joined</span>
+                      <span class="text-emerald-700 font-bold">Optimal</span>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="pt-3 mt-3 border-t border-slate-200/70 flex items-center justify-between text-[11px] font-mono text-slate-500">
+              <span>FACILITIES ARE ADMIN-EDITABLE & DEACTIVATION-SAFE</span>
+              <span>18 OPEN · 14 JOINED · 3 ON HOLD</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SCREEN 03: 1-TO-4 POSITION SPLIT & CANDIDATE DOCUMENT GATE            -->
+    <!-- ===================================================================== -->
+    <section id="screen-detail" class="hidden space-y-6">
+      
+      <!-- Master Requisition Header Sculpture -->
+      <div class="prism-shell reveal-1">
+        <div class="prism-inner p-6 sm:p-8">
+          <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200/80 pb-6">
+            <div class="space-y-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <span class="font-mono text-xs font-bold px-3 py-1 rounded-xl bg-slate-950 text-white">REQ-YH-2026-042</span>
+                <span class="px-3 py-1 rounded-xl text-xs font-bold bg-emerald-500/10 text-emerald-800 border border-emerald-500/20">
+                  Vacancy Approved · Spawned 4 Independent Position Units
+                </span>
+                <span class="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-slate-900/5 text-slate-700">Pinned to Workflow v2.4</span>
+              </div>
+              <h1 class="text-2xl sm:text-4xl font-extrabold text-slate-950 tracking-tight">
+                Senior Service Technician <span class="font-serif italic font-normal text-slate-600">— Hadapsar RedWing</span>
+              </h1>
+              <div class="flex flex-wrap items-center gap-x-6 gap-y-1 text-xs text-slate-600 pt-1">
+                <span>Raised By: <strong class="text-slate-950">Sandeep Jadhav</strong></span>
+                <span>Reason: <strong class="text-slate-950">Replacement (Employee Left)</strong></span>
+                <span>Salary Band: <strong class="font-mono text-slate-950">₹22,000 – ₹28,000/mo</strong></span>
+                <span>Incentives: <strong class="font-mono text-slate-950">₹2,000 – ₹5,000/mo</strong></span>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="notifyStudio('Whole-Request Hold Applied', 'All non-hired position units under REQ-YH-2026-042 placed on Hold with mandatory reason. Active ageing timers frozen.', 'warn')" class="silky-btn px-4 py-2.5 rounded-2xl bg-white border border-slate-300 text-xs font-bold text-slate-900 shadow-sm flex items-center gap-1.5">
+                <i data-lucide="pause-circle" class="w-4 h-4 text-slate-600"></i>
+                <span>Hold Entire Request</span>
+              </button>
+              <button onclick="switchScreen('newreq')" class="silky-btn px-4 py-2.5 rounded-2xl bg-slate-950 text-white text-xs font-bold shadow-md flex items-center gap-1.5">
+                <i data-lucide="sliders" class="w-4 h-4"></i>
+                <span>Edit Band / Qty (Triggers Delta Re-Approval)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- 4 Interactive Position Unit Capsules -->
+          <div class="pt-5">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#E40521] font-bold">
+                1-to-4 Position Split Architecture (Click any Position Unit to inspect its candidates & SLA clock)
+              </span>
+              <span class="font-mono text-[11px] text-slate-500">3 Candidates for 1 Position = Still 1 Position</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              
+              <!-- POS 01 -->
+              <button onclick="selectPositionUnit(1)" id="unit-1" class="text-left p-4 rounded-2xl bg-white/80 border border-slate-200/90 hover:bg-white transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-slate-900">POS-26-042-01</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-600 text-white">JOINED</span>
+                </div>
+                <div class="flex items-center gap-2.5 mt-3">
+                  <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=100&auto=format&fit=crop&q=80" class="h-8 w-8 rounded-xl object-cover" />
+                  <div>
+                    <div class="text-sm font-extrabold text-slate-950">Amit Pawar</div>
+                    <div class="text-[10px] font-mono text-emerald-700">Joined 12 Oct · Active 11d</div>
+                  </div>
+                </div>
+              </button>
+
+              <!-- POS 02 (SELECTED) -->
+              <button onclick="selectPositionUnit(2)" id="unit-2" class="text-left p-4 rounded-2xl bg-white ring-2 ring-[#E40521] shadow-lg transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-slate-950">POS-26-042-02</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-[#E40521] text-white">DECISION GATE</span>
+                </div>
+                <div class="flex items-center gap-2.5 mt-3">
+                  <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80" class="h-8 w-8 rounded-xl object-cover" />
+                  <div>
+                    <div class="text-sm font-extrabold text-slate-950">2 Candidates Tracked</div>
+                    <div class="text-[10px] font-mono text-rose-700 font-bold">Waiting 6d · Overdue</div>
+                  </div>
+                </div>
+              </button>
+
+              <!-- POS 03 -->
+              <button onclick="selectPositionUnit(3)" id="unit-3" class="text-left p-4 rounded-2xl bg-white/80 border border-slate-200/90 hover:bg-white transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-slate-900">POS-26-042-03</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-sky-600 text-white">HR SEARCHING</span>
+                </div>
+                <div class="mt-3">
+                  <div class="text-sm font-extrabold text-slate-950">Looped to Sourcing</div>
+                  <div class="text-[10px] font-mono text-slate-500 mt-0.5">1 Prior Candidate Rejected · Stage 2d</div>
+                </div>
+              </button>
+
+              <!-- POS 04 -->
+              <button onclick="selectPositionUnit(4)" id="unit-4" class="text-left p-4 rounded-2xl bg-slate-900/[0.04] border border-slate-300/80 hover:bg-white transition-all">
+                <div class="flex items-center justify-between">
+                  <span class="font-mono text-xs font-bold text-slate-900">POS-26-042-04</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-slate-800 text-white">ON HOLD</span>
+                </div>
+                <div class="mt-3">
+                  <div class="text-sm font-extrabold text-slate-950">Paused by CEO</div>
+                  <div class="text-[10px] font-mono text-slate-600 mt-0.5">Active: 9d (Frozen) · Hold: 5d</div>
+                </div>
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Candidate Dossiers & SHA-Chained Audit Timeline -->
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 reveal-2">
+        
+        <!-- Left 7 Cols: Candidate Dossiers + Live WebP Photo Gate -->
+        <div class="lg:col-span-7 prism-shell">
+          <div class="prism-inner p-6 space-y-6">
+            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200/80 pb-4">
+              <div>
+                <span id="pos-workspace-tag" class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#E40521] font-bold">
+                  ACTIVE WORKSPACE · POS-26-042-02
+                </span>
+                <h2 id="pos-workspace-heading" class="text-xl font-extrabold text-slate-950 mt-0.5">
+                  Candidate Submissions & Mandatory Document Gate
+                </h2>
+              </div>
+              <div class="flex items-center gap-2 font-mono text-[11px]">
+                <span class="px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-slate-700">Calendar: 14d</span>
+                <span class="px-2.5 py-1 rounded-xl bg-slate-950 text-white font-semibold">Active: 14d (0d Hold)</span>
+              </div>
+            </div>
+
+            <!-- Candidate 1 Card -->
+            <div class="p-5 rounded-3xl bg-white border border-slate-200/90 shadow-sm space-y-4">
+              <div class="flex flex-wrap items-start justify-between gap-4">
+                <div class="flex items-center gap-4">
+                  <div class="relative">
+                    <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=160&auto=format&fit=crop&q=80" alt="Rahul Deshmukh" class="h-16 w-16 rounded-2xl object-cover ring-2 ring-[#E40521]/30 shadow-md" />
+                    <span class="absolute -bottom-1.5 -right-1.5 px-1.5 py-0.5 rounded bg-emerald-600 text-white font-mono text-[9px] font-bold">142KB WebP</span>
+                  </div>
+                  <div>
+                    <div class="flex flex-wrap items-center gap-2">
+                      <h3 class="text-lg font-extrabold text-slate-950">Rahul Deshmukh</h3>
+                      <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono font-bold bg-rose-500/10 text-rose-700 border border-rose-500/20">
+                        Sent for Approval · 6d Overdue
+                      </span>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1">
+                      Phone: <span class="font-mono text-slate-900">+91 98230 44190</span> · Proposed: <strong class="font-mono text-slate-950">₹26,500/mo</strong> + <strong class="font-mono text-slate-950">₹3,500 Incentive</strong>
+                    </p>
+                    <p class="text-[11px] font-mono text-emerald-700 font-medium mt-1">
+                      ✓ DPDP Candidate Privacy Notice v2.1 Recorded on 11 Oct 2026
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Private Signed URL File Buttons -->
+                <div class="flex items-center gap-2">
+                  <button onclick="attemptProtectedFileAccess('cand_892_resume.pdf', 'Resume PDF')" class="silky-btn px-3.5 py-2 rounded-xl bg-slate-950/5 hover:bg-slate-950 hover:text-white text-slate-950 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i data-lucide="file-text" class="w-3.5 h-3.5 text-[#E40521]"></i>
+                    <span>Resume.pdf</span>
+                  </button>
+                  <button onclick="attemptProtectedFileAccess('cand_892_photo.webp', 'Candidate Photo WebP')" class="silky-btn px-3.5 py-2 rounded-xl bg-slate-950/5 hover:bg-slate-950 hover:text-white text-slate-950 text-xs font-bold flex items-center gap-1.5 transition">
+                    <i data-lucide="image" class="w-3.5 h-3.5 text-sky-600"></i>
+                    <span>Photo.webp</span>
+                  </button>
+                </div>
+              </div>
+
+              <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 leading-relaxed">
+                <strong class="text-slate-950">HR Evaluation (Neha Kulkarni):</strong> 6 years diagnostic experience on Honda Activa 125 & Hornet 2.0 fuel-injection systems. Scored 92% in practical bay evaluation at Hadapsar RedWing.
+              </div>
+
+              <div class="pt-3 border-t border-slate-200/70 flex flex-wrap items-center justify-between gap-2">
+                <span class="text-[11px] font-mono text-slate-500">Candidate decision is decoupled from position closure</span>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button onclick="notifyStudio('Candidate Approved!', 'Rahul Deshmukh moved to Approved / Proceed to Offer. Position will mark Hired when physical joining date is recorded.', 'success')" class="silky-btn px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-sm">
+                    Approve Candidate
+                  </button>
+                  <button onclick="notifyStudio('Marked Maybe / Further Review', 'Rahul Deshmukh placed in Maybe queue. Position remains open.', 'info')" class="silky-btn px-3.5 py-2 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-900 border border-purple-500/20 text-xs font-bold">
+                    Maybe / Review
+                  </button>
+                  <button onclick="notifyStudio('Candidate Rejected → Position Looped to Sourcing', 'Rahul Deshmukh marked Rejected with mandatory reason. POS-26-042-02 automatically returned to HR Searching.', 'warn')" class="silky-btn px-3.5 py-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-900 border border-rose-500/20 text-xs font-bold">
+                    Reject (Loop Pos to Sourcing)
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Candidate 2 Card: Interactive Mandatory Attachment Gate Simulator -->
+            <div class="p-5 rounded-3xl bg-gradient-to-br from-amber-500/10 via-white to-white border border-amber-400/60 space-y-4">
+              <div class="flex flex-wrap items-center justify-between gap-2">
+                <div class="flex items-center gap-2.5">
+                  <span class="h-3 w-3 rounded-full bg-amber-500 animate-pulse"></span>
+                  <h3 class="text-sm font-extrabold text-slate-950">Candidate #2: Sachin Shinde · <span class="text-amber-900">Mandatory Document Gate</span></h3>
+                </div>
+                <span id="gate-badge" class="font-mono text-[10px] font-bold px-2.5 py-1 rounded-full bg-amber-500/20 text-amber-950">
+                  LOCKED: PHOTOGRAPH REQUIRED
+                </span>
+              </div>
+
+              <p class="text-xs text-slate-600 leading-relaxed">
+                Resume (`sachin_cv.pdf`, 410 KB) is uploaded, but **Candidate Photograph** is missing. Standard submission is server-blocked until a photo is captured/compressed or an authorized exception is logged with a mandatory reason.
+              </p>
+
+              <div class="flex flex-wrap items-center gap-2.5">
+                <button id="gate-submit-btn" disabled onclick="notifyStudio('Candidate Sent for Approval', 'Sachin Shinde routed to CEO/Owner queue with verified CV + 138KB WebP Photo.', 'success')" class="px-4 py-2.5 rounded-xl bg-slate-200 text-slate-400 text-xs font-bold cursor-not-allowed transition">
+                  Send for Approval (Blocked)
+                </button>
+
+                <button onclick="unlockPhotoGate()" class="silky-btn px-4 py-2.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-white text-xs font-bold flex items-center gap-1.5 shadow-md">
+                  <i data-lucide="camera" class="w-3.5 h-3.5 text-emerald-400"></i>
+                  <span>Capture & Compress WebP Photo (9.4MB → 138KB)</span>
+                </button>
+
+                <button onclick="notifyStudio('Authorized Exception Recorded', 'Override executed with mandatory audit reason. Event SEC_ATTACHMENT_OVERRIDE written to Admin Audit Log.', 'warn')" class="silky-btn px-3.5 py-2.5 rounded-xl bg-white border border-amber-400 text-amber-950 text-xs font-bold">
+                  Authorized Exception (Audited)
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right 5 Cols: Append-Only Chronological Audit Timeline -->
+        <div class="lg:col-span-5 prism-shell">
+          <div class="prism-inner p-6 h-full flex flex-col justify-between">
+            <div>
+              <div class="flex items-center justify-between border-b border-slate-200/80 pb-4">
+                <div>
+                  <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-slate-500 font-bold">Append-Only Event Ledger</span>
+                  <h2 class="text-lg font-extrabold text-slate-950 mt-0.5">Immutable Activity Timeline</h2>
+                </div>
+                <span class="font-mono text-[10px] font-bold px-2.5 py-1 rounded-lg bg-slate-950 text-white">SHA-256 CHAIN</span>
+              </div>
+
+              <div class="space-y-5 mt-5 relative before:absolute before:left-3 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                
+                <div class="relative pl-9">
+                  <span class="absolute left-1.5 top-1.5 h-3.5 w-3.5 rounded-full bg-[#E40521] ring-4 ring-white"></span>
+                  <div class="flex justify-between text-[11px] font-mono text-slate-500">
+                    <span>14 Oct 2026 · 11:20 IST</span>
+                    <span>EVT-9941</span>
+                  </div>
+                  <div class="text-xs font-extrabold text-slate-950 mt-0.5">Candidate Sent for Approval · POS-26-042-02</div>
+                  <p class="text-xs text-slate-600 mt-0.5">Actor: <strong class="text-slate-900">Neha Kulkarni (HR)</strong> · Verified `cand_892_resume.pdf` + `cand_892_photo.webp`.</p>
+                </div>
+
+                <div class="relative pl-9">
+                  <span class="absolute left-1.5 top-1.5 h-3.5 w-3.5 rounded-full bg-slate-800 ring-4 ring-white"></span>
+                  <div class="flex justify-between text-[11px] font-mono text-slate-500">
+                    <span>10 Oct 2026 · 16:05 IST</span>
+                    <span>EVT-9812</span>
+                  </div>
+                  <div class="text-xs font-extrabold text-slate-950 mt-0.5">Position Placed On Hold · POS-26-042-04</div>
+                  <p class="text-xs text-slate-600 mt-0.5">Actor: <strong class="text-slate-900">Vikramaditya (CEO)</strong> · Prior state `HR_SEARCHING` preserved. Active hiring clock paused at 9d.</p>
+                </div>
+
+                <div class="relative pl-9">
+                  <span class="absolute left-1.5 top-1.5 h-3.5 w-3.5 rounded-full bg-amber-500 ring-4 ring-white"></span>
+                  <div class="flex justify-between text-[11px] font-mono text-slate-500">
+                    <span>08 Oct 2026 · 14:40 IST</span>
+                    <span>EVT-9704</span>
+                  </div>
+                  <div class="text-xs font-extrabold text-slate-950 mt-0.5">Candidate Rejected → Looped to Sourcing · POS-26-042-03</div>
+                  <p class="text-xs text-slate-600 mt-0.5">Actor: <strong class="text-slate-900">Vikramaditya (CEO)</strong> · Candidate `Kiran Mane` rejected; position returned to `HR Searching`.</p>
+                </div>
+
+                <div class="relative pl-9">
+                  <span class="absolute left-1.5 top-1.5 h-3.5 w-3.5 rounded-full bg-emerald-600 ring-4 ring-white"></span>
+                  <div class="flex justify-between text-[11px] font-mono text-slate-500">
+                    <span>02 Oct 2026 · 10:15 IST</span>
+                    <span>EVT-9401</span>
+                  </div>
+                  <div class="text-xs font-extrabold text-slate-950 mt-0.5">Vacancy Approved → 4 Position Units Spawned</div>
+                  <p class="text-xs text-slate-600 mt-0.5">Actor: <strong class="text-slate-900">Yashvardhan (Owner)</strong> · Created `POS-26-042-01` through `04`.</p>
+                </div>
+
+              </div>
+            </div>
+
+            <div class="pt-4 mt-6 border-t border-slate-200/80 flex gap-2">
+              <input type="text" placeholder="Append an immutable timeline note..." class="flex-1 px-3.5 py-2.5 rounded-xl bg-white border border-slate-200 text-xs focus:outline-none focus:border-slate-950" />
+              <button onclick="notifyStudio('Immutable Note Recorded', 'Appended to activity_events with authenticated actor ID and UTC timestamp.', 'success')" class="silky-btn px-4 py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold">Post</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SCREEN 04: REQUISITION STUDIO FORM & DELTA RE-APPROVAL SIMULATOR      -->
+    <!-- ===================================================================== -->
+    <section id="screen-newreq" class="hidden max-w-4xl mx-auto reveal-1">
+      <div class="prism-shell">
+        <div class="prism-inner p-8 sm:p-10 space-y-6">
+          <div class="flex flex-wrap items-start justify-between gap-4 border-b border-slate-200/80 pb-5">
+            <div>
+              <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-[#E40521] font-bold">Idempotent Server Submission · INR Validation</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">Raise Vacancy Request / Trigger Delta Route</h1>
+              <p class="text-xs text-slate-600 mt-0.5">Routes in parallel to CEO & Owner. Finance receives automatic read-only budget awareness.</p>
+            </div>
+            <div class="text-right font-mono">
+              <span class="text-[10px] text-slate-400 block">IMMUTABLE SERVER ID</span>
+              <span class="text-base font-extrabold text-slate-950">REQ-YH-2026-059</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Facility / Location (9 Seeded) *</label>
+              <select class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-950 shadow-sm">
+                <option>01 · Hadapsar RedWing</option>
+                <option>02 · Service RedWing</option>
+                <option>03 · Service BigWing</option>
+                <option>04 · Izeil office</option>
+                <option>05 · BigWing Sales</option>
+                <option>06 · Fursungi</option>
+                <option>07 · Wadki</option>
+                <option>08 · ESD Godown</option>
+                <option>09 · HP Salunke Vihar</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Requester Identity (Server-Locked)</label>
+              <input type="text" disabled value="Sandeep Jadhav (sandeep.j@yashhonda.com)" class="w-full px-4 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-xs font-mono text-slate-600 cursor-not-allowed" />
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Position / Role Title *</label>
+              <input type="text" value="BigWing Senior Relationship Executive" class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-950 shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Standardized Vacancy Reason *</label>
+              <select class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-950 shadow-sm">
+                <option>Replacement (Employee Left)</option>
+                <option>Replacement (Planned Exit)</option>
+                <option>New Position (Approved Expansion)</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Monthly Salary Range (INR · Min ≤ Max) *</label>
+              <div class="grid grid-cols-2 gap-2.5">
+                <input type="number" value="25000" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-950 shadow-sm" />
+                <input type="number" value="34000" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-950 shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Monthly Incentive Band (INR · 0 Allowed) *</label>
+              <div class="grid grid-cols-2 gap-2.5">
+                <input type="number" value="0" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-950 shadow-sm" />
+                <input type="number" value="8000" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-mono font-bold text-slate-950 shadow-sm" />
+              </div>
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Number of Positions (Spawns N Independent Units) *</label>
+              <input type="number" value="3" min="1" max="25" class="w-full px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-mono font-extrabold text-slate-950 shadow-sm" />
+            </div>
+
+            <div>
+              <label class="block font-mono text-[10px] uppercase tracking-wider text-slate-600 font-bold mb-1.5">Priority & Target Joining Date *</label>
+              <div class="grid grid-cols-2 gap-2.5">
+                <select class="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-bold text-slate-950 shadow-sm">
+                  <option>Urgent Priority</option>
+                  <option>Normal Priority</option>
+                </select>
+                <input type="date" value="2026-11-10" class="px-4 py-3 rounded-2xl bg-white border border-slate-200 text-xs font-mono text-slate-950 shadow-sm" />
+              </div>
+            </div>
+          </div>
+
+          <div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-wrap items-center justify-between gap-4">
+            <div class="text-xs text-slate-700 max-w-xl">
+              <strong class="text-slate-950">Delta Re-Approval Guardrail:</strong> Increasing headcount quantity or raising `salary_max` / `incentive_max` on an already-approved request automatically pauses un-hired units and routes a Delta Re-Approval task to CEO/Owner.
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button onclick="notifyStudio('Delta Re-Approval Routed', 'Salary Max hike (₹28k → ₹34k) paused un-hired positions and queued a priority approval for CEO & Owner.', 'warn')" class="silky-btn px-4 py-2.5 rounded-xl bg-white border border-amber-400 text-amber-950 text-xs font-bold">
+                Simulate Delta Trigger
+              </button>
+              <button onclick="notifyStudio('Vacancy Request Submitted', 'Server generated REQ-YH-2026-059 and notified CEO & Owner.', 'success')" class="silky-btn px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#E40521] to-[#BE0019] text-white text-xs font-bold shadow-lg shadow-red-600/25">
+                Submit Requisition
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- SCREEN 05: ADMIN WORKFLOW CANVAS, DPDP VAULT & SECURITY AUDIT LOG     -->
+    <!-- ===================================================================== -->
+    <section id="screen-admin" class="hidden space-y-6">
+      
+      <!-- Visual Workflow Simulator with Animated SVG Bezier Connectors -->
+      <div class="prism-shell reveal-1">
+        <div class="prism-inner p-6 sm:p-8 space-y-6">
+          <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-200/80 pb-4">
+            <div>
+              <span class="font-mono text-[10px] uppercase tracking-[0.18em] text-indigo-700 font-bold">Sole System Administrator · Ankur Master Governance</span>
+              <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-950 mt-1">Visual Workflow Simulator, DPDP Vault & Audit Ledger</h1>
+            </div>
+            <div class="flex items-center gap-2.5">
+              <button onclick="notifyStudio('Workflow Graph Validated', 'All stages reachable, parallel Owner/CEO approvers verified, mandatory CV+Photo gate locked, terminal Hired state verified.', 'success')" class="silky-btn px-4 py-2 rounded-xl bg-emerald-500/10 text-emerald-900 border border-emerald-500/25 text-xs font-bold">
+                ✓ Run Graph & SLA Validator
+              </button>
+              <button onclick="notifyStudio('Workflow Version 2.5 Published', 'New requests now use v2.5. Existing 18 open positions remain safely pinned to v2.4 unless explicitly migrated.', 'info')" class="silky-btn px-4 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold shadow-md">
+                Publish Draft v2.5
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive SVG Bezier Workflow Canvas -->
+          <div class="p-6 rounded-3xl bg-slate-950/[0.025] border border-slate-200/90 overflow-x-auto">
+            <div class="min-w-[880px] space-y-4">
+              <div class="flex items-center justify-between text-[11px] font-mono text-slate-500">
+                <span>VISUAL STATE MACHINE · VERSION 2.5 DRAFT (DRAG-FREE DETERMINISTIC GRAPH)</span>
+                <span class="text-emerald-700 font-bold">SECURITY GUARDRAILS LOCKED: RLS + SIGNED URLS + AUDIT LEDGER</span>
+              </div>
+
+              <div class="grid grid-cols-4 gap-6 relative items-center pt-2">
+                <!-- Animated SVG Connector Overlay -->
+                <svg class="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 880 120">
+                  <path d="M 195 60 C 220 60, 225 60, 245 60" stroke="#94A3B8" stroke-width="2" fill="none" class="flow-line" />
+                  <path d="M 415 60 C 440 60, 445 60, 465 60" stroke="#E40521" stroke-width="2.5" fill="none" class="flow-line" />
+                  <path d="M 635 60 C 660 60, 665 60, 685 60" stroke="#10B981" stroke-width="2.5" fill="none" class="flow-line" />
+                </svg>
+
+                <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-1.5 relative z-10">
+                  <div class="flex justify-between text-[10px] font-mono">
+                    <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-900 font-bold">STAGE 01</span>
+                    <span class="text-slate-500">SLA: 48h</span>
+                  </div>
+                  <div class="text-sm font-extrabold text-slate-950">Vacancy Approval</div>
+                  <div class="text-[11px] text-slate-500">Parallel: Owner OR CEO · Spawns N Position Units</div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white border border-slate-200/90 shadow-sm space-y-1.5 relative z-10">
+                  <div class="flex justify-between text-[10px] font-mono">
+                    <span class="px-2 py-0.5 rounded bg-sky-500/15 text-sky-900 font-bold">STAGE 02</span>
+                    <span class="text-slate-500">SLA: 120h</span>
+                  </div>
+                  <div class="text-sm font-extrabold text-slate-950">HR Sourcing & Shortlist</div>
+                  <div class="text-[11px] text-slate-500">Candidate rejection loops back here automatically</div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-white ring-2 ring-[#E40521] shadow-md space-y-1.5 relative z-10">
+                  <div class="flex justify-between text-[10px] font-mono">
+                    <span class="px-2 py-0.5 rounded bg-[#E40521] text-white font-bold">HARD GATE 03</span>
+                    <span class="text-[#E40521] font-bold">SLA: 72h</span>
+                  </div>
+                  <div class="text-sm font-extrabold text-slate-950">Candidate Approval</div>
+                  <div class="text-[11px] text-slate-600">Enforces CV + WebP Photo + DPDP Notice v2.1</div>
+                </div>
+
+                <div class="p-4 rounded-2xl bg-gradient-to-br from-emerald-900 to-slate-950 text-white shadow-md space-y-1.5 relative z-10">
+                  <div class="flex justify-between text-[10px] font-mono">
+                    <span class="px-2 py-0.5 rounded bg-emerald-500/25 text-emerald-300 font-bold">TERMINAL 04</span>
+                    <span class="text-emerald-300">Joined Date</span>
+                  </div>
+                  <div class="text-sm font-extrabold">Hired (Physically Joined)</div>
+                  <div class="text-[11px] text-emerald-200/80">Requires actual `joined_at` timestamp</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Lower Split: Admin-Controllable DPDP Settings + Security Audit Log -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 pt-2">
+            
+            <div class="lg:col-span-6 p-5 rounded-3xl bg-white/85 border border-slate-200/90 space-y-4">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-extrabold text-slate-950">Admin-Controllable DPDP & Retention Policy</h3>
+                <span class="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-900 font-bold">Zero-Code Config</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <span class="font-mono text-[10px] uppercase text-slate-500 block">Rejected Candidate Purge</span>
+                  <div class="flex items-center justify-between mt-1.5">
+                    <input type="number" value="180" class="w-20 px-2.5 py-1 rounded-lg bg-white border border-slate-300 font-mono font-bold text-slate-950" />
+                    <span class="font-mono text-[11px] text-slate-600">Days</span>
+                  </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <span class="font-mono text-[10px] uppercase text-slate-500 block">Signed File URL TTL</span>
+                  <div class="flex items-center justify-between mt-1.5">
+                    <input type="number" value="120" class="w-20 px-2.5 py-1 rounded-lg bg-white border border-slate-300 font-mono font-bold text-slate-950" />
+                    <span class="font-mono text-[11px] text-slate-600">Seconds</span>
+                  </div>
+                </div>
+                <div class="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/80 sm:col-span-2">
+                  <span class="font-mono text-[10px] uppercase text-slate-500 block">Grievance Officer Contact (Displayed across 7 Legal Docs)</span>
+                  <input type="text" value="privacy.grievance@yashhonda.com · +91 20 2681 ••••" class="w-full mt-1.5 px-3 py-1.5 rounded-lg bg-white border border-slate-300 font-mono text-xs font-bold text-slate-950" />
+                </div>
+              </div>
+              <button onclick="notifyStudio('DPDP Policy Saved', 'Updated retention TTL and grievance contact across all 7 legal documents. Audit event logged.', 'success')" class="silky-btn w-full py-2.5 rounded-xl bg-slate-950 text-white text-xs font-bold">
+                Save DPDP & Retention Config
+              </button>
+            </div>
+
+            <div class="lg:col-span-6 p-5 rounded-3xl bg-white/85 border border-slate-200/90 space-y-3">
+              <div class="flex items-center justify-between">
+                <h3 class="text-base font-extrabold text-slate-950">Append-Only System & Security Audit Log</h3>
+                <span class="font-mono text-[10px] px-2.5 py-0.5 rounded-full bg-slate-950 text-white font-bold">PII REDACTED</span>
+              </div>
+              <div class="space-y-2.5 font-mono text-[11px] max-h-52 overflow-y-auto pr-1">
+                <div class="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/25">
+                  <div class="flex justify-between text-[10px] text-rose-800 font-bold">
+                    <span>SEC_FILE_ACCESS_DENIED · 14 Oct 11:42 IST</span>
+                    <span>CORR-9921</span>
+                  </div>
+                  <div class="font-sans text-xs font-bold text-slate-950 mt-0.5">Blocked Resume Download (`cand_892_resume.pdf`)</div>
+                  <div class="font-sans text-[11px] text-slate-600">Actor `rohan.m (Finance)` denied signed URL generation by server RBAC policy.</div>
+                </div>
+                <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200/80">
+                  <div class="flex justify-between text-[10px] text-slate-500">
+                    <span>DPDP_NOTICE_RECORDED · 14 Oct 11:18 IST</span>
+                    <span>CORR-9914</span>
+                  </div>
+                  <div class="font-sans text-xs font-bold text-slate-950 mt-0.5">Candidate Notice v2.1 Delivered (`cand_892`)</div>
+                  <div class="font-sans text-[11px] text-slate-600">Actor `neha.k (HR)` logged notice delivery prior to CV upload.</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ======================================================================= -->
+  <!-- SLIDE-OVER ARCHITECTURAL DRILL-DOWN DRAWER                              -->
+  <!-- ======================================================================= -->
+  <div id="drilldown-backdrop" onclick="closeDrilldown()" class="fixed inset-0 bg-slate-950/25 backdrop-blur-sm z-50 hidden"></div>
+  <aside id="drilldown-drawer" class="fixed top-0 right-0 bottom-0 w-full max-w-xl glass-nav z-50 translate-x-full transition-transform duration-500 p-6 sm:p-8 flex flex-col justify-between border-l border-white">
+    <div>
+      <div class="flex items-start justify-between border-b border-slate-200/80 pb-4">
+        <div>
+          <span class="font-mono text-[10px] uppercase tracking-widest px-2.5 py-1 rounded-md bg-[#E40521] text-white font-bold">Permission-Scoped Drill-Down</span>
+          <h2 id="drilldown-title" class="text-xl font-extrabold text-slate-950 mt-2">Open Positions</h2>
+          <p id="drilldown-subtitle" class="text-xs text-slate-600 mt-0.5">1:1 filter parity with dashboard metric card</p>
+        </div>
+        <button onclick="closeDrilldown()" class="p-2 rounded-xl bg-slate-900/5 hover:bg-slate-900/10 text-slate-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-3 mt-5 overflow-y-auto max-h-[68vh] pr-1">
+        <div onclick="closeDrilldown(); switchScreen('detail'); selectPositionUnit(2);" class="silky-card cursor-pointer p-4 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold text-slate-950">POS-26-042-02</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-rose-500/10 text-rose-700">Waiting 6d · Overdue</span>
+            </div>
+            <div class="text-sm font-extrabold text-slate-950 mt-1">Senior Service Technician · Hadapsar RedWing</div>
+            <div class="text-xs text-slate-500">Candidate: Rahul Deshmukh (CV + 142KB WebP Verified)</div>
+          </div>
+          <span class="font-mono text-xs font-bold text-[#E40521]">Inspect →</span>
+        </div>
+
+        <div onclick="closeDrilldown(); switchScreen('detail'); selectPositionUnit(3);" class="silky-card cursor-pointer p-4 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold text-slate-950">POS-26-042-03</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/10 text-sky-800">HR Searching · 2d</span>
+            </div>
+            <div class="text-sm font-extrabold text-slate-950 mt-1">Senior Service Technician · Hadapsar RedWing</div>
+            <div class="text-xs text-slate-500">1 Prior Candidate Rejected · Looped back to sourcing</div>
+          </div>
+          <span class="font-mono text-xs font-bold text-slate-950">Inspect →</span>
+        </div>
+
+        <div onclick="closeDrilldown(); switchScreen('detail'); selectPositionUnit(4);" class="silky-card cursor-pointer p-4 rounded-2xl bg-white border border-slate-200/90 flex items-center justify-between">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-xs font-bold text-slate-950">POS-26-042-04</span>
+              <span class="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-slate-900/10 text-slate-800">On Hold · Clock Paused</span>
+            </div>
+            <div class="text-sm font-extrabold text-slate-950 mt-1">Senior Service Technician · Hadapsar RedWing</div>
+            <div class="text-xs text-slate-500">Active Age: 9d (Frozen) · Hold Duration: 5d</div>
+          </div>
+          <span class="font-mono text-xs font-bold text-slate-950">Inspect →</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="pt-4 border-t border-slate-200/80 flex items-center justify-between text-xs text-slate-500">
+      <span>Preserves FY 2026–27 & Facility Context</span>
+      <button onclick="closeDrilldown()" class="px-4 py-2 rounded-xl bg-slate-950 text-white font-bold">Done</button>
+    </div>
+  </aside>
+
+  <!-- ⌘K SPOTLIGHT MODAL -->
+  <div id="cmd-modal" onclick="if(event.target===this) toggleCommandModal(false)" class="fixed inset-0 bg-slate-950/30 backdrop-blur-sm z-50 hidden flex items-start justify-center pt-24 p-4">
+    <div class="glass-nav rounded-3xl max-w-lg w-full p-5 space-y-4 border border-white shadow-2xl">
+      <div class="flex items-center gap-3 border-b border-slate-200/80 pb-3">
+        <i data-lucide="search" class="w-4 h-4 text-[#E40521]"></i>
+        <input type="text" placeholder="Jump to Request ID (REQ-YH-2026-042), Facility, or Persona..." class="w-full bg-transparent text-sm font-semibold text-slate-950 focus:outline-none" />
+        <button onclick="toggleCommandModal(false)" class="font-mono text-[10px] px-2 py-0.5 rounded bg-slate-200 text-slate-700">ESC</button>
+      </div>
+      <div class="space-y-1.5 text-xs">
+        <button onclick="toggleCommandModal(false); switchScreen('detail');" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white flex items-center justify-between">
+          <span><strong>REQ-YH-2026-042</strong> · 1-to-4 Position Split & Document Gate</span>
+          <span class="font-mono text-[10px] text-slate-500">Hadapsar RedWing</span>
+        </button>
+        <button onclick="toggleCommandModal(false); setPersona('Rohan Mehta (Finance)', 'FINANCE', false, false); switchScreen('detail');" class="w-full text-left px-3 py-2.5 rounded-xl hover:bg-white flex items-center justify-between">
+          <span><strong>Test Scenario #9</strong> · Switch to Finance & Test HTTP 403 File Block</span>
+          <span class="font-mono text-[10px] text-rose-700 font-bold">Security Test</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- VERSIONED DPDP & LEGAL MODAL -->
+  <div id="legal-modal" onclick="if(event.target===this) toggleLegalModal(false)" class="fixed inset-0 bg-slate-950/30 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="glass-nav rounded-[32px] max-w-2xl w-full p-6 sm:p-8 space-y-5 border border-white shadow-2xl">
+      <div class="flex items-start justify-between border-b border-slate-200/80 pb-4">
+        <div>
+          <span class="font-mono text-[10px] uppercase tracking-widest px-2.5 py-1 rounded bg-slate-950 text-white font-bold">7 Required Notices · v2.1</span>
+          <h2 class="text-xl font-extrabold text-slate-950 mt-2">DPDP Privacy, Confidentiality & Retention Suite</h2>
+        </div>
+        <button onclick="toggleLegalModal(false)" class="p-2 rounded-xl bg-slate-100 text-slate-900">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+      <div class="space-y-3 max-h-64 overflow-y-auto pr-1 text-xs text-slate-700 leading-relaxed">
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
+          <strong class="text-slate-950 block">1. Terms of Use, Disclaimer & Confidentiality Rules</strong>
+          Candidate resumes, photographs, and contact details are strictly confidential recruitment records of Yash Honda. Unauthorized downloading or forwarding is prohibited and logged.
+        </div>
+        <div class="p-3.5 rounded-2xl bg-white border border-slate-200/80">
+          <strong class="text-slate-950 block">2. Candidate Privacy Notice & Photograph Safeguard</strong>
+          Photographs are captured solely for identity verification during workshop/showroom interviews and executive approval. Never used for AI or appearance scoring.
+        </div>
+      </div>
+      <label class="flex items-start gap-2.5 text-xs text-slate-900 font-medium cursor-pointer">
+        <input type="checkbox" id="legal-ack-check" class="mt-0.5 rounded border-slate-400" />
+        <span>I affirmatively acknowledge Version 2.1 of the Terms of Use, Internal User Privacy Notice, and Confidentiality Rules.</span>
+      </label>
+      <div class="flex justify-end gap-2.5 pt-3 border-t border-slate-200/80">
+        <button onclick="toggleLegalModal(false)" class="px-4 py-2 rounded-xl bg-white border border-slate-300 text-xs font-bold">Close</button>
+        <button onclick="recordAck()" class="px-5 py-2 rounded-xl bg-slate-950 text-white text-xs font-bold">Record Acknowledgement</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    let activePersona = {
+      label: 'Vikramaditya (CEO)',
+      code: 'CEO',
+      canAccessFiles: true,
+      canHold: true
+    };
+
+    function notifyStudio(title, message, type = 'info') {
+      const stack = document.getElementById('toast-stack');
+      const card = document.createElement('div');
+      const badges = {
+        success: 'bg-emerald-600 text-white',
+        warn: 'bg-amber-500 text-slate-950',
+        error: 'bg-[#E40521] text-white',
+        info: 'bg-slate-950 text-white'
+      };
+      card.className = 'glass-nav rounded-2xl p-4 border border-white shadow-2xl pointer-events-auto transition-all duration-500 transform translate-y-2 opacity-0';
+      card.innerHTML = `
+        <div class="flex items-start justify-between gap-3">
+          <div class="space-y-1">
+            <div class="flex items-center gap-2">
+              <span class="font-mono text-[9px] uppercase tracking-widest px-2 py-0.5 rounded font-bold ${badges[type]}">${type.toUpperCase()}</span>
+              <span class="font-mono text-[10px] text-slate-400">Asia/Kolkata</span>
+            </div>
+            <div class="text-xs font-extrabold text-slate-950">${title}</div>
+            <div class="text-[11px] text-slate-600 leading-relaxed">${message}</div>
+          </div>
+          <button onclick="this.parentElement.parentElement.remove()" class="text-slate-400 hover:text-slate-950 text-xs font-mono">✕</button>
+        </div>
+      `;
+      stack.appendChild(card);
+      requestAnimationFrame(() => card.classList.remove('translate-y-2', 'opacity-0'));
+      setTimeout(() => {
+        if (card.parentElement) {
+          card.classList.add('opacity-0', 'translate-y-2');
+          setTimeout(() => card.remove(), 400);
+        }
+      }, 5000);
+    }
+
+    function switchScreen(screenId) {
+      ['login', 'dashboard', 'detail', 'newreq', 'admin'].forEach(id => {
+        document.getElementById('screen-' + id).classList.add('hidden');
+        const tab = document.getElementById('top-tab-' + id);
+        if (tab) {
+          tab.className = 'top-nav-pill px-3.5 py-2 rounded-xl text-xs font-semibold transition-all duration-300 flex items-center gap-1.5 text-slate-600 hover:text-slate-950';
+        }
+      });
+      document.getElementById('screen-' + screenId).classList.remove('hidden');
+      const activeTab = document.getElementById('top-tab-' + screenId);
+      if (activeTab) {
+        activeTab.className = 'top-nav-pill px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-300 flex items-center gap-1.5 bg-slate-950 text-white shadow-md shadow-slate-950/15';
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setPersona(label, code, canAccessFiles, canHold) {
+      activePersona = { label, code, canAccessFiles, canHold };
+      document.getElementById('header-role-readout').textContent = label;
+      const bentoLabel = document.getElementById('bento-persona-label');
+      if (bentoLabel) bentoLabel.textContent = label;
+
+      ['CEO', 'OWNER', 'HR', 'FINANCE', 'ADMIN', 'EMPLOYEE'].forEach(c => {
+        const pill = document.getElementById('p-' + c);
+        if (pill) {
+          pill.className = c === code
+            ? 'p-pill px-2.5 py-1 rounded-lg bg-slate-950 text-white font-semibold text-[11px] transition'
+            : 'p-pill px-2.5 py-1 rounded-lg bg-white/70 hover:bg-white text-slate-700 border border-slate-200/80 font-medium text-[11px] transition';
+        }
+      });
+
+      notifyStudio(
+        `Switched Persona: ${label}`,
+        canAccessFiles
+          ? `Authorized for private signed URL file downloads & ${canHold ? 'Global Hold/Resume' : 'Candidate Sourcing'}.`
+          : `RBAC Restriction Active: ${code} role has read-only budget visibility and is server-blocked from Candidate Resumes & Photos.`,
+        canAccessFiles ? 'info' : 'warn'
+      );
+    }
+
+    function attemptProtectedFileAccess(key, name) {
+      if (!activePersona.canAccessFiles) {
+        notifyStudio(
+          `HTTP 403 Access Denied · Logged`,
+          `Role "${activePersona.code}" (${activePersona.label}) is blocked from accessing private object "${key}". Event SEC_FILE_ACCESS_DENIED appended to Admin Audit Log.`,
+          'error'
+        );
+        return;
+      }
+      notifyStudio(
+        `Signed URL Generated (120s TTL)`,
+        `Verified "${activePersona.code}" authorization. Opening private storage object "${key}" (${name}).`,
+        'success'
+      );
+    }
+
+    function selectPositionUnit(idx) {
+      [1, 2, 3, 4].forEach(i => {
+        document.getElementById('unit-' + i).className = 'text-left p-4 rounded-2xl bg-white/80 border border-slate-200/90 hover:bg-white transition-all';
+      });
+      document.getElementById('unit-' + idx).className = 'text-left p-4 rounded-2xl bg-white ring-2 ring-[#E40521] shadow-lg transition-all';
+      const titles = {
+        1: 'POS-26-042-01 · Amit Pawar (Joined 12 Oct 2026)',
+        2: 'POS-26-042-02 · Candidate Submissions & Mandatory Document Gate',
+        3: 'POS-26-042-03 · Returned to HR Searching after Candidate Rejection',
+        4: 'POS-26-042-04 · On Hold by CEO (Active Ageing Clock Frozen at 9d)'
+      };
+      document.getElementById('pos-workspace-tag').textContent = `ACTIVE WORKSPACE · POS-26-042-0${idx}`;
+      document.getElementById('pos-workspace-heading').textContent = titles[idx];
+      notifyStudio(`Position Unit Switched`, `Inspecting ${titles[idx]}`, 'info');
+    }
+
+    function unlockPhotoGate() {
+      const badge = document.getElementById('gate-badge');
+      const btn = document.getElementById('gate-submit-btn');
+      badge.textContent = '✓ CV + 138KB WEBP VERIFIED';
+      badge.className = 'font-mono text-[10px] font-bold px-2.5 py-1 rounded-full bg-emerald-500/20 text-emerald-950';
+      btn.disabled = false;
+      btn.textContent = 'Send Sachin Shinde for Approval →';
+      btn.className = 'silky-btn px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-md cursor-pointer';
+      notifyStudio('WebP Photo Compressed & Gate Unlocked', '9.4 MB camera photo compressed client-side to 138 KB WebP. Candidate submission gate unlocked!', 'success');
+    }
+
+    function openDrilldown(title, subtitle) {
+      document.getElementById('drilldown-title').textContent = title;
+      document.getElementById('drilldown-subtitle').textContent = subtitle;
+      document.getElementById('drilldown-backdrop').classList.remove('hidden');
+      document.getElementById('drilldown-drawer').classList.remove('translate-x-full');
+    }
+
+    function closeDrilldown() {
+      document.getElementById('drilldown-backdrop').classList.add('hidden');
+      document.getElementById('drilldown-drawer').classList.add('translate-x-full');
+    }
+
+    function toggleCommandModal(show) {
+      document.getElementById('cmd-modal').classList.toggle('hidden', !show);
+    }
+
+    function toggleLegalModal(show) {
+      document.getElementById('legal-modal').classList.toggle('hidden', !show);
+    }
+
+    function recordAck() {
+      if (!document.getElementById('legal-ack-check').checked) {
+        notifyStudio('Affirmative Check Required', 'Please tick the un-checked acknowledgement box first.', 'warn');
+        return;
+      }
+      toggleLegalModal(false);
+      notifyStudio('Acknowledgement Logged', `Recorded Version 2.1 acceptance for ${activePersona.label} with UTC timestamp.`, 'success');
+    }
+  </script>
+</body>
+</html>

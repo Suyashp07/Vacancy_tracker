@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Admin Panel · Yash Honda Vacancy &amp; Hiring Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .tabs { display: flex; gap: 2px; border-bottom: 1px solid var(--line); margin-bottom: 20px; overflow-x: auto; }
+  .tab { border: 0; background: transparent; padding: 10px 14px; font-size: 13px; color: var(--ink-3); border-bottom: 2px solid transparent; white-space: nowrap; transition: color .16s, border-color .16s; }
+  .tab:hover { color: var(--ink); }
+  .tab.on { color: var(--accent-ink); border-bottom-color: var(--accent); font-weight: 500; }
+  .tab .n { font-family: var(--font-mono); font-size: 11px; margin-left: 6px; color: var(--ink-3); }
+  .panel { display: none; } .panel.on { display: block; animation: rise .3s cubic-bezier(.16,1,.3,1); }
+
+  .urow { display: grid; grid-template-columns: auto 1.3fr 1fr 1.4fr auto; gap: 16px; align-items: center; padding: 13px 16px; border-bottom: 1px solid var(--line-soft); }
+  .urow:hover { background: var(--surface-alt); }
+  .urow.off { opacity: .55; }
+  .uname { font-size: 13.4px; font-weight: 500; }
+  .uemail { font-size: 11.8px; color: var(--ink-3); font-family: var(--font-mono); }
+
+  /* permission matrix */
+  .mx { width: 100%; border-collapse: collapse; font-size: 12.4px; }
+  .mx th { position: sticky; top: 0; background: var(--surface-alt); z-index: 2; }
+  .mx th, .mx td { border-bottom: 1px solid var(--line-soft); padding: 9px 10px; text-align: center; }
+  .mx th:first-child, .mx td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); z-index: 1; min-width: 210px; }
+  .mx thead th { font-size: 10.8px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); font-weight: 500; border-bottom: 1px solid var(--line); }
+  .mx tbody tr:hover td { background: var(--surface-alt); }
+  .mx .yes { color: var(--ok); } .mx .no { color: var(--line); } .mx .cfg { color: var(--warn); }
+  .mx .grp td { background: var(--ink); color: #fff; font-size: 10.5px; text-transform: uppercase; letter-spacing: .1em; text-align: left; padding: 7px 12px; }
+  .mx .grp td:first-child { background: var(--ink); color: #fff; }
+  .sw { width: 30px; height: 18px; border-radius: 20px; background: var(--line); position: relative; display: inline-block; transition: background .2s; border:0; }
+  .sw i { position: absolute; top: 2px; left: 2px; width: 14px; height: 14px; border-radius: 50%; background: #fff; transition: transform .22s cubic-bezier(.16,1,.3,1); }
+  .sw.on { background: var(--accent); } .sw.on i { transform: translateX(12px); }
+  .sw.locked { background: var(--neutral-soft); }
+
+  /* workflow config */
+  .wf { display: grid; grid-template-columns: 1fr 300px; gap: 18px; align-items: start; }
+  .steps { display: grid; gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .step { background: var(--surface); padding: 13px 16px; display: grid; grid-template-columns: 26px 1fr auto auto; gap: 14px; align-items: center; cursor: pointer; transition: background .16s; }
+  .step:hover { background: var(--surface-alt); }
+  .step.sel { background: var(--accent-soft); }
+  .sidx { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+  .sname { font-size: 13.2px; font-weight: 500; }
+  .skey { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); }
+  .scfg { display: flex; gap: 5px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+  .cfgbox { position: sticky; top: 86px; }
+  .kv { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--line-soft); font-size: 12.4px; }
+  .kv:last-child { border: 0; }
+  .kv span:first-child { color: var(--ink-3); }
+  .graph { display: flex; gap: 4px; align-items: center; overflow-x: auto; padding: 16px; }
+  .node { border: 1px solid var(--line); border-radius: 8px; padding: 8px 11px; background: var(--surface); font-size: 11.8px; white-space: nowrap; }
+  .node.terminal { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .node.appr { border-color: var(--accent); background: var(--accent-soft); color: var(--accent-ink); }
+  .edge { color: var(--line); flex: none; }
+
+  /* audit log */
+  .logfilter { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-bottom: 14px; }
+  .logrow { display: grid; grid-template-columns: 132px 108px 1fr 1.5fr auto; gap: 14px; padding: 11px 14px; border-bottom: 1px solid var(--line-soft); font-size: 12.4px; align-items: center; }
+  .logrow:hover { background: var(--surface-alt); }
+  .cat { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; }
+  .ret { display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: var(--r-lg); overflow: hidden; }
+  .ret > div { background: var(--surface); padding: 14px 16px; }
+  .ret .k { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); }
+  .ret .v { font-family: var(--font-mono); font-size: 22px; letter-spacing: -.04em; margin-top: 4px; }
+  .ret .s { font-size: 11.6px; color: var(--ink-3); margin-top: 4px; }
+  .legal { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .ldoc { border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px 16px; background: var(--surface); transition: box-shadow .18s, border-color .18s; }
+  .ldoc:hover { box-shadow: var(--shadow); border-color: #CFCFC8; }
+  .lname { font-size: 13.4px; font-weight: 500; }
+  .lmeta { font-size: 11.6px; color: var(--ink-3); margin-top: 4px; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  @media (max-width: 1100px) { .wf { grid-template-columns: 1fr; } .cfgbox { position: static; } .legal { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+YHUI.shell('admin', 'Admin Panel');
+const el = document.getElementById('content');
+const viewer = YH.usr(YHUI.getViewer());
+
+if (viewer.role !== 'Admin') {
+  el.innerHTML = '<div class="notice" style="max-width:640px">' + YHUI.svg(YHUI.ICONS.shield, 18) +
+    '<div><b>Admin Panel is restricted.</b> You are signed in as ' + viewer.role + '. Switch the prototype identity (top right) to <b>Admin</b> to inspect configuration, or press the button to continue as Admin — this mirrors a real server-side refusal, not a hidden button.</div></div>' +
+    '<button class="btn primary" style="margin-top:14px" onclick="YHUI.setViewer(\'u-admin\')">Continue as Admin</button>';
+  document.querySelector('.content').style.paddingTop = '60px';
+} else {
+  build();
+}
+
+function build() {
+  el.innerHTML =
+    '<div class="tabs reveal">' +
+    [['users', 'Users', YH.users.length], ['access', 'Access matrix', ''], ['workflow', 'Workflow', 'v1'],
+     ['facilities', 'Facilities', YH.facilities.length], ['legal', 'Legal &amp; Privacy', '1 draft'],
+     ['privacy', 'Privacy &amp; Retention', ''], ['audit', 'System &amp; Audit Log', YH.audit.length]]
+      .map(([k, l, n], i) => '<button class="tab' + (i === 0 ? ' on' : '') + '" data-p="' + k + '" onclick="tab(\'' + k + '\')">' + l + (n ? '<span class="n">' + n + '</span>' : '') + '</button>').join('') +
+    '</div><div id="p-users" class="panel on"></div><div id="p-access" class="panel"></div><div id="p-workflow" class="panel"></div>' +
+    '<div id="p-facilities" class="panel"></div><div id="p-legal" class="panel"></div><div id="p-privacy" class="panel"></div><div id="p-audit" class="panel"></div>';
+  users(); access(); workflow(); facilities(); legal(); privacy(); audit();
+}
+function tab(k) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.toggle('on', t.dataset.p === k));
+  document.querySelectorAll('.panel').forEach(p => p.classList.toggle('on', p.id === 'p-' + k));
+}
+
+/* ---------------- users ---------------- */
+function users() {
+  document.getElementById('p-users').innerHTML =
+    '<div style="display:flex;gap:10px;align-items:center;margin-bottom:14px;flex-wrap:wrap">' +
+    '<div class="search" style="position:relative;max-width:300px;flex:1"><input class="input" placeholder="Search name or work email"></div>' +
+    '<button class="btn" onclick="YHUI.toast(\'Facility scope, role and permission overrides are edited per user\')">Bulk scope</button>' +
+    '<button class="btn primary" style="margin-left:auto" onclick="invite()">' + YHUI.svg(YHUI.ICONS.plus, 15) + 'Invite user</button></div>' +
+    '<div class="card" style="overflow:hidden">' +
+    '<div class="urow" style="border-bottom:1px solid var(--line);background:var(--surface-alt);font-size:10.8px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)">' +
+    '<div></div><div>Person</div><div>Role</div><div>Facility scope</div><div></div></div>' +
+    YH.users.map(u => '<div class="urow"><span class="avatar" style="width:32px;height:32px;font-size:11.5px">' + u.initials + '</span>' +
+      '<div><div class="uname">' + u.name + (u.role === 'Admin' ? ' <span class="badge info">system administrator</span>' : '') + '</div><div class="uemail">' + u.email + '</div></div>' +
+      '<div><select class="select" style="max-width:140px;padding:5px 8px;font-size:12.4px" onchange="YHUI.toast(\'Role change logged · existing history stays attributed to this user\')">' +
+      ['Admin', 'Owner', 'CEO', 'HR Team', 'Finance Team', 'Employee'].map(r => '<option' + (r === u.role ? ' selected' : '') + '>' + r + '</option>').join('') + '</select></div>' +
+      '<div style="display:flex;gap:4px;flex-wrap:wrap">' + (u.scope === 'all' ? '<span class="badge outline">all facilities</span>' :
+        u.scope.map(f => '<span class="badge outline">' + YHUI.fac(f).split(' ')[0] + '</span>').join('')) + '</div>' +
+      '<div style="display:flex;gap:6px;align-items:center"><button class="sw on" onclick="this.classList.toggle(\'on\');YHUI.toast(this.classList.contains(\'on\')?\'Account activated\':\'Deactivated · historical actions preserved\')"><i></i></button>' +
+      '<button class="btn sm ghost" onclick="YHUI.setViewer && YHUI.toast(\'Permission override drawer · reason mandatory, audited\')">Override</button></div></div>').join('') +
+    '</div>' +
+    '<div class="notice warn" style="margin-top:16px;max-width:760px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Accounts are never deleted.</b> Deactivation preserves attribution so approval history stays trustworthy. Shared logins are prohibited; owner and CEO are separate accounts because self-approval is blocked for every role.</div></div>';
+}
+function invite() {
+  YHUI.openModal('<div class="modal-head"><h3>Invite a user</h3><div class="qsub" style="margin-top:4px">No outbound email in this release — generate a one-time setup link and hand it over directly.</div></div>' +
+    '<div class="modal-body"><div style="display:grid;gap:14px">' +
+    '<div class="field"><label class="req">Full name</label><input class="input" placeholder="As it should appear on approvals"></div>' +
+    '<div class="field"><label class="req">Work email</label><input class="input" placeholder="name@yashhonda.in"><div class="hint">Public providers are rejected for privileged roles.</div></div>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">' +
+    '<div class="field"><label class="req">Role</label><select class="select"><option>Employee</option><option>HR Team</option><option>Finance Team</option><option>CEO</option><option>Owner</option></select></div>' +
+    '<div class="field"><label>MFA</label><select class="select"><option>Required (Admin, Owner, CEO)</option><option>Optional</option></select></div></div>' +
+    '<div class="field"><label>Facility scope</label><div style="display:flex;gap:5px;flex-wrap:wrap">' +
+    YH.facilities.slice(0, 5).map(f => '<span class="chip">' + f.name + '</span>').join('') + '<span class="chip on">+4 more</span></div></div>' +
+    '<div class="stacknote"><b class="mono" style="font-size:12px">setup link</b>' +
+    '<div class="cmeta" style="margin-top:5px"><span class="cell-id">https://hiring.yashhonda.in/activate/t_9f3a…</span><span>·</span><span>expires in 72h</span><span>·</span><span>single use</span></div></div>' +
+    '</div></div><div class="modal-foot"><button class="btn" data-close>Cancel</button>' +
+    '<button class="btn primary" onclick="YHUI.closeAll();YHUI.toast(\'Account created as inactive · invite link copied\')">Create and generate link</button></div>');
+}
+
+/* ---------------- access matrix ---------------- */
+const PERMS = [
+  ['Request lifecycle', [['view_all_requests', 'all|Owner|CEO|HR|Admin', 'Own only', 'Own only', 'Configurable', 'yes', 'no'],
+    ['raise_request', 'yes', 'yes', 'yes', 'yes', 'yes', 'yes'],
+    ['approve_vacancy', 'no', 'yes', 'yes', 'optional', 'optional', 'no'],
+    ['reject_return_request', 'no', 'yes', 'yes', 'no', 'no', 'no'],
+    ['edit_submitted_request', 'yes', 'no', 'no', 'no', 'no', 'own only'],
+    ['hold_resume_any', 'yes', 'yes', 'yes', 'configurable', 'no', 'no'],
+    ['close_cancel_position', 'yes', 'configurable', 'configurable', 'configurable', 'no', 'no']]],
+  ['Candidate data', [['view_candidates', 'yes', 'configurable', 'yes', 'yes', 'no', 'no'],
+    ['view_resume_photo', 'yes', 'configurable', 'authorized decisions', 'yes', 'no', 'no'],
+    ['download_resume_photo', 'restricted+logged', 'no', 'no', 'yes', 'no', 'no'],
+    ['manage_candidates', 'yes', 'configurable', 'no', 'yes', 'no', 'no'],
+    ['send_candidate_for_approval', 'yes', 'no', 'no', 'yes', 'no', 'no'],
+    ['document_exception', 'yes', 'no', 'no', 'no', 'no', 'no'],
+    ['view_salary_incentives', 'yes', 'yes', 'yes', 'yes', 'yes', 'configurable']]],
+  ['Reporting', [['export_reports', 'yes', 'yes', 'yes', 'configurable', 'yes', 'no'],
+    ['export_candidates', 'yes', 'no', 'no', 'separate grant', 'no', 'no'],
+    ['view_audit_history', 'full', 'business', 'business', 'own records', 'own records', 'own requests']]],
+  ['Configuration (cannot be weakened)', [['configure_workflow', 'yes', 'no', 'no', 'no', 'no', 'no'],
+    ['manage_users_permissions', 'yes', 'no', 'no', 'no', 'no', 'no'],
+    ['manage_privacy_retention', 'yes', 'no', 'no', 'no', 'no', 'no'],
+    ['disable_audit_logging', 'locked', 'locked', 'locked', 'locked', 'locked', 'locked']]]
+];
+const COLS = ['Admin', 'Owner', 'CEO', 'HR', 'Finance', 'Employee'];
+function cellCls(v) {
+  if (v === 'yes') return 'yes'; if (v === 'no' || v === 'locked') return 'no';
+  return 'cfg';
+}
+function access() {
+  document.getElementById('p-access').innerHTML =
+    '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px">' +
+    '<div class="legend">' +
+    '<span><b style="background:var(--ok)"></b>granted</span><span><b style="background:var(--warn)"></b>configurable / conditional</span>' +
+    '<span><b style="background:var(--line)"></b>denied by default</span></div>' +
+    '<div style="margin-left:auto;display:flex;gap:8px">' +
+    '<select class="select" style="max-width:190px;padding:6px 9px;font-size:12.5px"><option>Role preset · default policy</option><option>Override for Sneha Kale</option><option>Override for Nilesh Patil</option></select>' +
+    '<button class="btn" onclick="YHUI.toast(\'Deny by default. A blank cell means no grant exists, not an unknown.\')">Reset to default</button></div></div>' +
+    '<div class="card" style="overflow:auto;max-height:64vh">' +
+    '<table class="mx"><thead><tr><th>Permission key</th>' + COLS.map(c => '<th>' + c + '</th>').join('') + '</tr></thead><tbody>' +
+    PERMS.map(([grp, rows]) => '<tr class="grp"><td colspan="7">' + grp + '</td></tr>' +
+      rows.map(r => '<tr><td><b>' + r[0].replace(/_/g, ' ') + '</b><div class="skey">' + r[0] + '</div></td>' +
+        r.slice(1).map(v => '<td><span class="badge ' + (cellCls(v) === 'yes' ? 'ok' : cellCls(v) === 'cfg' ? 'warn' : 'outline') + '" style="font-size:10.8px;padding:1px 7px">' + v + '</span></td>').join('') + '</tr>').join('')
+    ).join('') + '</tbody></table></div>' +
+    '<div class="notice" style="margin-top:16px;max-width:820px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Rows in the last group are locked.</b> Workflow configuration cannot disable authentication, server-side authorization, private file access or audit logging. ' +
+    'The Admin role itself has no <span class="mono">approve_vacancy</span> grant, so Admin-raised requests route to Owner or CEO.</div></div>';
+}
+
+/* ---------------- workflow ---------------- */
+const WSTEPS = [
+  ['submitted', 'Request submitted', 'normal', 'all form fields', '—', 'create_request', '—'],
+  ['pending_vacancy_approval', 'Pending vacancy approval', 'approval', 'reason if rejecting', '—', 'Owner, CEO (not requester)', '2d / 5d'],
+  ['approved', 'Approved', 'normal', '—', '—', 'system', '—'],
+  ['returned_for_clarification', 'Returned for clarification', 'normal', 'reason', '—', 'Owner, CEO', '—'],
+  ['rejected', 'Rejected', 'terminal', 'reason', '—', 'Owner, CEO', '—'],
+  ['hr_searching', 'HR searching', 'normal', 'assigned HR', '—', 'HR Team', '7d / 14d'],
+  ['shortlisted', 'Shortlisted', 'normal', '—', '—', 'HR Team', '5d / 10d'],
+  ['sent_for_candidate_approval', 'Sent for candidate approval', 'approval', 'HR note, proposed comp', 'resume + photograph', 'HR Team', '1d / 3d'],
+  ['candidate_decision', 'Candidate decision', 'approval', 'reason if rejecting', '—', 'Owner, CEO', '2d / 5d'],
+  ['offer_in_progress', 'Offer in progress', 'normal', 'joining date', '—', 'HR Team', '7d / 21d'],
+  ['hired', 'Hired', 'terminal', 'confirmed joining date', '—', 'HR Team', '—'],
+  ['closed_unfilled', 'Closed unfilled', 'terminal', 'closure reason', '—', 'Owner, CEO, Admin', '—']
+];
+function workflow() {
+  document.getElementById('p-workflow').innerHTML =
+    '<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px">' +
+    '<span class="badge ok"><span class="dot"></span>Published · yash_honda_default v1</span>' +
+    '<span class="badge outline">12 steps</span><span class="badge outline">4 approval steps</span><span class="badge outline">3 terminal</span>' +
+    '<div style="margin-left:auto;display:flex;gap:8px">' +
+    '<button class="btn" onclick="YHUI.toast(\'Draft v2 created · existing records stay on v1 until an explicit, previewed migration\')">New draft version</button>' +
+    '<button class="btn" onclick="YHUI.toast(\'Validation passed · no unreachable step, every path reaches a terminal state, no approver-less approval\')">Validate</button>' +
+    '<button class="btn dark" onclick="YHUI.toast(\'Editor is Phase 2 · v1 config is seeded data, so edits here land in the same tables the engine reads\')">Edit in builder</button></div></div>' +
+    '<div class="card" style="overflow:hidden;margin-bottom:18px"><div class="graph">' +
+    WSTEPS.slice(0, 11).map((s, i) => '<span class="node' + (s[2] === 'approval' ? ' appr' : s[2] === 'terminal' ? ' terminal' : '') + '">' + s[1] + '</span>' +
+      (i < 10 ? '<span class="edge">' + YHUI.svg(YHUI.ICONS.arr, 13) + '</span>' : '')).join('') +
+    '<span class="edge" style="margin-left:12px">＋ hold is an overlay at any non-terminal step</span></div></div>' +
+    '<div class="wf"><div class="steps">' +
+    WSTEPS.map((s, i) => '<div class="step" data-s="' + i + '" onclick="selStep(' + i + ')">' +
+      '<span class="sidx">' + String(i + 1).padStart(2, '0') + '</span>' +
+      '<div><div class="sname">' + s[1] + '</div><div class="skey">' + s[0] + '</div></div>' +
+      '<div class="scfg">' + (s[4] !== '—' ? '<span class="badge warn">' + s[4] + '</span>' : '') +
+      (s[2] === 'approval' ? '<span class="badge info">approval</span>' : s[2] === 'terminal' ? '<span class="badge outline">terminal</span>' : '') + '</div>' +
+      '<span class="badge outline">' + s[6] + '</span></div>').join('') +
+    '</div><div class="cfgbox"><div class="card pad" id="stepcfg"></div>' +
+    '<div class="card pad" style="margin-top:14px"><div class="section-head" style="margin:0 0 10px"><h2>Dashboard category mapping</h2></div>' +
+    [['Open positions', 'hr_searching, shortlisted, sent_for_approval, maybe, offer'], ['Hired', 'hired by joining date'],
+     ['On hold', 'hold overlay, any preserved stage'], ['Closed / cancelled', 'closed_unfilled, cancelled']].map(([k, v]) =>
+      '<div class="kv"><span>' + k + '</span><span style="text-align:right;font-size:11.8px">' + v + '</span></div>').join('') +
+    '<div class="hint" style="margin-top:10px;font-size:11.5px">Mapping is configuration, so the dashboard can be re-bucketed without a code change.</div></div></div></div>';
+  selStep(7);
+}
+function selStep(i) {
+  const s = WSTEPS[i];
+  document.querySelectorAll('.step').forEach(n => n.classList.toggle('sel', n.dataset.s == i));
+  document.getElementById('stepcfg').innerHTML =
+    '<div class="section-head" style="margin:0 0 6px"><h2>' + s[1] + '</h2><span class="mono" style="font-size:11px">' + s[0] + '</span></div>' +
+    '<div class="kv"><span>Step type</span><span>' + s[2] + '</span></div>' +
+    '<div class="kv"><span>Required fields</span><span style="text-align:right">' + s[3] + '</span></div>' +
+    '<div class="kv"><span>Required documents</span><span style="text-align:right">' + s[4] + '</span></div>' +
+    '<div class="kv"><span>Eligible actors</span><span style="text-align:right">' + s[5] + '</span></div>' +
+    '<div class="kv"><span>SLA warn / overdue</span><span class="mono">' + s[6] + '</span></div>' +
+    '<div class="kv"><span>Outbound transitions</span><span style="text-align:right;font-size:11.6px">' + outs(i) + '</span></div>' +
+    '<div class="kv"><span>Reason mandatory</span><span>' + (['pending_vacancy_approval', 'candidate_decision', 'closed_unfilled', 'returned_for_clarification', 'rejected'].includes(s[0]) ? 'on reject / return / close' : 'no') + '</span></div>' +
+    '<div class="stacknote" style="margin-top:12px">Changing this step publishes a <b>new version</b>. Requests already in flight keep v1; migrating them is a separate previewed and audited operation.</div>';
+}
+const outs = (i) => ({ 0: 'pending_vacancy_approval', 1: 'approved · returned · rejected', 2: 'hr_searching (creates positions)', 3: 'submitted (resubmit)', 4: '— terminal', 5: 'shortlisted · sent_for_candidate_approval', 6: 'sent_for_candidate_approval', 7: 'candidate_decision · hr_searching', 8: 'offer_in_progress · hr_searching · maybe', 9: 'hired · hr_searching', 10: '— terminal', 11: '— terminal' }[i] || '—');
+
+/* ---------------- facilities ---------------- */
+function facilities() {
+  document.getElementById('p-facilities').innerHTML =
+    '<div style="display:flex;gap:10px;align-items:center;margin-bottom:14px">' +
+    '<div class="sub" style="font-size:12.5px">Nine seeded records, editable configuration — never hard-coded into screens.</div>' +
+    '<button class="btn primary sm" style="margin-left:auto" onclick="YHUI.toast(\'Facility created · active immediately for new requests\')">' + YHUI.svg(YHUI.ICONS.plus, 14) + 'Add facility</button></div>' +
+    '<div class="card" style="overflow:hidden"><table class="reg"><thead><tr><th>Facility</th><th>Type</th><th>Open positions</th><th>Hired this FY</th><th>Requests all time</th><th>Status</th><th></th></tr></thead><tbody>' +
+    YH.facilities.map((f, i) => {
+      const ps = YH.positions.filter(p => p.facility === f.id);
+      const open = ps.filter(p => !['hired', 'closed_unfilled'].includes(p.status)).length;
+      const hired = ps.filter(p => p.status === 'hired').length;
+      const reqs = YH.requests.filter(r => r.facility === f.id).length;
+      const dead = i === 8;
+      return '<tr><td><div class="cell-main">' + f.name + '</div><div class="subrow" style="font-size:11.6px;color:var(--ink-3)">facility ' + f.id.toUpperCase() + ' · ' + (dead ? 'no historical records' : reqs + ' requests') + '</div></td>' +
+        '<td class="sub">' + f.kind + '</td>' +
+        '<td class="tnum">' + open + '</td><td class="tnum">' + hired + '</td><td class="tnum">' + reqs + '</td>' +
+        '<td>' + (dead ? '<span class="badge hold">inactive</span>' : '<span class="badge ok"><span class="dot"></span>active</span>') + '</td>' +
+        '<td class="nowrap"><button class="btn sm ghost" onclick="YHUI.toast(\'Rename is immediate and applies to history display\')">Rename</button>' +
+        '<button class="btn sm ghost" onclick="deactivate(\'' + f.id + '\',' + dead + ',' + reqs + ')">' + (dead ? 'Reactivate' : 'Deactivate') + '</button></td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    '<div class="notice warn" style="margin-top:16px;max-width:760px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Physical deletion is refused for referenced facilities.</b> Deactivation removes it from new-request pickers while keeping every historical position and approval readable.</div></div>';
+}
+function deactivate(id, dead, reqs) {
+  if (!dead && reqs > 0) return YHUI.toast('Blocked: ' + reqs + ' historical requests reference this facility. Deactivate instead of delete.');
+  YHUI.toast(dead ? 'Facility reactivated for new requests' : 'Facility deactivated · history preserved');
+}
+
+/* ---------------- legal ---------------- */
+const DOCS = [
+  ['Terms of Use', 'v1.0', 'draft', ['per-login', 're-ack on material change']],
+  ['Privacy Notice for Internal Users', 'v1.0', 'draft', ['first sign-in', 're-ack flagged']],
+  ['Candidate Privacy Notice', 'v1.2', 'published', ['HR records delivery', 'per candidate']],
+  ['Disclaimer', 'v1.0', 'draft', ['footer link']],
+  ['Acceptable Use &amp; Confidentiality Rules', 'v1.0', 'draft', ['request form checkbox']],
+  ['Data Retention and Deletion Summary', 'v0.9', 'draft', ['footer link']],
+  ['Privacy Request / Grievance Contact', '—', 'blocked', ['published everywhere']]
+];
+function legal() {
+  document.getElementById('p-legal').innerHTML =
+    '<div class="notice" style="max-width:860px;margin-bottom:18px">' + YHUI.svg(YHUI.ICONS.shield, 17) +
+    '<div><b>Publish gate active.</b> Six documents still need the verified legal entity name and a real grievance contact. The app will not ship placeholder contact details, and nothing here claims DPDP compliance — counsel sign-off is a separate checklist.</div></div>' +
+    '<div class="legal">' + DOCS.map(([n, v, st, how], i) =>
+      '<div class="ldoc"><div style="display:flex;gap:10px;align-items:flex-start">' +
+      '<div class="doc-ico">' + YHUI.svg(YHUI.ICONS.doc, 16) + '</div>' +
+      '<div style="flex:1"><div class="lname">' + n + '</div>' +
+      '<div class="lmeta"><span class="mono">' + v + '</span>' +
+      '<span class="badge ' + (st === 'published' ? 'ok' : st === 'blocked' ? 'risk' : 'warn') + '">' + st + '</span>' +
+      '<span>·</span><span>' + how.join(' · ') + '</span></div></div></div>' +
+      '<div style="display:flex;gap:6px;margin-top:12px">' +
+      '<button class="btn sm ghost" onclick="YHUI.toast(\'Version history kept · publishing v-new does not erase v-old\')">Versions</button>' +
+      '<button class="btn sm ghost" onclick="YHUI.toast(\'Acknowledgement records: who accepted which version, when, from which surface\')">Who acknowledged?</button>' +
+      (st === 'published' ? '' : '<button class="btn sm" onclick="YHUI.toast(\'Blocked until entity name and grievance contact are entered\')" disabled>Publish</button>') +
+      '</div></div>').join('') + '</div>' +
+    '<div class="card pad" style="margin-top:18px"><div class="section-head" style="margin:0 0 10px"><h2>Acknowledgement ledger</h2><span class="note">affirmative action only, never pre-ticked</span></div>' +
+    '<table class="reg"><thead><tr><th>User</th><th>Document</th><th>Version</th><th>Surface</th><th>Timestamp</th></tr></thead><tbody>' +
+    [['Deepak Sanghvi', 'Terms of Use', 'v0.9', 'first sign-in', '2026-10-02 09:14'],
+     ['Sneha Kale', 'Acceptable Use &amp; Confidentiality', 'v0.9', 'request form', '2026-10-05 17:02'],
+     ['Ranjit Bhandari', 'Privacy Notice for Internal Users', 'v0.8', 'first sign-in', '2026-09-28 11:41'],
+     ['Amit Zode', 'Terms of Use', 'v0.9', 'first sign-in', '2026-10-13 08:26']].map(r2 =>
+      '<tr><td class="cell-main">' + r2[0] + '</td><td class="sub">' + r2[1] + '</td><td class="mono">' + r2[2] + '</td><td class="sub">' + r2[3] + '</td><td class="mono">' + r2[4] + ' IST</td></tr>').join('') +
+    '</tbody></table></div>';
+}
+
+/* ---------------- privacy & retention ---------------- */
+function privacy() {
+  const unsucc = YH.positions.flatMap(p => p.cands).filter(c => c.status === 'rejected').length;
+  document.getElementById('p-privacy').innerHTML =
+    '<div class="section-head"><h2>Retention clock</h2><span class="note">configurable by outcome, never a fixed constant in code</span></div>' +
+    '<div class="ret reveal">' +
+    retTile('Unsuccessful candidates', '180 days', 'after final decision', unsucc + ' in queue') +
+    retTile('Hired recruitment record', '3 years', 'after joining date', '1 record') +
+    retTile('Audit events', '5 years', 'then archived, not deleted', YH.audit.length * 41 + ' events') +
+    retTile('Expired and awaiting deletion', '', 'deletion run is manual + audited', '<span style="color:var(--risk)">2 due</span>') +
+    '</div>' +
+    '<div class="grid2 section" style="display:grid;grid-template-columns:1.3fr 1fr;gap:18px;align-items:start">' +
+    '<div class="card" style="overflow:hidden"><table class="reg"><thead><tr><th>Candidate</th><th>Position</th><th>Outcome</th><th>Notice</th><th>Retention due</th><th></th></tr></thead><tbody>' +
+    YH.positions.flatMap(p => p.cands.map(c => ({ p, c }))).filter(x => x.c.status !== 'draft').map(({ p, c }) => {
+      const due = c.status === 'rejected' ? '2027-04-13' : c.status === 'approved' ? '2029-10-06' : '2027-04-30';
+      const soon = YH.days(due) < 0 && due < '2027-04-20';
+      return '<tr><td><div class="cell-main">' + YHUI.esc(c.name) + '</div><div class="subrow">' + c.city + ' · ' + (c.docs.length === 2 ? 'resume + photo' : c.docs.join(' + ')) + '</div></td>' +
+        '<td class="cell-id">' + p.number + '</td>' +
+        '<td>' + (c.status === 'rejected' ? '<span class="badge risk">rejected</span>' : c.status === 'approved' ? '<span class="badge ok">hired</span>' : '<span class="badge outline">in process</span>') + '</td>' +
+        '<td class="sub">' + (c.notice.given ? c.notice.version + ' ✓' : '<span class="badge risk">missing</span>') + '</td>' +
+        '<td><span class="mono">' + due + '</span>' + (soon ? '<div class="subrow" style="color:var(--risk)">in retention queue</div>' : '') + '</td>' +
+        '<td class="nowrap"><button class="btn sm ghost" onclick="openRecord()">Data record</button>' +
+        '<button class="btn sm ghost" onclick="YHUI.toast(\'Deletion requires a reason, removes active documents, and records the backup-expiry position\')">Delete</button></td></tr>';
+    }).join('') + '</tbody></table></div>' +
+    '<div><div class="card pad"><div class="section-head" style="margin:0 0 10px"><h2>Privacy requests</h2><span class="note">access · correction · erasure</span></div>' +
+    '<div class="kv"><span>Open</span><span class="mono">1</span></div>' +
+    '<div class="kv"><span>Received</span><span>Telephoned to Fursungi showroom, logged here</span></div>' +
+    '<div class="kv"><span>Assigned to</span><span>Sneha Kale</span></div>' +
+    '<div class="kv"><span>Target</span><span class="mono">candidate 4471</span></div>' +
+    '<div class="kv"><span>Statutory clock</span><span>set by counsel, not hard-coded</span></div>' +
+    '<div style="display:flex;gap:8px;margin-top:12px"><button class="btn sm" onclick="YHUI.toast(\'Correction applied as a new event; the original value stays in history\')">Log correction</button>' +
+    '<button class="btn sm danger" onclick="YHUI.toast(\'Erasure checked against legal retention duties; decision and reason recorded\')">Assess erasure</button></div></div>' +
+    '<div class="card pad" style="margin-top:14px"><div class="section-head" style="margin:0 0 10px"><h2>Incident register</h2></div>' +
+    '<div class="kv"><span>Open incidents</span><span class="mono">0</span></div>' +
+    '<div class="kv"><span>Last suspected exposure</span><span>Denied Finance resume view · contained</span></div>' +
+    '<div class="kv"><span>Notification assessment</span><span>Not required, no exfiltration</span></div>' +
+    '<div class="stacknote" style="margin-top:10px">Written procedure required before go-live. Who investigates and who decides on notifications must be named people, not roles.</div></div>' +
+    '<div class="card pad" style="margin-top:14px"><div class="section-head" style="margin:0 0 10px"><h2>Processors</h2></div>' +
+    ['Supabase (database, auth, private storage) · region ap-south-1', 'Vercel (application hosting)', 'No email provider in v1', 'No analytics on candidate data', 'No AI or resume parsing, by design'].map(x =>
+      '<div class="kv"><span>' + x.split(' · ')[0] + '</span><span style="text-align:right;font-size:11.8px">' + (x.split(' · ')[1] || '—') + '</span></div>').join('') +
+    '<div class="notice warn" style="margin-top:12px">' + YHUI.svg(YHUI.ICONS.shield, 15) + '<div>Processing agreement, subprocessor list and backup location still need review per §5.5 of the master document.</div></div></div>' +
+    '</div></div>';
+}
+function retTile(k, v, sub, foot) {
+  return '<div><div class="k">' + k + '</div>' +
+    '<div class="v">' + (v || '—') + '</div><div class="s">' + sub + '</div>' +
+    '<div class="s">' + foot + '</div></div>';
+}
+function openRecord() {
+  YHUI.openDrawer('<div class="drawer-head"><div style="flex:1"><div class="crumb">Subject access response</div><h3>What this system holds</h3></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body"><div class="stacknote">Name · city · phone · email · resume file · photograph · HR note · proposed compensation · position link · decision and date · notice-delivery record · retention due date.</div>' +
+    '<div class="notice info" style="margin-top:14px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Not collected:</b> Aadhaar, PAN, bank details, home address, date of birth, family details. No automated scoring, no appearance analysis, no inference of protected characteristics.</div></div>' +
+    '<div class="section-head" style="margin-top:18px"><h2>Access history for this person</h2></div>' +
+    '<div class="timeline">' + [['2026-10-14', 'Resume opened', 'Sneha Kale (HR Team)'], ['2026-10-13', 'Resume + photo downloaded', 'Ranjit Bhandari (CEO)'], ['2026-10-05', 'Record created', 'Sneha Kale (HR Team)']]
+      .map(([d, w, who]) => '<div class="tl-item key"><div class="tl-what">' + w + '</div><div class="tl-meta"><span>' + who + '</span><span>·</span><span>' + YHUI.date(d) + '</span></div></div>').join('') + '</div>' +
+    '</div><div class="drawer-foot"><button class="btn" data-close>Close</button>' +
+    '<button class="btn dark" onclick="YHUI.toast(\'Portable copy prepared for the verified subject, export logged\')">Prepare copy</button></div>');
+}
+
+/* ---------------- audit ---------------- */
+const CATS = ['all', 'business', 'config', 'security', 'privacy', 'operational', 'export'];
+let cat = 'all', lq = '';
+function audit() {
+  document.getElementById('p-audit').innerHTML =
+    '<div class="ret reveal" style="margin-bottom:16px">' +
+    retTile('Recent errors', '3', 'last 7 days', '<span style="color:var(--risk)">1 unresolved</span>') +
+    retTile('Failed uploads', '1', 'rejected at validation', 'wrong content type') +
+    retTile('Security events', '2', 'denied access attempts', 'both blocked') +
+    retTile('Backup / restore', '✓', 'last verified 13 Oct', 'RTO 11 min') +
+    '</div>' +
+    '<div class="logfilter">' + CATS.map(c => '<button class="chip' + (c === 'all' ? ' on' : '') + '" data-c="' + c + '" onclick="setCat(\'' + c + '\')">' + c + '</button>').join('') +
+    '<div class="search" style="position:relative;margin-left:auto;max-width:260px">' + YHUI.svg(YHUI.ICONS.search, 15) +
+    '<input class="input" id="lq" style="padding-left:34px" placeholder="Event, actor, request ID…"></div>' +
+    '<button class="btn sm" onclick="YHUI.toast(\'Log export requires a reason and is itself logged\')">Export</button></div>' +
+    '<div class="card" style="overflow:hidden"><div style="display:grid;grid-template-columns:132px 108px 1fr 1.5fr auto;gap:14px;padding:9px 14px;background:var(--surface-alt);border-bottom:1px solid var(--line);font-size:10.8px;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)">' +
+    '<div>Timestamp</div><div>Category</div><div>Actor</div><div>Action / target</div><div>Outcome</div></div><div id="logs"></div></div>' +
+    '<div class="notice info" style="margin-top:16px;max-width:860px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+    '<div><b>Append-only.</b> Neither Admin nor any role can edit or erase an entry — corrections are new events referencing the original. Passwords, tokens, API keys, resume contents, photographs and full candidate contact details are never written into this log. ' +
+    'Correlation IDs replace stack traces in user-facing errors.</div></div>';
+  document.getElementById('lq').oninput = (e) => { lq = e.target.value.toLowerCase(); logs(); };
+  logs();
+}
+function setCat(c) { cat = c; document.querySelectorAll('[data-c]').forEach(b => b.classList.toggle('on', b.dataset.c === c)); logs(); }
+function logs() {
+  const rows = YH.audit.filter(a => (cat === 'all' || a.cat === cat) &&
+    (!lq || (a.action + a.target + a.who + a.detail).toLowerCase().includes(lq)));
+  document.getElementById('logs').innerHTML = rows.length ? rows.map(a =>
+    '<div class="logrow"><span class="mono">' + a.at + '</span>' +
+    '<span class="badge ' + (a.cat === 'security' ? 'risk' : a.cat === 'config' ? 'hold' : a.cat === 'privacy' ? 'info' : a.cat === 'operational' ? 'warn' : 'outline') + '"><span class="dot"></span>' + a.cat + '</span>' +
+    '<span class="cell-main">' + YHUI.esc(a.who) + '</span>' +
+    '<span><div>' + YHUI.esc(a.action) + '</div><div class="cell-id" style="margin-top:2px">' + YHUI.esc(a.target) + '</div>' +
+    (a.detail ? '<div class="subrow" style="font-size:11.5px">' + YHUI.esc(a.detail) + '</div>' : '') + '</span>' +
+    '<span class="badge ' + (a.outcome === 'blocked' ? 'risk' : a.outcome === 'retried' ? 'warn' : 'ok') + '">' + a.outcome + '</span></div>').join('')
+    : '<div style="text-align:center;padding:44px"><div class="cell-main">No events match</div><div class="sub" style="margin-top:4px">Widen the category or date range. A quiet log is not an empty system.</div></div>';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dashboard · Yash Honda Vacancy &amp; Hiring Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  /* ---- hero band: asymmetric, no equal-card trio ---- */
+  .hero { display: grid; grid-template-columns: 1.65fr 1fr; gap: 16px; align-items: stretch; }
+  .queue {
+    background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-lg);
+    padding: 20px 22px; box-shadow: var(--shadow); position: relative; overflow: hidden;
+  }
+  .queue::after {
+    content: ''; position: absolute; right: -60px; top: -60px; width: 190px; height: 190px;
+    border-radius: 50%; background: radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 70%);
+    pointer-events: none;
+  }
+  .queue h2 { font-size: 15px; font-weight: 600; margin: 0; letter-spacing: -.01em; }
+  .qmeta { font-size: 12px; color: var(--ink-3); margin-top: 3px; }
+  .qrow {
+    display: grid; grid-template-columns: 1fr auto; gap: 4px 14px; align-items: center;
+    padding: 11px 0; border-top: 1px solid var(--line-soft); cursor: pointer;
+    transition: padding-left .18s cubic-bezier(.16,1,.3,1);
+  }
+  .qrow:hover { padding-left: 6px; }
+  .qrow:hover .qtitle { color: var(--accent-ink); }
+  .qtype { font-size: 10.5px; text-transform: uppercase; letter-spacing: .08em; color: var(--ink-3); }
+  .qtitle { font-size: 13.6px; font-weight: 500; letter-spacing: -.01em; }
+  .qsub { font-size: 11.8px; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .qright { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+  .qopen { font-size: 12px; color: var(--accent); font-weight: 500; display: inline-flex; align-items: center; gap: 4px; opacity: 0; transition: opacity .18s, transform .18s; transform: translateX(-4px); }
+  .qrow:hover .qopen { opacity: 1; transform: none; }
+
+  /* snapshot panel with monospace ledger rows */
+  .snap { background: var(--ink); color: #EDEEF0; border-radius: var(--r-lg); padding: 20px 22px; display: flex; flex-direction: column; }
+  .snap h2 { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; margin: 0; color: #9AA3AE; font-weight: 500; }
+  .snap .big { font-family: var(--font-mono); font-size: 42px; letter-spacing: -.05em; line-height: 1; margin: 14px 0 4px; }
+  .snap .big i { font-style: normal; font-size: 15px; color: #9AA3AE; letter-spacing: 0; }
+  .srow { display: flex; justify-content: space-between; gap: 10px; padding: 9px 0; border-top: 1px solid rgba(255,255,255,.09); font-size: 12.5px; }
+  .srow span:last-child { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .spark { display: flex; align-items: flex-end; gap: 3px; height: 34px; margin-top: auto; padding-top: 14px; }
+  .spark i { flex: 1; background: #3E6C9C; border-radius: 2px 2px 0 0; transition: height .5s cubic-bezier(.16,1,.3,1); }
+  .spark i.hi { background: #6FA7DE; }
+  .spark i:last-child { background: #C98A4B; }
+
+  /* ---- metric ledger: fractional grid, no boxed tiles ---- */
+  .ledger { display: grid; grid-template-columns: repeat(12, 1fr); gap: 0; border: 1px solid var(--line); border-radius: var(--r-lg); background: var(--surface); overflow: hidden; }
+  .metric { grid-column: span 3; padding: 16px 18px; border-right: 1px solid var(--line-soft); border-bottom: 1px solid var(--line-soft); cursor: pointer; position: relative; transition: background .16s; }
+  .metric:hover { background: var(--surface-alt); }
+  .metric:hover .mnum { color: var(--accent-ink); }
+  .metric:nth-child(4n) { border-right: 0; }
+  .metric:nth-last-child(-n+4) { border-bottom: 0; }
+  .metric.wide { grid-column: span 4; }
+  .mname { font-size: 11.5px; color: var(--ink-2); display: flex; align-items: center; gap: 6px; }
+  .mnum { font-family: var(--font-mono); font-size: 30px; font-weight: 500; letter-spacing: -.045em; line-height: 1.15; margin-top: 6px; transition: color .16s; }
+  .mfoot { font-size: 11.5px; color: var(--ink-3); margin-top: 2px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .mfoot b { font-weight: 600; }
+  .munit { font-size: 10.5px; text-transform: uppercase; letter-spacing: .07em; color: var(--ink-3); }
+
+  /* ---- stage pipeline ---- */
+  .pipe { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 2px; border-radius: var(--r-lg); overflow: hidden; border: 1px solid var(--line); background: var(--line); }
+  .stage { background: var(--surface); padding: 14px 14px 16px; cursor: pointer; transition: background .18s; position: relative; }
+  .stage:hover { background: var(--accent-soft); }
+  .st-name { font-size: 11.5px; color: var(--ink-2); min-height: 32px; }
+  .st-num { font-family: var(--font-mono); font-size: 22px; font-weight: 500; letter-spacing: -.04em; }
+  .st-bar { height: 4px; border-radius: 2px; background: var(--line); margin-top: 10px; overflow: hidden; }
+  .st-bar i { display: block; height: 100%; background: var(--accent); border-radius: 2px; transition: width .7s cubic-bezier(.16,1,.3,1); }
+  .st-hold i { background: var(--warn); }
+
+  /* ---- facility table ---- */
+  .fbar { display: flex; align-items: center; gap: 8px; }
+  .fbar .track { flex: 1; height: 6px; background: var(--neutral-soft); border-radius: 3px; overflow: hidden; display: flex; }
+  .fbar .track i { height: 100%; }
+  .legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-2); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .legend b { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+  .kpi { display: inline-flex; align-items: baseline; gap: 5px; }
+  .kpi em { font-style: normal; font-family: var(--font-mono); font-size: 12px; color: var(--ink-3); }
+
+  /* ---- drill-down drawer ---- */
+  .ddrow { display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+  .ddrow:last-child { border-bottom: 0; }
+  .ddrow:hover .ddlink { opacity: 1; }
+  .ddlink { font-size: 11.8px; color: var(--accent); opacity: 0; transition: opacity .16s; display: inline-flex; align-items: center; gap: 4px; }
+  .sumline { display: flex; gap: 18px; flex-wrap: wrap; padding: 12px 14px; background: var(--surface-alt); border: 1px solid var(--line-soft); border-radius: var(--r-md); font-size: 12px; color: var(--ink-2); }
+  .sumline b { font-family: var(--font-mono); color: var(--ink); }
+  @media (max-width: 1200px) { .hero { grid-template-columns: 1fr; } .metric { grid-column: span 4; } .metric:nth-child(4n) { border-right: 1px solid var(--line-soft); } }
+  @media (max-width: 760px) { .ledger { grid-template-columns: 1fr; } .metric, .metric.wide { grid-column: span 1; border-right: 0; } .pipe { grid-auto-flow: row; grid-auto-columns: auto; } }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+YHUI.shell('dashboard', 'Hiring overview');
+const el = document.getElementById('content');
+const M = YH.metrics();
+const viewer = YH.usr(YHUI.getViewer());
+const myTasks = YH.tasks(YHUI.getViewer());
+const overdue = M.overdue.rows;
+
+// ---------------------------------------------------------------- hero band
+const openCount = M.open_positions.rows.length;
+const hired = M.hired.rows.length;
+const filled = Math.round((hired / (hired + openCount + M.closed.rows.length)) * 100);
+
+const queueRows = myTasks.slice(0, 4).map(t =>
+  '<div class="qrow" onclick="YHUI.closeAll();location.href=\'my-actions.html\'">' +
+  '<div><div class="qtype">' + t.type + '</div>' +
+  '<div class="qtitle">' + YHUI.esc(t.title) + '</div>' +
+  '<div class="qsub"><span class="cell-id">' + t.ref + '</span><span>·</span><span>' + t.facility + '</span><span>·</span>' +
+  YHUI.ageTag(ageRef(t), t.sla) + '</div></div>' +
+  '<div class="qright"><span class="qopen">Open ' + YHUI.svg(YHUI.ICONS.arr, 13) + '</span></div></div>').join('');
+
+el.innerHTML =
+  '<div class="hero">' +
+    '<section class="queue reveal">' +
+      '<div style="display:flex;align-items:baseline;gap:10px">' +
+        '<h2>Waiting on ' + viewer.name.split(' ')[0] + '</h2>' +
+        '<span class="badge ' + (myTasks.length ? 'warn' : 'ok') + '">' + myTasks.length + ' actions</span>' +
+        '<span style="margin-left:auto" class="qmeta">' + (overdue.length ? '<b style="color:var(--risk)">' + overdue.length + ' overdue</b> · ' : 'none overdue · ') + YH.FY.label + '</span>' +
+      '</div>' +
+      (myTasks.length ? queueRows :
+        '<div style="padding:34px 0;text-align:center"><div class="qtitle">Queue clear</div><div class="qsub" style="justify-content:center">Nothing needs your decision right now.</div></div>') +
+      (myTasks.length > 4 ? '<div style="padding-top:12px;border-top:1px solid var(--line-soft);display:flex;align-items:center;gap:8px">' +
+        '<a class="btn sm" href="my-actions.html">See all ' + myTasks.length + ' actions' + YHUI.svg(YHUI.ICONS.arr, 13) + '</a>' +
+        '<span class="qmeta">' + (myTasks.length - 4) + ' more</span></div>' : '') +
+    '</section>' +
+    '<section class="snap reveal d1">' +
+      '<h2>Position ledger</h2>' +
+      '<div class="big">' + openCount + ' <i>open</i></div>' +
+      '<div class="qmeta" style="color:#9AA3AE">of ' + YH.positions.length + ' position records created this FY</div>' +
+      '<div style="margin-top:14px">' +
+        srow('Approved headcount', YH.positions.filter(p => p.status !== 'cancelled').length) +
+        srow('Hired &amp; joined', hired) +
+        srow('Awaiting decision', M.pending_candidate.rows.length + M.pending_vacancy.rows.length) +
+        srow('On hold', M.on_hold.rows.length) +
+        srow('Fulfilment rate', filled + '%') +
+      '</div>' +
+      '<div class="spark" title="Positions opened per week, last 9 weeks">' + sparkBars() + '</div>' +
+      '<div class="qmeta" style="color:#7A828C;margin-top:6px">Weekly position openings · synthetic demo</div>' +
+    '</section>' +
+  '</div>';
+
+const ageRef = (t) => {
+  const p = YH.positions.find(x => x.number === t.ref);
+  if (p) return p.stageOn;
+  const r = YH.requests.find(x => x.number === t.ref);
+  return r ? r.submittedAt : YH.TODAY.toISOString().slice(0, 10);
+};
+function srow(k, v) { return '<div class="srow"><span>' + k + '</span><span>' + v + '</span></div>'; }
+function sparkBars() {
+  const vals = [4, 7, 5, 11, 9, 6, 13, 8, 12];
+  const max = Math.max.apply(null, vals);
+  return vals.map((v, i) => '<i class="' + (i === 6 ? 'hi' : '') + '" style="height:' + Math.round((v / max) * 34) + 'px" title="' + v + ' positions"></i>').join('');
+}
+
+// ---------------------------------------------------------------- metric ledger
+const order = ['pending_vacancy', 'pending_candidate', 'open_positions', 'on_hold', 'shortlisted', 'hired', 'closed', 'overdue'];
+const extra = {
+  pending_vacancy: () => 'oldest ' + oldest(M.pending_vacancy.rows, 'submittedAt') + ' · approver Owner/CEO',
+  pending_candidate: () => 'across ' + uniqFac(M.pending_candidate.rows) + ' facilities',
+  open_positions: () => '<b>' + YH.positions.filter(p => !YH.isHold(p) && p.status === 'hr_searching').length + ' searching</b> · ' + uniqFac(M.open_positions.rows) + ' facilities',
+  on_hold: () => 'reason recorded on every hold',
+  shortlisted: () => 'includes maybe / further review',
+  hired: () => 'by actual joining date',
+  closed: () => 'closed unfilled or cancelled',
+  overdue: () => 'SLA breaches need a named owner'
+};
+el.insertAdjacentHTML('beforeend',
+  '<div class="section"><div class="section-head"><h2>Counts</h2>' +
+  '<span class="note">Headcount tiles count <b>position records</b>. Approval tiles count <b>request records</b>. Click any tile for the filtered list.</span>' +
+  '<span class="right"><button class="chip on">All facilities</button>' +
+  YH.facilities.slice(0, 3).map(f => '<button class="chip">' + f.name.split(' ')[0] + '</button>').join('') + '</span></div>' +
+  '<div class="ledger reveal d2">' + order.map(k => {
+    const m = M[k];
+    return '<div class="metric" onclick="drill(\'' + k + '\')">' +
+      '<div class="mname">' + m.title +
+      '<span class="munit" style="margin-left:auto">' + m.unit + '</span></div>' +
+      '<div class="mnum">' + m.rows.length + '</div>' +
+      '<div class="mfoot">' + extra[k]() + '</div></div>';
+  }).join('') + '</div></div>');
+
+const oldest = (rows, key) => {
+  if (!rows.length) return '—';
+  return Math.max.apply(null, rows.map(r => YH.days(r[key]))) + 'd';
+};
+const uniqFac = (rows) => new Set(rows.map(r => r.facility || r.fac)).size;
+
+// ---------------------------------------------------------------- pipeline
+const stages = [
+  ['hr_searching', 'HR searching'], ['shortlisted', 'Shortlisted'], ['sent_for_approval', 'Sent for approval'],
+  ['maybe_further_review', 'Maybe / review'], ['offer_in_progress', 'Offer in progress'], ['hired', 'Hired'], ['closed_unfilled', 'Closed unfilled']
+];
+const counts = stages.map(([k]) => YH.positions.filter(p => p.status === k).length);
+const maxc = Math.max.apply(null, counts.concat([1]));
+el.insertAdjacentHTML('beforeend',
+  '<div class="section"><div class="section-head"><h2>Where hiring is stuck</h2>' +
+  '<span class="note">Position records by current stage, all facilities, ' + YH.FY.label + '</span></div>' +
+  '<div class="pipe reveal d3">' + stages.map(([k, label], i) => {
+    const c = counts[i];
+    return '<div class="stage' + (k === 'hr_searching' ? ' st-hold' : '') + '" onclick="drillStage(\'' + k + '\',\'' + label + '\')">' +
+      '<div class="st-name">' + label + '</div><div class="st-num">' + c + '</div>' +
+      '<div class="st-bar"><i style="width:' + Math.round((c / maxc) * 100) + '%"></i></div></div>';
+  }).join('') + '</div></div>');
+
+// ---------------------------------------------------------------- ageing + facility
+el.insertAdjacentHTML('beforeend',
+  '<div class="section" style="display:grid;grid-template-columns:1.25fr 1fr;gap:16px;align-items:start">' +
+    '<div><div class="section-head"><h2>Ageing &amp; overdue</h2><span class="note">Stage clock excludes time on hold</span></div>' +
+    '<div class="card reveal d4" style="overflow:hidden"><table class="reg"><thead><tr>' +
+    '<th>Task</th><th>Record</th><th>Facility</th><th>Waiting</th></tr></thead><tbody>' +
+    (overdue.length ? overdue.map(o =>
+      '<tr onclick="drillRow(\'' + o.ref + '\')" style="cursor:pointer"><td><span class="badge risk"><span class="dot"></span>' + o.kind + '</span></td>' +
+      '<td class="cell-id">' + o.ref + '</td><td class="sub">' + o.facility + '</td>' +
+      '<td><div class="age risk"><span class="bar"><i style="width:100%"></i></span><span class="tnum">' + o.age + 'd</span> · ' + o.why + '</div></td></tr>').join('')
+      : '<tr><td colspan="4" style="padding:26px;text-align:center;color:var(--ink-3)">No SLA breaches in this period.</td></tr>') +
+    '</tbody></table></div>' +
+    '<div class="section-head" style="margin-top:22px"><h2>Recent activity</h2><span class="note">append-only event log</span></div>' +
+    '<div class="card pad reveal d5"><div class="timeline">' + YH.audit.slice(0, 5).map(a =>
+      '<div class="tl-item ' + catCls(a.cat) + '"><div class="tl-what">' + YHUI.esc(a.action) + '</div>' +
+      '<div class="tl-meta"><span class="cell-id">' + YHUI.esc(a.target) + '</span><span>·</span><span>' + a.who + '</span><span>·</span><span class="mono">' + a.at + ' IST</span>' +
+      '<span class="badge ' + (a.outcome === 'blocked' ? 'risk' : a.outcome === 'retried' ? 'warn' : '') + '">' + a.outcome + '</span></div>' +
+      (a.detail ? '<div class="tl-note">' + YHUI.esc(a.detail) + '</div>' : '') + '</div>').join('') + '</div></div></div>' +
+
+    '<div><div class="section-head"><h2>Facility breakdown</h2><span class="note">' + YH.FY.label + '</span></div>' +
+    '<div class="card pad reveal d4">' +
+    '<div class="legend" style="margin-bottom:14px">' +
+    '<span><b style="background:var(--accent)"></b>Open</span><span><b style="background:var(--warn)"></b>On hold</span>' +
+    '<span><b style="background:var(--ok)"></b>Hired</span><span><b style="background:var(--risk)"></b>Overdue</span></div>' +
+    YH.facilities.map(f => {
+      const ps = YH.positions.filter(p => p.facility === f.id);
+      const op = ps.filter(p => !['hired', 'closed_unfilled'].includes(p.status) && !YH.isHold(p)).length;
+      const hd = ps.filter(YH.isHold).length, hi = ps.filter(p => p.status === 'hired').length;
+      const ov = ps.filter(p => p.status === 'sent_for_approval' && YH.days(p.stageOn) > 3).length;
+      const tot = Math.max(op + hd + hi + ov, 1);
+      return '<div class="fbar" style="padding:9px 0;border-top:1px solid var(--line-soft)">' +
+        '<div style="width:132px;font-size:12.5px">' + f.name + '</div>' +
+        '<div class="track">' +
+        seg(op, tot, 'var(--accent)') + seg(hd, tot, 'var(--warn)') + seg(hi, tot, 'var(--ok)') + seg(ov, tot, 'var(--risk)') + '</div>' +
+        '<div class="kpi" style="width:44px;justify-content:flex-end"><span class="tnum">' + ps.length + '</span><em>pos</em></div></div>';
+    }).join('') +
+    '<div class="notice info" style="margin-top:14px">' + YHUI.svg(YHUI.ICONS.shield, 15) +
+    '<div>Facility list is editable configuration. Deactivating a facility never removes its historical positions.</div></div>' +
+    '</div></div></div>');
+
+const seg = (n, tot, color) => n ? '<i style="width:' + ((n / tot) * 100) + '%;background:' + color + '" title="' + n + '"></i>' : '';
+const catCls = (c) => ({ security: 'riskev', privacy: 'key', config: 'hold', business: 'decision' }[c] || '');
+
+// ---------------------------------------------------------------- drill-down
+function drillRows(rows) {
+  return rows.map(r => {
+    const facName = r.fac ? YHUI.fac(r.fac) : (typeof r.facility === 'string' && r.facility.indexOf(' ') > -1 ? r.facility : YHUI.fac(r.facility));
+    const ref = r.number || r.ref;
+    if (r.kind) { // task-shaped overdue row
+      return '<div class="ddrow"><div><div class="qtitle">' + YHUI.esc(r.title) + '</div>' +
+        '<div class="qsub"><span class="badge risk">' + r.kind + '</span><span class="cell-id">' + ref + '</span><span>·</span><span>' + facName + '</span></div>' +
+        '<div class="qsub">' + r.why + '</div></div>' +
+        '<div style="text-align:right"><div class="age risk"><span class="bar"><i style="width:100%"></i></span><span class="tnum">' + r.age + 'd</span></div>' +
+        '<div class="ddlink">Open record ' + YHUI.svg(YHUI.ICONS.arr, 12) + '</div></div></div>';
+    }
+    const isPos = !!r.req;
+    const req = isPos ? YH.requests.find(x => x.number === r.req) : r;
+    const name = isPos ? (req ? req.title : r.title) : r.title;
+    const cands = isPos ? (r.cands || []) : [];
+    return '<div class="ddrow"><div><div class="qtitle">' + YHUI.esc(name) + '</div>' +
+      '<div class="qsub"><span class="cell-id">' + ref + '</span><span>·</span><span>' + facName + '</span><span>·</span>' + YHUI.badge(r.status) +
+      (YH.isHold(r) ? '<span>·</span><span class="badge hold">held by ' + r.holdBy + '</span>' : '') +
+      (cands.length ? '<span>·</span><span>' + cands.length + ' candidate' + (cands.length > 1 ? 's' : '') + '</span>' : '') + '</div></div>' +
+      '<div style="text-align:right">' + (isPos ? YHUI.ageTag(r.stageOn, 14) : YHUI.ageTag(r.submittedAt, 5)) +
+      '<div class="ddlink">Open record ' + YHUI.svg(YHUI.ICONS.arr, 12) + '</div></div></div>';
+  }).join('');
+}
+function drill(key) {
+  const m = M[key];
+  const facs = new Set(m.rows.map(r => r.fac || r.facility));
+  const ages = m.rows.map(r => r.age != null ? r.age : YH.days(r.stageOn || r.submittedAt)).filter(n => !isNaN(n));
+  const actionable = m.rows.filter(r => r.kind || r.status === 'sent_for_approval' || r.status === 'pending').length;
+  YHUI.openDrawer(
+    '<div class="drawer-head"><div style="flex:1"><div class="crumb">Drill-down · count matches the tile exactly</div>' +
+    '<h3>' + m.title + '</h3><div class="qsub" style="margin-top:6px">' +
+    '<span class="badge info">' + m.rows.length + ' ' + m.unit + '</span>' +
+    '<span>period ' + YH.FY.label + '</span><span>·</span><span>permission-filtered for ' + viewer.role + '</span></div></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body">' +
+    '<div class="sumline"><span>Facilities <b>' + (facs.size || 0) + '</b></span>' +
+    '<span>Oldest <b>' + (ages.length ? Math.max.apply(null, ages) : 0) + 'd</b></span>' +
+    '<span>Needs action <b>' + actionable + '</b></span></div>' +
+    (m.rows.length ? drillRows(m.rows, m.unit) :
+      '<div style="text-align:center;padding:48px 20px"><div class="qtitle">Nothing in this bucket</div>' +
+      '<div class="qsub" style="justify-content:center">Counts stay at zero rather than falling back to "all records".</div></div>') +
+    '</div><div class="drawer-foot"><button class="btn" data-close>Close</button>' +
+    '<button class="btn dark sm" onclick="YHUI.toast(\'Export queued · logged with your name and filter set\')">' +
+    YHUI.svg(YHUI.ICONS.doc, 14) + ' Export these ' + m.rows.length + ' ' + m.unit + '</button></div>');
+}
+function drillStage(k, label) {
+  const rows = YH.positions.filter(p => p.status === k);
+  drill({ title: label + ' · positions', unit: 'positions', rows: rows });
+}
+function drillRow(ref) { location.href = 'request-detail.html?pos=' + ref; }
+el.insertAdjacentHTML('beforeend',
+  '<div class="section"><div class="notice">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+  '<div><strong>Prototype data is synthetic.</strong> No real candidate names, resumes, photographs or contact details are used in this design pass. ' +
+  'Live candidate records only enter the system after the privacy notice, retention schedule and restore test are signed off.</div></div></div>');
+</script>
+</body>
+</html>

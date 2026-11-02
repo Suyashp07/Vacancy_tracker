@@ -1,0 +1,451 @@
+/*
+ * Dashboard — the "Executive Hiring Command" screen.
+ * Premium light bento: frosted glass panels over the ambient stage, an
+ * Instrument-Serif hero, JetBrains-Mono metrics, hairline framing instead of
+ * solid fills, and staggered fluid reveals. Shared atoms live in globals.css.
+ */
+
+/* ---- hero command band ---- */
+.dash-hero {
+  position: relative;
+  overflow: hidden;
+  padding: 24px 26px 22px;
+  border-radius: var(--r-lg);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(16px) saturate(1.45);
+  backdrop-filter: blur(16px) saturate(1.45);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--shadow-glass);
+}
+.dash-hero::before {
+  /* prismatic top edge catch-light */
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(47, 93, 140, 0.4), rgba(14, 165, 233, 0.28), transparent);
+}
+.dash-hero::after {
+  /* soft corner bloom */
+  content: '';
+  position: absolute;
+  right: -80px;
+  top: -110px;
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, var(--accent-soft), transparent 68%);
+  pointer-events: none;
+}
+.dash-hero-top {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.dash-title {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(30px, 4.4vw, 42px);
+  line-height: 1.02;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  margin-top: 6px;
+}
+.dash-title em {
+  font-style: italic;
+  color: var(--accent-ink);
+}
+.dash-greet {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  margin-top: 8px;
+  max-width: 74ch;
+  line-height: 1.55;
+}
+.dash-hero-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.live-clock {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: var(--ink-2);
+  letter-spacing: 0.02em;
+}
+.live-clock .mono {
+  color: var(--ink);
+  font-weight: 500;
+}
+.live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent);
+  animation: livepulse 2.4s var(--ease) infinite;
+}
+@keyframes livepulse {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--ok) 55%, transparent);
+  }
+  70% {
+    box-shadow: 0 0 0 7px color-mix(in srgb, var(--ok) 0%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+/* ---- headline stat strip ---- */
+.stat-strip {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-top: 20px;
+}
+.stat {
+  display: block;
+  padding: 14px 16px;
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--glass-brd);
+  transition:
+    transform 0.3s var(--ease),
+    box-shadow 0.3s var(--ease),
+    border-color 0.2s ease;
+}
+a.stat:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--glass-brd));
+  box-shadow: var(--shadow-lift);
+}
+.stat-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-3);
+}
+.stat-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 30px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+  line-height: 1.1;
+  margin-top: 6px;
+  color: var(--ink);
+}
+.stat-num small {
+  font-size: 13px;
+  color: var(--ink-3);
+  margin-left: 5px;
+  letter-spacing: 0;
+}
+.stat.alert .stat-num {
+  color: var(--risk);
+}
+.stat.wait .stat-num {
+  color: var(--warn);
+}
+
+/* two-column work band: the queue beside the stall list */
+.dashgrid {
+  display: grid;
+  grid-template-columns: 1.05fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: start;
+}
+
+/* These panels are rendered inside frosted .card elements, so they add only
+   inner layout here and let the card supply the glass, border and radius. */
+.queue,
+.snap,
+.facilities,
+.activity {
+  position: relative;
+  overflow: hidden;
+  padding: 18px 20px 14px;
+}
+.queue::after {
+  content: '';
+  position: absolute;
+  right: -60px;
+  top: -60px;
+  width: 190px;
+  height: 190px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--accent-soft), transparent 70%);
+  pointer-events: none;
+}
+.qbody {
+  margin-top: 6px;
+  position: relative;
+  z-index: 1;
+}
+.qrow {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 4px 14px;
+  align-items: center;
+  padding: 11px 0;
+  border-top: 1px solid var(--line-soft);
+  cursor: pointer;
+  transition: padding-left 0.22s var(--ease);
+}
+.qrow:hover {
+  padding-left: 6px;
+}
+.qrow:hover .qtitle {
+  color: var(--accent-ink);
+}
+.qrow.overdue {
+  box-shadow: inset 3px 0 0 var(--risk);
+  padding-left: 9px;
+}
+.qrow.warning {
+  box-shadow: inset 3px 0 0 var(--warn);
+  padding-left: 9px;
+}
+.qtype {
+  grid-column: 1;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-3);
+}
+.qtitle {
+  grid-column: 1;
+  grid-row: 2;
+  font-size: 13.6px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.qsub {
+  font-size: 11.8px;
+  color: var(--ink-3);
+  font-weight: 400;
+}
+.qright {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+}
+
+/* ---- stalled positions panel ---- */
+.snap {
+  display: flex;
+  flex-direction: column;
+}
+.snap table.reg {
+  border: 0;
+}
+.snap table.reg th {
+  border-top: 0;
+}
+
+/* ---- stage pipeline ---- */
+.pipe {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 1fr;
+  gap: 10px;
+}
+.stage {
+  position: relative;
+  padding: 15px 15px 16px;
+  cursor: pointer;
+  border-radius: var(--r-md);
+  background: var(--glass);
+  -webkit-backdrop-filter: blur(12px) saturate(1.35);
+  backdrop-filter: blur(12px) saturate(1.35);
+  border: 1px solid var(--glass-brd);
+  box-shadow: var(--shadow-glass);
+  overflow: hidden;
+  transition:
+    transform 0.28s var(--ease),
+    box-shadow 0.28s var(--ease),
+    border-color 0.2s ease;
+}
+.stage:hover {
+  transform: translateY(-2px);
+  border-color: color-mix(in srgb, var(--accent) 30%, var(--glass-brd));
+  box-shadow: var(--shadow-glass), var(--shadow-lift);
+}
+.st-name {
+  font-size: 11.5px;
+  color: var(--ink-2);
+  min-height: 32px;
+}
+.st-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  font-weight: 500;
+  letter-spacing: -0.045em;
+}
+.st-bar {
+  height: 4px;
+  border-radius: 2px;
+  background: var(--neutral-soft);
+  margin-top: 10px;
+  overflow: hidden;
+}
+.st-bar i {
+  display: block;
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #0ea5e9));
+  border-radius: 2px;
+  transition: width 0.8s var(--ease);
+}
+.st-hold .st-bar i {
+  background: linear-gradient(90deg, var(--warn), color-mix(in srgb, var(--warn) 50%, #f59e0b));
+}
+
+/* ---- facility network load ---- */
+.netload {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+.fbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 9px 0;
+  border-top: 1px solid var(--line-soft);
+}
+.fbar:first-child {
+  border-top: 0;
+}
+.frank {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-3);
+  width: 18px;
+  flex: none;
+}
+.fbar .fname {
+  width: 30%;
+  font-size: 12.8px;
+  color: var(--ink);
+  font-weight: 500;
+  flex: none;
+  letter-spacing: -0.01em;
+}
+.fbar .track {
+  flex: 1;
+  height: 6px;
+  background: var(--neutral-soft);
+  border-radius: 3px;
+  overflow: hidden;
+  display: flex;
+}
+.fbar .track i {
+  height: 100%;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 50%, #0ea5e9));
+  transition: width 0.8s var(--ease);
+}
+.fbar .track.risk i {
+  background: linear-gradient(90deg, var(--risk), color-mix(in srgb, var(--risk) 45%, #dc2626));
+}
+.fbar .track.warn i {
+  background: linear-gradient(90deg, var(--warn), color-mix(in srgb, var(--warn) 45%, #f59e0b));
+}
+.fbar .fval {
+  font-family: var(--font-mono);
+  width: 30px;
+  text-align: right;
+  font-size: 12.8px;
+  color: var(--ink);
+  flex: none;
+}
+.fchip {
+  flex: none;
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  padding: 3px 8px;
+  border-radius: 999px;
+  border: 1px solid var(--glass-brd);
+  white-space: nowrap;
+}
+.fchip.risk {
+  color: var(--risk);
+  background: var(--risk-soft);
+  border-color: #eccfca;
+}
+.fchip.warn {
+  color: var(--warn);
+  background: var(--warn-soft);
+  border-color: #eadcc2;
+}
+.fchip.ok {
+  color: var(--ok);
+  background: var(--ok-soft);
+  border-color: #cfe6da;
+}
+
+/* ---- metric drill-down rows (opened from the ledger) ---- */
+.drillrow {
+  display: block;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--line-soft);
+  color: var(--ink);
+  transition: color 0.16s ease;
+}
+.drillrow:last-child {
+  border-bottom: 0;
+}
+.drillrow:hover .cell-main {
+  color: var(--accent-ink);
+}
+
+/* A zero is an answer, not an absence - it is quieter, never removed. */
+.metric.zero .mnum {
+  color: var(--ink-3);
+}
+.metric.zero:hover .mnum {
+  color: var(--ink-2);
+}
+
+@media (max-width: 1180px) {
+  .stat-strip {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 1100px) {
+  .dashgrid {
+    grid-template-columns: 1fr;
+  }
+  .pipe {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (max-width: 560px) {
+  .stat-strip {
+    grid-template-columns: 1fr;
+  }
+  .pipe {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,26 @@
+/*
+ * The policy library. There is no prototype for this screen: it is the DPDP
+ * obligation surface, so the reading column is wide and the register beside it is
+ * deliberately quiet.
+ */
+
+.librow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 10px 11px;
+  border-radius: var(--r-sm);
+  border: 1px solid transparent;
+  transition: background 0.14s, border-color 0.14s;
+}
+.librow:hover {
+  background: var(--surface-alt);
+}
+.librow.sel {
+  background: var(--accent-soft);
+  border-color: #c4d7ea;
+}
+.librow + .librow {
+  margin-top: 2px;
+}

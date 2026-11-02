@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Actions · Yash Honda Vacancy &amp; Hiring Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/app.css">
+<style>
+  .qs { display: grid; grid-template-columns: 1.55fr 1fr; gap: 18px; align-items: start; }
+  .group { margin-bottom: 22px; }
+  .gh { display: flex; align-items: center; gap: 10px; padding: 0 2px 8px; border-bottom: 1px solid var(--line); margin-bottom: 2px; }
+  .gh h3 { font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin: 0; color: var(--ink-2); font-weight: 500; }
+  .gh .n { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+  .gh .sla { margin-left: auto; font-size: 11.5px; color: var(--ink-3); }
+  .task {
+    display: grid; grid-template-columns: 3px 1fr auto; gap: 0 14px; align-items: center;
+    padding: 13px 14px 13px 0; border-bottom: 1px solid var(--line-soft); cursor: pointer;
+    transition: background .16s;
+  }
+  .task:hover { background: var(--surface-alt); }
+  .task .rail { height: 100%; min-height: 40px; border-radius: 0 3px 3px 0; background: var(--line); }
+  .task.over .rail { background: var(--risk); }
+  .task.soon .rail { background: var(--warn); }
+  .task.done { opacity: .5; pointer-events: none; }
+  .task.done .rail { background: var(--ok); }
+  .tk-title { font-size: 13.6px; font-weight: 500; letter-spacing: -.01em; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .tk-sub { font-size: 11.8px; color: var(--ink-3); display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 4px; }
+  .tk-right { text-align: right; display: flex; flex-direction: column; gap: 5px; align-items: flex-end; }
+  .quick { display: flex; gap: 5px; opacity: 0; transform: translateX(4px); transition: opacity .18s, transform .22s cubic-bezier(.16,1,.3,1); }
+  .task:hover .quick { opacity: 1; transform: none; }
+
+  /* decision surface */
+  .dossier { display: grid; grid-template-columns: auto 1fr; gap: 16px; align-items: start; }
+  .bigphoto { width: 96px; height: 96px; border-radius: 14px; object-fit: cover; border: 1px solid var(--line); }
+  .facts { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 18px; font-size: 12.8px; }
+  .facts dt { color: var(--ink-3); font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
+  .facts dd { margin: 2px 0 10px; }
+  .verdict { display: grid; gap: 8px; }
+  .vbtn { display: flex; align-items: center; gap: 11px; padding: 12px 14px; border: 1px solid var(--line); border-radius: var(--r-md); background: var(--surface); text-align: left; transition: all .16s; }
+  .vbtn:hover { border-color: #C6C6BE; box-shadow: var(--shadow); transform: translateY(-1px); }
+  .vbtn.sel { border-color: var(--accent); background: var(--accent-soft); }
+  .vbtn .vk { width: 26px; height: 26px; border-radius: 8px; display: grid; place-items: center; background: var(--neutral-soft); color: var(--ink-2); flex: none; }
+  .vbtn.sel .vk { background: var(--accent); color: #fff; }
+  .vbtn.ok .vk { background: var(--ok-soft); color: var(--ok); }
+  .vbtn.no .vk { background: var(--risk-soft); color: var(--risk); }
+  .vbtn b { font-size: 13.2px; font-weight: 500; display: block; }
+  .vbtn span { font-size: 11.8px; color: var(--ink-3); }
+
+  .statline { display: flex; gap: 22px; padding: 16px 0; border-bottom: 1px solid var(--line-soft); }
+  .stat { }
+  .stat .v { font-family: var(--font-mono); font-size: 26px; letter-spacing: -.045em; }
+  .stat .k { font-size: 11px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .07em; margin-top: 2px; }
+  @media (max-width: 1080px) { .qs { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<script src="assets/data.js"></script>
+<script src="assets/ui.js"></script>
+<script>
+YHUI.shell('my-actions', 'My Actions');
+const el = document.getElementById('content');
+const viewer = YH.usr(YHUI.getViewer());
+let queue = YH.tasks(YHUI.getViewer()).slice();
+const GROUPS = [
+  ['Vacancy approval', 'Approve, reject or return the requirement. Positions do not exist until you approve.'],
+  ['Candidate decision', 'Review the resume and photograph, then decide. A rejection returns the position to HR searching.'],
+  ['Hold review', 'Decide whether a paused position should resume or stay held.'],
+  ['Sourcing', 'Positions waiting on you to produce candidates.'],
+  ['Missing documents', 'Submissions that cannot go forward until the resume or photograph is on file.'],
+  ['Joining confirmation', 'Confirm the actual joining date to mark a position Hired.'],
+  ['Budget review', 'Compensation and budget check for the configured cases.'],
+  ['Clarification needed', 'Requests sent back to you for more detail.'],
+  ['Your request is with the approver', 'Requests you raised that are awaiting a decision.']
+];
+
+el.innerHTML =
+  '<div class="qs"><div>' +
+  '<div class="reveal" style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:14px">' +
+  '<div class="statline" style="border:0;padding:0;display:flex;gap:26px">' +
+  stat('Awaiting you', queue.length) + stat('Overdue', queue.filter(t => t.age > t.sla).length) +
+  stat('Oldest', (queue.length ? Math.max.apply(null, queue.map(t => t.age)) : 0) + 'd') + '</div>' +
+  '<div style="margin-left:auto;display:flex;gap:6px">' +
+  ['All', 'Overdue', 'Urgent'].map((f, i) => '<button class="chip' + (i === 0 ? ' on' : '') + '" onclick="setFilter(this,\'' + f + '\')">' + f + '</button>').join('') + '</div></div>' +
+  '<div id="list" class="card reveal d1"></div>' +
+  '</div><div>' +
+  '<div class="card pad reveal d2"><div class="section-head" style="margin:0 0 8px"><h2>How this queue is built</h2></div>' +
+  '<div class="sub" style="font-size:12.5px">Tasks appear only when the workflow says the step is yours. Nobody else sees them, and completing one moves the record forward in the same transaction that writes the audit event.</div>' +
+  '<div style="margin-top:14px;display:grid;gap:9px">' +
+  pipe('Vacancy approval', 'Owner or CEO · first to act closes the task', 'warn') +
+  pipe('Candidate decision', 'Owner or CEO · cannot be the person who submitted it', 'info') +
+  pipe('Sourcing &amp; documents', 'Assigned HR for that facility', '') +
+  pipe('Hold review', 'Whoever placed the hold, plus Admin', 'hold') +
+  '</div></div>' +
+  '<div class="card pad reveal d3" style="margin-top:16px"><div class="section-head" style="margin:0 0 10px"><h2>Decided by you</h2><span class="note">history, not the queue</span></div>' +
+  '<div class="timeline">' +
+  [['approved', 'Vacancy approved · YH-2627-0153', 'Deepak Sanghvi', '2026-10-06', 'decision'],
+   ['approved', 'Candidate approved · Pravin Jadhav', 'Ranjit Bhandari', '2026-10-01', 'riskev'],
+   ['hold', 'Position placed on hold · YH-2627-0147-P4', 'Ranjit Bhandari', '2026-10-08', 'hold'],
+   ['rejected', 'Vacancy rejected · YH-2627-0156', 'Ranjit Bhandari', '2026-10-09', 'riskev']].map(([k, w, who, at, cls]) =>
+    '<div class="tl-item ' + cls + '"><div class="tl-what">' + w + '</div><div class="tl-meta"><span>' + who + '</span><span>·</span><span>' + YHUI.date(at) + '</span>' +
+    '<span class="badge ' + (k === 'approved' ? 'ok' : k === 'rejected' ? 'risk' : '') + '">' + (k === 'hold' ? 'held' : k) + '</span></div></div>').join('') +
+  '</div></div>' +
+  '<div class="notice info reveal d4" style="margin-top:16px">' + YHUI.svg(YHUI.ICONS.bell, 16) +
+  '<div>In-app notifications only in this release. No email, no WhatsApp, and no reminder automation — overdue items surface here instead.</div></div>' +
+  '</div></div>';
+
+let filter = 'All';
+function setFilter(btn, f) {
+  filter = f; btn.parentNode.querySelectorAll('.chip').forEach(c => c.classList.toggle('on', c === btn)); render();
+}
+const stat = (k, v) => '<div class="stat"><div class="v">' + v + '</div><div class="k">' + k + '</div></div>';
+const pipe = (k, v, cls) => '<div style="display:flex;gap:10px;align-items:center;font-size:12.5px"><span class="badge ' + cls + '" style="min-width:70px;justify-content:center">' + k + '</span><span class="muted">' + v + '</span></div>';
+
+function render() {
+  const rows = queue.filter(t => filter === 'All' ? true : filter === 'Overdue' ? t.age > t.sla : (t.urgent || t.sla <= 2));
+  const byType = {};
+  rows.forEach(t => (byType[t.type] = byType[t.type] || []).push(t));
+  const order = GROUPS.map(g => g[0]).filter(k => byType[k]);
+  document.getElementById('list').innerHTML = order.length ? order.map(k => {
+    const g = GROUPS.find(x => x[0] === k);
+    return '<div class="group" style="padding:14px 16px">' +
+      '<div class="gh"><h3>' + k + '</h3><span class="n">' + byType[k].length + '</span>' +
+      '<span class="sla">' + (g[1]) + '</span></div>' +
+      byType[k].map(t => task(t)).join('') + '</div>';
+  }).join('<div style="height:1px;background:var(--line-soft)"></div>') :
+    '<div style="text-align:center;padding:56px 24px">' +
+    '<div style="width:46px;height:46px;margin:0 auto 14px;border-radius:14px;border:1px solid var(--line);display:grid;place-items:center;color:var(--ok)">' + YHUI.svg(YHUI.ICONS.check, 21) + '</div>' +
+    '<div style="font-size:15px;font-weight:600;letter-spacing:-.02em">Queue clear</div>' +
+    '<div class="sub" style="margin-top:5px;max-width:40ch;margin-inline:auto">Nothing is waiting on you' + (filter === 'All' ? '' : ' in this filter') + '. Decisions you already took stay in the record history.</div>' +
+    (queue.length && filter !== 'All' ? '<button class="btn sm" style="margin-top:12px" onclick="setFilter(document.querySelector(\'.chip\'),\'All\')">Show everything</button>' : '') +
+    '</div>';
+  document.querySelectorAll('[data-task]').forEach(n => n.onclick = () => openTask(n.dataset.task));
+}
+function task(t) {
+  const over = t.age > t.sla, soon = !over && t.age > t.sla * 0.6;
+  return '<div class="task' + (t._done ? ' done' : over ? ' over' : soon ? ' soon' : '') + '" data-task="' + t.ref + ':' + t.type + '">' +
+    '<div class="rail"></div>' +
+    '<div><div class="tk-title">' + YHUI.esc(t.title) +
+    (t.urgent ? '<span class="badge risk">Urgent</span>' : '') +
+    (t.missing ? '<span class="badge warn">' + t.missing.join(' + ') + ' missing</span>' : '') +
+    (t.docs && !t.docs.includes('photo') ? '<span class="badge risk">photo missing</span>' : '') + '</div>' +
+    '<div class="tk-sub"><span class="cell-id">' + t.ref + '</span><span>·</span><span>' + t.facility + '</span><span>·</span>' +
+    YHUI.ageTag(stageDate(t), t.sla) + (t.due ? '<span>·</span><span>due ' + YHUI.date(t.due) + '</span>' : '') + '</div></div>' +
+    '<div class="tk-right">' +
+    '<div class="quick">' +
+    (t.type === 'Vacancy approval' ? '<button class="btn sm primary" onclick="event.stopPropagation();quick(\'' + t.ref + '\',\'approved\')">Approve</button><button class="btn sm" onclick="event.stopPropagation();quick(\'' + t.ref + '\',\'returned\')">Return</button>' : '') +
+    (t.type === 'Candidate decision' ? '<button class="btn sm primary" onclick="event.stopPropagation();quick(\'' + t.ref + '\',\'approved\')">Approve</button><button class="btn sm danger" onclick="event.stopPropagation();quick(\'' + t.ref + '\',\'rejected\')">Reject</button>' : '') +
+    (t.type === 'Hold review' ? '<button class="btn sm" onclick="event.stopPropagation();quick(\'' + t.ref + '\',\'resumed\')">Resume</button>' : '') +
+    '<button class="btn sm ghost" onclick="event.stopPropagation();openTask(\'' + t.ref + ':' + t.type + '\')">Open</button></div></div></div>';
+}
+function stageDate(t) {
+  const p = YH.positions.find(x => x.number === t.ref);
+  if (p) return p.holdOn && t.type === 'Hold review' ? p.holdOn : p.stageOn;
+  const r = YH.requests.find(x => x.number === t.ref);
+  return r ? r.submittedAt : '2026-10-10';
+}
+function quick(ref, verdict) {
+  const needReason = verdict === 'rejected' || verdict === 'returned';
+  if (needReason) return openTask(ref + ':', verdict);
+  removeTask(ref, verdict);
+}
+function removeTask(ref, verdict) {
+  const t = queue.find(x => x.ref === ref && !x._done);
+  if (!t) return;
+  t._done = true;
+  YHUI.toast(verdict === 'approved' ? 'Approved · audit event written, requester and HR notified in-app' :
+    verdict === 'resumed' ? 'Resumed into the previous stage' : 'Decision recorded');
+  setTimeout(() => { queue = queue.filter(x => x.ref !== ref || !x._done); render(); stats(); }, 620);
+}
+function stats() {
+  const n = document.querySelectorAll('.statline .stat .v');
+  if (n.length) { n[0].textContent = queue.filter(t => !t._done).length; n[1].textContent = queue.filter(t => !t._done && t.age > t.sla).length; }
+}
+
+// ---------------------------------------------------- decision surface
+function openTask(key, preset) {
+  const [ref, type] = key.split(':');
+  const pos = YH.positions.find(p => p.number === ref);
+  const req = pos ? YH.requests.find(r2 => r2.number === pos.req) : YH.requests.find(r2 => r2.number === ref);
+  if (pos) return candidateDecision(pos, type, preset);
+  if (req && req.status === 'pending') return vacancyDecision(req);
+  if (req && req.status === 'returned') return returnedRequest(req);
+  YHUI.openDrawer('<div class="drawer-head"><div style="flex:1"><div class="crumb">' + ref + '</div><h3>' + (type || 'Task') + '</h3></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body"><div class="stacknote">This task belongs to the ' + YHUI.esc(type || 'review') + ' step. Open the position record for full context.</div>' +
+    '<div style="margin-top:14px"><a class="btn sm" href="request-detail.html?pos=' + ref + '">Open position record' + YHUI.svg(YHUI.ICONS.arr, 13) + '</a></div></div>' +
+    '<div class="drawer-foot"><button class="btn" data-close>Close</button>' +
+    '<button class="btn primary" onclick="removeTask(\'' + ref + '\',\'approved\')">Mark handled</button></div>');
+}
+
+function vacancyDecision(r) {
+  const ps = YH.posFor(r.number);
+  YHUI.openDrawer(
+    '<div class="drawer-head"><div style="flex:1"><div class="crumb">Vacancy approval · ' + r.number + '</div>' +
+    '<h3>' + YHUI.esc(r.title) + '</h3><div class="qsub" style="margin-top:6px">' +
+    '<span class="badge warn">' + YH.days(r.submittedAt) + 'd waiting</span><span>SLA 5d</span><span>·</span>' +
+    '<span>raised by ' + YH.usr(r.raisedBy).name + ' (' + YH.usr(r.raisedBy).role + ')</span><span>·</span><span>' + YHUI.fac(r.facility) + '</span></div></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body">' +
+    '<dl class="facts">' +
+    f('Requested headcount', r.qty + ' positions') + f('Reason', YHUI.esc(r.reason)) +
+    f('Salary band', YHUI.band(r.sal[0], r.sal[1])) + f('Incentive band', YHUI.band(r.inc[0], r.inc[1])) +
+    f('Priority', r.priority) + f('Required by', YHUI.date(r.requiredBy)) +
+    f('Facility', YHUI.fac(r.facility)) + f('Budget status', 'Finance review not enabled in workflow v1') +
+    '</dl>' +
+    '<div class="stacknote"><b style="font-size:12.5px">Justification as written by the requester</b>' +
+    '<div class="sub" style="font-size:12.8px;margin-top:6px">' + YHUI.esc(r.notes) + '</div></div>' +
+    '<div class="notice info" style="margin-top:14px">' + YHUI.svg(YHUI.ICONS.grid, 16) +
+    '<div>Approval creates <b>' + r.qty + ' independent position records</b>. Rejecting creates none. Changing headcount later is a separate audited adjustment, never an edit.</div></div>' +
+    '<div class="section-head" style="margin-top:20px"><h2>Your decision</h2><span class="note">reason mandatory for reject and return</span></div>' +
+    '<div class="verdict">' +
+    vbtn('approved', 'check', 'Approve vacancy', 'Positions created and handed to HR', 'ok') +
+    vbtn('returned', 'arr', 'Return for clarification', 'Goes back to the requester with your note') +
+    vbtn('rejected', 'x', 'Reject', 'Ends the request, reason recorded permanently', 'no') +
+    '</div>' +
+    '<div class="field hidden" id="rzn" style="margin-top:14px"><label class="req">Reason</label>' +
+    '<textarea class="textarea" id="rztext" placeholder="Specific, factual, and readable by the requester."></textarea>' +
+    '<div class="err-msg hidden" data-for="rztext">A reason is mandatory for this decision.</div></div>' +
+    '</div>' +
+    '<div class="drawer-foot"><button class="btn" data-close>Decide later</button>' +
+    '<button class="btn ghost" onclick="YHUI.toast(\'Delegated to the other approver · task reassigned and logged\')">Delegate</button>' +
+    '<button class="btn primary" onclick="commitTask(\'' + r.number + '\')">Submit decision</button></div>');
+  pick(preset || 'approved');
+}
+function candidateDecision(pos, type, preset) {
+  const c = (pos.cands || [])[0] || {};
+  const hasR = (c.docs || []).includes('resume'), hasP = (c.docs || []).includes('photo');
+  const req = YH.requests.find(r2 => r2.number === pos.req);
+  YHUI.openDrawer(
+    '<div class="drawer-head"><div style="flex:1"><div class="crumb">Candidate decision · ' + pos.number + '</div>' +
+    '<h3>' + YHUI.esc(c.name || 'Candidate') + '</h3><div class="qsub" style="margin-top:6px">' +
+    '<span class="badge warn">' + YH.days(pos.stageOn) + 'd waiting</span><span>SLA 3d</span><span>·</span>' +
+    '<span>' + YHUI.fac(pos.facility) + '</span><span>·</span><span>for <b>' + YHUI.esc(req.title) + '</b></span></div></div>' +
+    '<button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body">' +
+    '<div class="dossier"><div>' +
+    (hasP ? '<img class="bigphoto" src="https://picsum.photos/seed/' + (c.name || 'x').replace(/\s/g, '') + '/192/192" alt="Candidate photograph">' :
+      '<div class="bigphoto" style="display:grid;place-items:center;background:var(--surface-alt);color:var(--ink-3);border-style:dashed">' + YHUI.svg(YHUI.ICONS.user, 22) + '</div>') +
+    '<div class="cmeta" style="justify-content:center;margin-top:6px">' + (hasP ? '<span class="badge ok">photo on file</span>' : '<span class="badge risk">no photo</span>') + '</div></div>' +
+    '<div><div class="doc" style="margin-bottom:8px"><div class="doc-ico">' + YHUI.svg(YHUI.ICONS.doc, 16) + '</div>' +
+    '<div style="flex:1"><div class="doc-name">Resume · ' + YHUI.esc(c.name || '') + '</div><div class="doc-meta">1.8 MB · PDF · uploaded ' + YHUI.date(c.addedOn) + ' by ' + c.addedBy + '</div></div>' +
+    '<button class="btn sm" onclick="YHUI.toast(\'Signed URL issued for 60s after the permission check · access logged\')">Open</button></div>' +
+    '<dl class="facts" style="grid-template-columns:1fr 1fr">' +
+    f('Contact', hasR || hasP ? YHUI.esc(c.phone || '—') : '<span class="locked">hidden</span>') +
+    f('City', YHUI.esc(c.city || '—')) +
+    f('Proposed salary', YHUI.inr(c.salary || 0)) +
+    f('Notice recorded', c.notice && c.notice.given ? 'v' + c.notice.version + ' · ' + YHUI.date(c.notice.date) : 'not recorded') +
+    '</dl></div></div>' +
+    '<div class="stacknote" style="margin-top:6px"><b style="font-size:12.5px">HR recommendation</b>' +
+    '<div class="sub" style="font-size:12.8px;margin-top:6px">' + YHUI.esc(c.note || '—') + '</div>' +
+    '<div class="hint" style="margin-top:8px;font-size:11.5px;color:var(--ink-3)">Objective, role-relevant notes only. Automated scoring or appearance-based evaluation is not part of this product.</div></div>' +
+    (hasR && hasP ? '' : '<div class="notice" style="margin-top:14px">' + YHUI.svg(YHUI.ICONS.shield, 16) +
+      '<div><b>Mandatory document missing.</b> This submission reached you through a recorded exception. Your decision here is audited along with that exception.</div></div>') +
+    '<div class="section-head" style="margin-top:20px"><h2>Decision</h2><span class="note">position-level outcome is separate</span></div>' +
+    '<div class="verdict">' +
+    vbtn('approved', 'check', 'Approve candidate', 'Position moves to offer / joining', 'ok') +
+    vbtn('maybe', 'clock', 'Maybe / further review', 'Position stays open, HR keeps sourcing') +
+    vbtn('rejected', 'x', 'Reject candidate', 'Reason required · position returns to HR searching', 'no') +
+    '</div>' +
+    '<div class="field hidden" id="rzn" style="margin-top:14px"><label class="req">Reason for the record</label>' +
+    '<textarea class="textarea" id="rztext" placeholder="What decided it? The HR team reads this and re-sources accordingly."></textarea>' +
+    '<div class="err-msg hidden" data-for="rztext">A reason is mandatory for this decision.</div></div>' +
+    '</div>' +
+    '<div class="drawer-foot"><button class="btn" data-close>Decide later</button>' +
+    '<a class="btn ghost" href="request-detail.html?pos=' + pos.number + '">Full position history</a>' +
+    '<button class="btn primary" onclick="commitTask(\'' + pos.number + '\')">Submit decision</button></div>');
+  pick(preset || 'approved');
+}
+function returnedRequest(r) {
+  YHUI.openDrawer('<div class="drawer-head"><div style="flex:1"><div class="crumb">Returned · ' + r.number + '</div>' +
+    '<h3>' + YHUI.esc(r.title) + '</h3></div><button class="btn ghost sm" data-close>' + YHUI.svg(YHUI.ICONS.x, 15) + '</button></div>' +
+    '<div class="drawer-body"><div class="notice">' + YHUI.svg(YHUI.ICONS.x, 16) +
+    '<div><b>' + YHUI.esc(r.approver) + ' returned this on ' + YHUI.date(r.decidedAt) + '</b><br>' + YHUI.esc(r.returnReason) + '</div></div>' +
+    '<div class="stacknote" style="margin-top:14px">Edit the fields the approver asked about. Resubmitting restarts the approval clock but the original submission date is kept for total calendar age.</div></div>' +
+    '<div class="drawer-foot"><button class="btn" data-close>Later</button><a class="btn ghost" href="request-detail.html?req=' + r.number + '">Open request</a>' +
+    '<button class="btn primary" onclick="removeTask(\'' + r.number + '\',\'approved\')">Resubmit</button></div>');
+}
+function f(k, v) { return '<div><dt>' + k + '</dt><dd>' + v + '</dd></div>'; }
+function vbtn(key, icon, title, sub, cls) {
+  return '<button class="vbtn ' + (cls || '') + '" data-v="' + key + '" onclick="pick(\'' + key + '\')">' +
+    '<span class="vk">' + YHUI.svg(YHUI.ICONS[icon], 15) + '</span><span><b>' + title + '</b><span>' + sub + '</span></span></button>';
+}
+let chosen = 'approved';
+function pick(key) {
+  chosen = key;
+  document.querySelectorAll('[data-v]').forEach(b => b.classList.toggle('sel', b.dataset.v === key));
+  const needs = key === 'rejected' || key === 'returned';
+  const rz = document.getElementById('rzn');
+  if (rz) { rz.classList.toggle('hidden', !needs); if (!needs) { const t = document.getElementById('rztext'); if (t) t.classList.remove('err'); } }
+}
+function commitTask(ref) {
+  const needs = chosen === 'rejected' || chosen === 'returned';
+  const t = document.getElementById('rztext');
+  if (needs && !(t && t.value.trim())) {
+    if (t) { t.classList.add('err'); const m = document.querySelector('[data-for="rztext"]'); if (m) m.classList.remove('hidden'); t.focus(); }
+    YHUI.toast('A reason is mandatory for this decision'); return;
+  }
+  YHUI.closeAll();
+  YHUI.toast(chosen === 'approved' ? 'Approved · record advanced, positions and tasks updated' :
+    chosen === 'rejected' ? 'Rejected with reason · position returned to HR searching' :
+    chosen === 'maybe' ? 'Marked for further review · position stays open' : 'Returned to the requester with your note');
+  removeTask(ref, chosen);
+}
+render();
+</script>
+</body>
+</html>

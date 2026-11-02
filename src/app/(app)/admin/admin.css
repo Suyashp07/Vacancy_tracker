@@ -1,0 +1,229 @@
+/* Admin screen only. Everything shared with the rest of the portal lives in
+   globals.css; these are the three shapes that exist nowhere else: the
+   permission matrix, the configured workflow graph and the audit register. */
+
+/* ---------- permission matrix ---------- */
+.mxwrap {
+  max-height: 70vh;
+  overflow: auto;
+}
+table.mx {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.4px;
+}
+table.mx th {
+  position: sticky;
+  top: 0;
+  background: var(--surface-alt);
+  z-index: 2;
+}
+table.mx th,
+table.mx td {
+  border-bottom: 1px solid var(--line-soft);
+  padding: 8px 10px;
+  text-align: center;
+  vertical-align: middle;
+}
+table.mx thead th {
+  font-size: 10.8px;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--ink-3);
+  font-weight: 500;
+  border-bottom: 1px solid var(--line);
+}
+/* the key column stays under the header as the matrix scrolls sideways */
+table.mx th:first-child,
+table.mx td:first-child {
+  text-align: left;
+  position: sticky;
+  left: 0;
+  background: var(--surface);
+  z-index: 1;
+  min-width: 244px;
+}
+table.mx thead th:first-child {
+  z-index: 3;
+  background: var(--surface-alt);
+}
+table.mx tbody tr:hover td {
+  background: var(--surface-alt);
+}
+table.mx tr.grp td {
+  background: var(--ink);
+  color: #fff;
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 6px 12px;
+  position: static;
+}
+.pkey {
+  font-weight: 500;
+  font-size: 12.6px;
+}
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  align-items: center;
+  font-size: 11.6px;
+  color: var(--ink-3);
+}
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.legend i {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+/* ---------- configured workflow ---------- */
+.wfg {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  padding: 14px 16px;
+}
+.wnode {
+  border: 1px solid var(--line);
+  border-radius: var(--r-sm);
+  padding: 7px 10px;
+  background: var(--surface);
+  font-size: 11.8px;
+  white-space: nowrap;
+}
+.wnode.appr {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--accent-ink);
+}
+.wnode.term {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: #fff;
+}
+.wedge {
+  color: var(--line);
+  flex: none;
+  display: inline-flex;
+}
+.wstep {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.wstep:last-child {
+  border-bottom: 0;
+}
+.wstep .badge {
+  margin-left: 6px;
+}
+.widx {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--ink-3);
+}
+
+/* ---------- accounts ---------- */
+/* The row keeps its actions on a second line of the same block: an opened
+   action card is 560px wide and must never push a table column open. */
+.userrow {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'av who meta'
+    'acts acts acts';
+  gap: 2px 14px;
+  align-items: center;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line-soft);
+}
+.userrow:last-child {
+  border-bottom: 0;
+}
+.userrow:hover {
+  background: var(--surface-alt);
+}
+.userrow.off {
+  opacity: 0.62;
+}
+.userrow .uav {
+  grid-area: av;
+  align-self: start;
+  margin-top: 3px;
+}
+.userrow .uwho {
+  grid-area: who;
+  min-width: 0;
+}
+.userrow .umeta {
+  grid-area: meta;
+  text-align: right;
+  font-size: 11.6px;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.userrow .uacts {
+  grid-area: acts;
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+/* ---------- audit register ---------- */
+.logrow {
+  display: grid;
+  grid-template-columns: 148px 108px 1fr 1.5fr 104px;
+  gap: 14px;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line-soft);
+  font-size: 12.4px;
+}
+.logrow:last-child {
+  border-bottom: 0;
+}
+.logrow:hover {
+  background: var(--surface-alt);
+}
+.loghead {
+  display: grid;
+  grid-template-columns: 148px 108px 1fr 1.5fr 104px;
+  gap: 14px;
+  padding: 9px 14px;
+  background: var(--surface-alt);
+  border-bottom: 1px solid var(--line);
+  font-size: 10.8px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+@media (max-width: 1080px) {
+  .logrow,
+  .loghead {
+    grid-template-columns: 120px 96px 1fr;
+  }
+  .logrow > :nth-child(4),
+  .loghead > :nth-child(4),
+  .logrow > :nth-child(5),
+  .loghead > :nth-child(5) {
+    display: none;
+  }
+  table.mx th:first-child,
+  table.mx td:first-child {
+    min-width: 180px;
+  }
+}

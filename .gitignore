@@ -1,0 +1,36 @@
+# dependencies
+node_modules/
+
+# next / build output
+.next/
+out/
+build/
+*.tsbuildinfo
+next-env.d.ts.bak
+
+# environment and secrets
+.env
+.env.local
+.env*.local
+.env.dbpassword
+
+# vercel
+.vercel
+.vercel-tmp/
+
+# local supabase / editor / OS
+.supabase/
+supabase/.temp/
+supabase/all_in_one.sql
+.DS_Store
+Thumbs.db
+
+# agent / tooling caches
+.qoder/
+.kilocode/
+.vscode/
+
+# logs
+npm-debug.log*
+*.log
+.env*
