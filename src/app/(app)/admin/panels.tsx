@@ -6,7 +6,7 @@
  * function which writes its own audit row.
  */
 import Link from 'next/link';
-import { ArrowRight, Search, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Download, Search, ShieldCheck } from 'lucide-react';
 import { ActionForm } from '@/components/action-form';
 import { StatefulForm } from '@/components/stateful-form';
 import { Avatar, Badge, Card, Empty, Notice, SectionHead } from '@/components/ui';
@@ -41,8 +41,10 @@ import { getWorkflow } from '@/server/session';
 import {
   createUser,
   fulfilDsr,
+  generateUserSetupLink,
   publishLegalDocument,
   recordDsr,
+  runRetentionPurge,
   saveLegalDraft,
   setRetention,
   setUserActive,
@@ -164,6 +166,14 @@ export async function UsersPanel({ actor }: { actor: Actor }) {
                           options: roleOptions,
                         },
                       ]}
+                    />
+                    <ActionForm
+                      run={generateUserSetupLink}
+                      args={[u.email]}
+                      label="Setup link"
+                      variant="default"
+                      submitLabel="Generate link"
+                      intro={`Generates a one-time password setup link for ${u.email} to share directly.`}
                     />
                     <ActionForm
                       run={setUserActive}
@@ -969,12 +979,23 @@ export async function PrivacyPanel({ actor }: { actor: Actor }) {
         </div>
       </Card>
 
-      <Notice>
-        <strong>Nothing deletes data on its own yet.</strong> These rows schedule a date and a worker with the service
-        key performs the destruction, recording what it removed. No such worker is scheduled in this deployment, so
-        the {pastDue.length} past-due {pastDue.length === 1 ? 'record is' : 'records are'} waiting on a deliberate,
-        audited run rather than a cron - which is safer than an automatic delete, but is a task to close before real
-        candidate data ages in here.
+      <Notice tone={pastDue.length > 0 ? 'risk' : 'info'}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+          <div>
+            <strong>DPDP Retention Enforcement:</strong>{' '}
+            {pastDue.length > 0
+              ? `${pastDue.length} expired ${pastDue.length === 1 ? 'record is' : 'records are'} due for statutory destruction under Indian DPDP retention rules.`
+              : 'All candidate personal records are currently within statutory retention periods.'}
+          </div>
+          <ActionForm
+            run={runRetentionPurge}
+            args={[]}
+            label="Run retention purge now"
+            variant={pastDue.length > 0 ? 'danger' : 'default'}
+            submitLabel="Execute Purge"
+            intro="Statutory purge under DPDP Act 2023. Permanently deletes candidate personal data, notes, and attachments past their retention due date while preserving immutable audit logs of the deletion."
+          />
+        </div>
       </Notice>
 
       <div className="split section">
@@ -1323,6 +1344,10 @@ export async function AuditPanel({ params }: { params: { cat?: string; q?: strin
             <button type="submit" className="btn sm">
               Apply
             </button>
+            <a href="/api/export?type=audit" download className="btn sm ghost" title="Export full audit register as CSV">
+              <Download size={14} />
+              Export CSV
+            </a>
           </form>
         </div>
       </div>

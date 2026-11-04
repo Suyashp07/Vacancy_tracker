@@ -34,3 +34,4 @@ Thumbs.db
 npm-debug.log*
 *.log
 .env*
+!.env.example

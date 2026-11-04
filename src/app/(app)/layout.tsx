@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { LogOut, Scale } from 'lucide-react';
 import { Nav } from '@/components/nav';
 import { Notifications } from '@/components/notifications';
+import { ChangePasswordModal } from '@/components/change-password-modal';
 import { SessionIdleGuard } from '@/components/session-idle';
 import { Avatar } from '@/components/ui';
 import { APP_NAME, APP_SUBTITLE, ROLE_LABEL, navFor } from '@/lib/constants';
@@ -73,6 +74,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
               <Scale size={15} />
               Policies
             </Link>
+            <ChangePasswordModal />
             <Notifications items={notifications} unread={unread} />
             <form action={signOut} className="topbar-signout">
               <button type="submit" className="btn ghost sm" title="Sign out" aria-label="Sign out">

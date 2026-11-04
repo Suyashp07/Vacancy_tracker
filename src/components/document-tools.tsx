@@ -32,9 +32,11 @@ export function DocumentRow({ doc, requestId }: { doc: DocView; requestId: strin
 
   function mint(action: 'view' | 'download') {
     start(async () => {
-      const result = await openDocument(doc.id);
+      const result = await openDocument(doc.id, action);
       if (result.ok && result.url) {
-        setMessage(`Opening for ${result.expiresIn ?? 60} seconds. This access is logged.`);
+        setMessage(
+          `${action === 'download' ? 'Downloading' : 'Opening'} for ${result.expiresIn ?? 60} seconds. This access is logged as a ${action}.`,
+        );
         window.open(result.url, '_blank', 'noopener,noreferrer');
       } else {
         setMessage(result.message ?? 'The document could not be opened.');

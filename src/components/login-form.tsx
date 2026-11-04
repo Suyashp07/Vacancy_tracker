@@ -1,23 +1,14 @@
 'use client';
 
 import { useRef, useState, useTransition } from 'react';
-import { Loader2, Zap } from 'lucide-react';
-import { signIn } from '@/server/actions';
+import { ArrowLeft, KeyRound, Loader2, Zap } from 'lucide-react';
+import { signIn, requestPasswordReset } from '@/server/actions';
 
 export interface DemoAccount {
   email: string;
   label: string;
 }
 
-/**
- * Login is a client form on purpose: a wrong password must stay on the page with
- * its message rather than reloading it, and the failure is recorded as a
- * denied-access signal by the action.
- *
- * When demo accounts are supplied, each becomes a one-click button: it fills the
- * email + shared password and submits through the exact same action as a manual
- * sign-in, so there is no second code path that could bypass the audit signal.
- */
 export function LoginForm({
   demoAccounts,
   demoPassword,
@@ -25,17 +16,29 @@ export function LoginForm({
   demoAccounts?: DemoAccount[];
   demoPassword?: string;
 }) {
-  const [message, setMessage] = useState<string | null>(null);
+  const [view, setView] = useState<'login' | 'forgot'>('login');
+  const [message, setMessage] = useState<{ text: string; ok: boolean } | null>(null);
   const [pending, start] = useTransition();
+
   const formRef = useRef<HTMLFormElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const passRef = useRef<HTMLInputElement>(null);
 
-  function submit(form: FormData) {
+  function submitLogin(form: FormData) {
+    setMessage(null);
     start(async () => {
       const result = await signIn(form);
-      // on success the action redirects and nothing below runs
-      if (result && !result.ok) setMessage(result.message);
+      if (result && !result.ok) {
+        setMessage({ text: result.message, ok: false });
+      }
+    });
+  }
+
+  function submitReset(form: FormData) {
+    setMessage(null);
+    start(async () => {
+      const result = await requestPasswordReset({ ok: false, message: '' }, form);
+      setMessage({ text: result.message, ok: result.ok });
     });
   }
 
@@ -46,14 +49,74 @@ export function LoginForm({
     formRef.current.requestSubmit();
   }
 
+  if (view === 'forgot') {
+    return (
+      <div className="card pad login-card">
+        <div className="row" style={{ gap: 8, alignItems: 'center' }}>
+          <KeyRound size={18} />
+          <h2 style={{ margin: 0 }}>Reset password</h2>
+        </div>
+        <div className="tiny muted" style={{ marginTop: 2 }}>
+          Enter your registered work email. We will send you instructions to set a new password.
+        </div>
+
+        {message ? (
+          <div className={message.ok ? 'ok-msg' : 'err-msg'}>{message.text}</div>
+        ) : null}
+
+        <form action={submitReset} className="col" style={{ gap: 14 }}>
+          <div className="field">
+            <label htmlFor="reset-email" className="req">
+              Work email
+            </label>
+            <input
+              id="reset-email"
+              name="email"
+              className="input"
+              type="email"
+              autoComplete="email"
+              required
+              placeholder="name@yashhonda.in"
+            />
+          </div>
+
+          <button
+            type="submit"
+            className="btn primary"
+            style={{ justifyContent: 'center', padding: '9px 13px' }}
+            disabled={pending}
+          >
+            {pending ? <Loader2 size={15} className="pulse" /> : null}
+            Send recovery link
+          </button>
+        </form>
+
+        <div style={{ marginTop: 6 }}>
+          <button
+            type="button"
+            className="btn ghost sm"
+            onClick={() => {
+              setView('login');
+              setMessage(null);
+            }}
+            style={{ padding: '6px 0' }}
+          >
+            <ArrowLeft size={13} />
+            Back to sign in
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form ref={formRef} className="card pad login-card" action={submit}>
+    <form ref={formRef} className="card pad login-card" action={submitLogin}>
       <h2>Sign in</h2>
-      <div className="tiny muted" style={{ marginTop: 4 }}>
-        Use the work account issued to you by the system administrator.
+      <div className="tiny muted" style={{ marginTop: 2 }}>
+        Sign in to your Yash Honda employee workspace.
       </div>
 
-      {message ? <div className="err-msg">{message}</div> : null}
+      {message ? <div className={message.ok ? 'ok-msg' : 'err-msg'}>{message.text}</div> : null}
 
       <div className="field">
         <label htmlFor="email" className="req">
@@ -72,9 +135,22 @@ export function LoginForm({
       </div>
 
       <div className="field">
-        <label htmlFor="password" className="req">
-          Password
-        </label>
+        <div className="row between" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <label htmlFor="password" className="req" style={{ margin: 0 }}>
+            Password
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              setView('forgot');
+              setMessage(null);
+            }}
+            className="link tiny"
+            style={{ border: 'none', background: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            Forgot password?
+          </button>
+        </div>
         <input
           ref={passRef}
           id="password"
@@ -87,7 +163,12 @@ export function LoginForm({
         />
       </div>
 
-      <button type="submit" className="btn primary" style={{ justifyContent: 'center', padding: '9px 13px' }} disabled={pending}>
+      <button
+        type="submit"
+        className="btn primary"
+        style={{ justifyContent: 'center', padding: '9px 13px' }}
+        disabled={pending}
+      >
         {pending ? <Loader2 size={15} className="pulse" /> : null}
         Sign in
       </button>
@@ -96,7 +177,7 @@ export function LoginForm({
         <div className="demo-logins">
           <div className="demo-logins-head">
             <Zap size={13} />
-            <span>One-click demo logins</span>
+            <span>Development quick logins</span>
           </div>
           <div className="demo-logins-grid">
             {demoAccounts.map((account) => (
@@ -114,14 +195,13 @@ export function LoginForm({
             ))}
           </div>
           <div className="demo-logins-foot">
-            Shared password <span className="mono">{demoPassword}</span> · seeded demo data, safe to explore.
+            Password: <span className="mono">{demoPassword}</span> (development only)
           </div>
         </div>
       ) : null}
 
-      <div className="hint">
-        Accounts are created by an Admin. There is no self-registration and no password recovery email in this release -
-        ask an Admin to reset it.
+      <div className="hint" style={{ marginTop: 2 }}>
+        Authorized personnel only. Contact your system administrator if you need your account configured.
       </div>
     </form>
   );

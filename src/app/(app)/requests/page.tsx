@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ChevronRight, Plus, Search } from 'lucide-react';
+import { ChevronRight, Download, Plus, Search } from 'lucide-react';
 import { AgeCell, Badge, Empty, PageHead, RequestBadge } from '@/components/ui';
 import { can, type RequestStatus } from '@/lib/constants';
 import { fmtCTCBand, fmtDate, fiscalYearLabel, recentFyTags } from '@/lib/format';
@@ -64,12 +64,20 @@ export default async function RequestsPage({ searchParams }: { searchParams: Pro
         title="Vacancy requests"
         note={`${sorted.length} of ${rows.length} request(s) in this view. ${scopeNote}`}
         right={
-          can(actor.role, 'raise_vacancy_request') ? (
-            <Link href="/requests/new" className="btn primary">
-              <Plus size={15} />
-              New vacancy request
-            </Link>
-          ) : null
+          <div className="row" style={{ gap: 8 }}>
+            {can(actor.role, 'reports_export') ? (
+              <a href="/api/export?type=requests" download className="btn sm ghost" title="Export as CSV">
+                <Download size={14} />
+                Export CSV
+              </a>
+            ) : null}
+            {can(actor.role, 'raise_vacancy_request') ? (
+              <Link href="/requests/new" className="btn primary sm">
+                <Plus size={15} />
+                New vacancy request
+              </Link>
+            ) : null}
+          </div>
         }
       />
 

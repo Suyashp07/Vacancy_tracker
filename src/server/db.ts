@@ -25,19 +25,20 @@ export async function db(): Promise<SupabaseClient> {
         return store.getAll();
       },
       setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-        for (const { name, value, options } of cookiesToSet) {
-          // Harden every auth cookie the library writes: unreadable by client JS
-          // (httpOnly), transport-only in production (secure), sent top-level only
-          // (lax), scoped to the whole site so chunking and deletion stay
-          // consistent. The spread keeps the library's own expiry/maxAge, so a
-          // sign-out (empty value + past expiry) still removes the cookie.
-          store.set(name, value, {
-            ...options,
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: options.sameSite ?? 'lax',
-            path: '/',
-          });
+        try {
+          for (const { name, value, options } of cookiesToSet) {
+            store.set(name, value, {
+              ...options,
+              httpOnly: true,
+              secure: process.env.NODE_ENV === 'production',
+              sameSite: options.sameSite ?? 'lax',
+              path: '/',
+            });
+          }
+        } catch {
+          // The `setAll` method was called from a Server Component.
+          // In Next.js, cookies can only be modified in a Server Action or Route Handler.
+          // Silently ignore here to prevent 500 errors during server rendering.
         }
       },
     },

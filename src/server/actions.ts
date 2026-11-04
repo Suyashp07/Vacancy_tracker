@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { z } from 'zod';
-import { db, call } from './db';
+import { db, adminDb, call } from './db';
 import { getActor, requireActor, pendingAcknowledgement } from './session';
 import {
   attemptRequestTransition,
@@ -347,9 +347,12 @@ export async function sendCandidateForApproval(
   return settle(result);
 }
 
-export async function openDocument(documentId: string): Promise<{ ok: boolean; url?: string; message?: string; expiresIn?: number }> {
+export async function openDocument(
+  documentId: string,
+  action: 'view' | 'download' = 'view',
+): Promise<{ ok: boolean; url?: string; message?: string; expiresIn?: number }> {
   await requireActor();
-  const result = await openCandidateDocument(documentId, 'view');
+  const result = await openCandidateDocument(documentId, action);
   if (!result.ok) return { ok: false, message: result.message };
   return { ok: true, url: result.url, expiresIn: result.expiresIn };
 }
@@ -502,10 +505,59 @@ export async function createUser(_prev: ActionState, form: FormData): Promise<Ac
       },
       p_actor: actor.id,
     });
+
+    let inviteMsg = '';
+    try {
+      const admin = adminDb();
+      const { data: linkData } = await admin.auth.admin.generateLink({
+        type: 'recovery',
+        email: created.email,
+      });
+      if (linkData?.properties?.action_link) {
+        inviteMsg = ` Setup link: ${linkData.properties.action_link}`;
+      }
+    } catch {
+      // non-fatal fallback
+    }
+
     revalidatePath('/admin');
     return done(
-      `Account created for ${created.email}. Set a password with the invite link - this portal sends no email in version 1.`,
+      `Account created for ${created.email}.${inviteMsg ? inviteMsg : ' Generate a setup link anytime from the accounts list.'}`,
     );
+  } catch (error) {
+    return fail(messageOf(error));
+  }
+}
+
+export async function generateUserSetupLink(email: string): Promise<ActionState> {
+  const actor = await requireActor();
+  if (actor.role !== 'Admin') return fail('Only an Admin can generate user setup links.');
+  try {
+    const admin = adminDb();
+    const { data, error } = await admin.auth.admin.generateLink({
+      type: 'recovery',
+      email: email.trim().toLowerCase(),
+    });
+    if (error || !data?.properties?.action_link) {
+      return fail(error?.message ?? 'Could not generate setup link.');
+    }
+    return done(`Setup link for ${email}: ${data.properties.action_link}`);
+  } catch (err) {
+    return fail(messageOf(err));
+  }
+}
+
+export async function runRetentionPurge(): Promise<ActionState> {
+  const actor = await requireActor();
+  if (actor.role !== 'Admin') return fail('Only an Admin can execute the retention purge.');
+  const client = await db();
+  try {
+    const res = await call<{ purged: number; batch: string }>(client, 'purge_due_retention', { p_limit: 50 });
+    revalidatePath('/admin');
+    if (!res || res.purged === 0) {
+      return done('Retention purge ran. No expired personal records are currently due for deletion.');
+    }
+    return done(`Retention purge completed. Purged ${res.purged} expired record(s) under batch ${res.batch}.`);
   } catch (error) {
     return fail(messageOf(error));
   }
@@ -641,6 +693,103 @@ export async function signOut(): Promise<void> {
   const client = await db();
   await client.auth.signOut();
   redirect('/login');
+}
+
+export async function requestPasswordReset(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const email = formText(form, 'email')?.toLowerCase();
+  if (!email || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) {
+    return fail('Enter a valid work email.');
+  }
+
+  const client = await db();
+  try {
+    const origin = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+    await client.auth.resetPasswordForEmail(email, {
+      redirectTo: `${origin}/auth/callback?next=/reset-password`,
+    });
+  } catch {
+    // Non-fatal: do not leak existence of email
+  }
+
+  return done(
+    'If an account exists for this work email, instructions to reset your password have been sent.',
+  );
+}
+
+export async function completePasswordReset(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const password = String(form.get('password') ?? '');
+  const confirmPassword = String(form.get('confirm_password') ?? '');
+
+  if (password.length < 8) {
+    return fail('Password must be at least 8 characters long.');
+  }
+  if (password !== confirmPassword) {
+    return fail('Passwords do not match.');
+  }
+
+  const client = await db();
+  const { error } = await client.auth.updateUser({ password });
+  if (error) {
+    return fail(error.message);
+  }
+
+  try {
+    const actor = await getActor();
+    if (actor) {
+      const admin = adminDb();
+      await admin.from('audit_events').insert({
+        actor_id: actor.id,
+        actor_role: actor.role,
+        action: 'auth.password_reset',
+        entity_type: 'user',
+        entity_id: actor.id,
+        result: 'success',
+        reason: 'User completed password recovery',
+        metadata: { email: actor.email },
+      });
+    }
+  } catch {
+    // Non-fatal audit log write
+  }
+
+  return done('Your password has been updated successfully.', '/dashboard');
+}
+
+export async function changePassword(_prev: ActionState, form: FormData): Promise<ActionState> {
+  const actor = await requireActor();
+  const password = String(form.get('password') ?? '');
+  const confirmPassword = String(form.get('confirm_password') ?? '');
+
+  if (password.length < 8) {
+    return fail('Password must be at least 8 characters long.');
+  }
+  if (password !== confirmPassword) {
+    return fail('Passwords do not match.');
+  }
+
+  const client = await db();
+  const { error } = await client.auth.updateUser({ password });
+  if (error) {
+    return fail(error.message);
+  }
+
+  try {
+    const admin = adminDb();
+    await admin.from('audit_events').insert({
+      actor_id: actor.id,
+      actor_role: actor.role,
+      action: 'auth.password_change',
+      entity_type: 'user',
+      entity_id: actor.id,
+      result: 'success',
+      reason: 'User changed their account password',
+      metadata: { email: actor.email },
+    });
+  } catch {
+    // Non-blocking audit write
+  }
+
+  return done('Your password has been changed successfully.');
 }
 
 // ---------------------------------------------------------------------------
