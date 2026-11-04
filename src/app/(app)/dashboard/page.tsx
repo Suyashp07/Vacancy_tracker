@@ -6,6 +6,7 @@ import {
   Badge,
   Card,
   Empty,
+  Notice,
   PositionBadge,
   SectionHead,
   Timeline,
@@ -60,7 +61,13 @@ export default async function DashboardPage({
   const maxPipeline = Math.max(1, ...pipeline.map((p) => p.positions));
   const maxFacility = Math.max(1, ...facilities.map((f) => f.total));
   const firstName = actor.name.split(' ')[0];
-  const overdueCount = tasks.filter((t) => t.slaState === 'overdue').length;
+
+  // Positions that have been open longer than their allowed time.
+  const lateCount = ageing.filter((r) => r.slaDays > 0 && r.ageing.active >= r.slaDays).length;
+
+  // Only showrooms that actually have open positions are listed.
+  const busyFacilities = facilities.filter((f) => f.total > 0);
+  const quietCount = facilities.length - busyFacilities.length;
 
   // Worst delay per showroom, so the label next to each bar matches the list above it.
   const facilityState = new Map<string, { tone: 'risk' | 'warn' | 'ok'; ratio: number }>();
@@ -122,21 +129,25 @@ export default async function DashboardPage({
         </div>
       </header>
 
-      {/* 2. What needs you - the first thing people come here for */}
-      <div className="section">
-        <Card className="queue" pad>
-          <SectionHead
-            title="Needs your decision"
-            note={tasks.length ? `${tasks.length} waiting` : undefined}
-            right={
-              <Link href="/my-actions" className="ddlink row" style={{ gap: 4 }}>
-                See all <ChevronRight size={14} />
-              </Link>
-            }
-          />
-          {tasks.length === 0 ? (
-            <Empty title="All clear" note="New decisions will show up here as soon as they are sent to you." />
-          ) : (
+      {/* 2. What needs you: a full card only when there is something to do */}
+      {tasks.length === 0 ? (
+        <div className="dash-note">
+          <Notice tone="ok">
+            <strong>All clear.</strong> Nothing needs your decision. New decisions appear here when they are sent to you.
+          </Notice>
+        </div>
+      ) : (
+        <div className="section">
+          <Card className="queue" pad>
+            <SectionHead
+              title="Needs your decision"
+              note={`${tasks.length} waiting`}
+              right={
+                <Link href="/my-actions" className="ddlink row" style={{ gap: 4 }}>
+                  See all <ChevronRight size={14} />
+                </Link>
+              }
+            />
             <div className="qbody">
               {tasks.slice(0, 5).map((t) => (
                 <Link key={t.task.id} href={t.href} className={`qrow ${t.slaState}`}>
@@ -153,22 +164,19 @@ export default async function DashboardPage({
                 </Link>
               ))}
             </div>
-          )}
-        </Card>
-      </div>
+          </Card>
+        </div>
+      )}
 
       {/* 3. Four headline numbers */}
-      <div className="stat-strip" style={{ marginTop: 16 }}>
+      <div className="stat-strip">
         <Link href="/requests?sort=age" className="stat">
           <div className="stat-label">Open positions</div>
           <div className="stat-num">{metrics.open_positions}</div>
         </Link>
-        <Link href="/my-actions" className={`stat ${overdueCount > 0 ? 'alert' : ''}`}>
-          <div className="stat-label">Waiting on you</div>
-          <div className="stat-num">
-            {tasks.length}
-            <small>{overdueCount > 0 ? `${overdueCount} late` : ''}</small>
-          </div>
+        <Link href="/requests?sort=age" className={`stat ${lateCount > 0 ? 'alert' : ''}`}>
+          <div className="stat-label">Running late</div>
+          <div className="stat-num">{lateCount}</div>
         </Link>
         <Link href="/on-hold" className={`stat ${metrics.on_hold > 0 ? 'wait' : ''}`}>
           <div className="stat-label">On hold</div>
@@ -210,9 +218,8 @@ export default async function DashboardPage({
                       <Link href={`/requests/${r.requestId}`} className="cell-main">
                         {r.position.label}
                       </Link>
-                      <div className="cell-id">
-                        {r.position.position_number} · {r.facilityName}
-                      </div>
+                      <div className="cell-id">{r.position.position_number}</div>
+                      <div className="tiny muted">{r.facilityName}</div>
                     </td>
                     <td>
                       <PositionBadge status={r.position.status} />
@@ -228,12 +235,15 @@ export default async function DashboardPage({
         </Card>
 
         <Card className="facilities" pad>
-          <SectionHead title="Open positions by showroom" note={`FY ${fiscalYearLabel(tag)}`} />
-          {facilities.length === 0 ? (
-            <Empty title="No showrooms to show" note="An admin decides which showrooms you can see." />
+          <SectionHead
+            title="Open positions by showroom"
+            note={quietCount > 0 ? `${quietCount} more with none open` : undefined}
+          />
+          {busyFacilities.length === 0 ? (
+            <Empty title="No open positions" note="No showroom you can see has an open position." />
           ) : (
             <div className="netload">
-              {facilities.map((f) => {
+              {busyFacilities.map((f) => {
                 const st = facilityState.get(f.name) ?? { tone: 'ok' as const, ratio: 0 };
                 return (
                   <div className="fbar" key={f.name}>
