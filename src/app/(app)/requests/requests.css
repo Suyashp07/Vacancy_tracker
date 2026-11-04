@@ -1,0 +1,27 @@
+/* Vacancy requests list */
+.reqbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.reqbar .search {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+.reqbar .select {
+  width: auto;
+  min-width: 160px;
+}
+.reqtable .where {
+  white-space: nowrap;
+}
+.reqtable .ttl {
+  font-size: 15px;
+}
+.reqtable .posline {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}

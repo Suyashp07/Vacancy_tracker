@@ -9,10 +9,7 @@ export const metadata = { title: 'Sign in' };
 
 // Demo buttons only appear when SHOW_DEMO_LOGINS=true is set in your local .env file.
 // On the live site leave it out, so the password is never shown to visitors.
-const SHOW_DEMO =
-  process.env.SHOW_DEMO_LOGINS === 'true' ||
-  process.env.NEXT_PUBLIC_ENABLE_DEMO_LOGINS === 'true' ||
-  process.env.APP_ENV !== 'production';
+const SHOW_DEMO = process.env.SHOW_DEMO_LOGINS === 'true';
 const DEMO_PASSWORD = 'Yh-Dev-2026!';
 const DEMO_ACCOUNTS: DemoAccount[] = [
   { email: 'hr@yashhonda.test', label: 'HR Executive' },

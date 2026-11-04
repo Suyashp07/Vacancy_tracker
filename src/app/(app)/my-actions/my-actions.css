@@ -1,55 +1,52 @@
-/*
- * The action queue - ported from prototype/my-actions.html.
- * The queue is the screen where SLA pressure is supposed to be felt, so the
- * rail colour is a state, not a decoration.
- */
-
-/* headline counts (.statline / .stat) and the queue layout (.split) are shared
-   atoms that live in globals.css */
+/* My Actions: each row has a coloured bar on the left. Red = late, amber = due soon. */
 
 .group {
-  margin-bottom: 22px;
+  padding: 14px 18px 6px;
+}
+.group + .group {
+  border-top: 1px solid var(--line-soft);
 }
 .gh {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: 10px;
   padding: 0 2px 8px;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 2px;
 }
 .gh h3 {
-  font-size: 12px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-size: 15px;
   margin: 0;
-  color: var(--ink-2);
-  font-weight: 500;
+  color: var(--ink);
+  font-weight: 600;
 }
 .gh .n {
   font-family: var(--font-mono);
-  font-size: 11.5px;
+  font-size: 12.5px;
   color: var(--ink-3);
 }
 .gh .sla {
   margin-left: auto;
-  font-size: 11.5px;
+  font-size: 13px;
   color: var(--ink-3);
   text-align: right;
+  max-width: 46ch;
 }
 
 .task {
   display: grid;
-  grid-template-columns: 3px 1fr auto;
-  gap: 0 14px;
+  grid-template-columns: 4px 1fr auto;
+  gap: 0 16px;
   align-items: center;
-  padding: 13px 14px 13px 0;
+  padding: 14px 0;
   border-bottom: 1px solid var(--line-soft);
+}
+.task:last-child {
+  border-bottom: 0;
 }
 .task .rail {
   height: 100%;
-  min-height: 40px;
-  border-radius: 0 3px 3px 0;
+  min-height: 44px;
+  border-radius: 3px;
   background: var(--line);
 }
 .task.over .rail {
@@ -59,40 +56,37 @@
   background: var(--warn);
 }
 .tk-title {
-  font-size: 13.6px;
+  font-size: 15px;
   font-weight: 500;
-  letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
 .tk-sub {
-  font-size: 11.8px;
+  font-size: 13px;
   color: var(--ink-3);
   display: flex;
-  gap: 8px;
+  gap: 14px;
   align-items: center;
   flex-wrap: wrap;
-  margin-top: 4px;
-}
-.tk-right {
-  text-align: right;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  align-items: flex-end;
+  margin-top: 5px;
 }
 .tk-right .quick {
   display: flex;
-  gap: 6px;
+  gap: 8px;
   flex-wrap: wrap;
   justify-content: flex-end;
+  align-items: center;
+}
+.tk-note {
+  max-width: 22ch;
+  text-align: right;
 }
 
 .clear {
   text-align: center;
-  padding: 56px 24px;
+  padding: 48px 24px;
 }
 .clear .mark {
   width: 46px;
@@ -105,5 +99,15 @@
   color: var(--ok);
 }
 
-/* the obligation rows (.howrow) and the queue layout (.split) are shared and
-   live in globals.css */
+@media (max-width: 760px) {
+  .task {
+    grid-template-columns: 4px 1fr;
+  }
+  .tk-right {
+    grid-column: 2;
+    margin-top: 10px;
+  }
+  .tk-right .quick {
+    justify-content: flex-start;
+  }
+}
