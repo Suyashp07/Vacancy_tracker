@@ -29,7 +29,7 @@ export function Nav({ allowed, counts }: { allowed: NavKey[]; counts: Partial<Re
     const active = n.key === 'dashboard' ? pathname === n.href : pathname.startsWith(n.href);
     const count = counts[n.key];
     return (
-      <Link key={n.key} href={n.href} className={`nav-item ${active ? 'active' : ''}`} title={n.hint}>
+      <Link key={n.key} href={n.href} prefetch={true} className={`nav-item ${active ? 'active' : ''}`} title={n.hint}>
         <Icon size={16} />
         <span>{n.label}</span>
         {count ? <span className={`nav-count tnum ${n.key === 'my_actions' && count > 0 ? 'risk' : ''}`.trim()}>{count}</span> : null}

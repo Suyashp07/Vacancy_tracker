@@ -8,6 +8,23 @@ import { can, CONSENT_GATE_KEYS, type PermissionKey } from '@/lib/constants';
 
 export type Denial = { denied: true; reason: string; code: string };
 
+const actorCache = new Map<string, { actor: Actor; expiresAt: number }>();
+const workflowCache = new Map<string, { value: WorkflowConfig; expiresAt: number }>();
+const fieldDefinitionsCache = new Map<string, { value: FieldDefinitionRow[]; expiresAt: number }>();
+
+export function invalidateActorCache(userId?: string): void {
+  if (userId) {
+    actorCache.delete(userId);
+  } else {
+    actorCache.clear();
+  }
+}
+
+export function invalidateWorkflowCache(): void {
+  workflowCache.clear();
+  fieldDefinitionsCache.clear();
+}
+
 /**
  * Resolves the signed-in person into an Actor: identity, role, facility scope,
  * and the legal-document version they still owe an acknowledgement for.
@@ -28,6 +45,12 @@ export const getActor = cache(async (): Promise<Actor | null> => {
     .then(({ data, error }) => (error ? null : data.user))
     .catch(() => null);
   if (!user) return null;
+
+  const now = Date.now();
+  const cached = actorCache.get(user.id);
+  if (cached && now < cached.expiresAt) {
+    return cached.actor;
+  }
 
   // The profile read and the facility-scope read only depend on the user id, so
   // they go out together rather than one round-trip after the other.
@@ -50,7 +73,7 @@ export const getActor = cache(async (): Promise<Actor | null> => {
   const role = profile.role as Role;
   const isGlobal = ['Admin', 'Owner', 'CEO'].includes(role) || role === 'Finance';
 
-  return {
+  const actor: Actor = {
     id: profile.id as string,
     email: profile.email as string,
     name: profile.full_name as string,
@@ -59,6 +82,9 @@ export const getActor = cache(async (): Promise<Actor | null> => {
     isGlobal,
     legalAckVersion: null,
   };
+
+  actorCache.set(user.id, { actor, expiresAt: now + 30 * 1000 });
+  return actor;
 });
 
 /** Page entry point. Anything unreachable without a session goes to /login. */
@@ -159,6 +185,11 @@ export function seesFacility(actor: Actor, facilityId: string | null | undefined
 // workflow configuration (read once per request, then reused)
 // ---------------------------------------------------------------------------
 export const getWorkflow = cache(async (workflowKey: string): Promise<WorkflowConfig> => {
+  const now = Date.now();
+  const cached = workflowCache.get(workflowKey);
+  if (cached && now < cached.expiresAt) {
+    return cached.value;
+  }
   const client = await db();
   const { data: definition } = await client
     .from('workflow_definitions')
@@ -172,22 +203,31 @@ export const getWorkflow = cache(async (workflowKey: string): Promise<WorkflowCo
     client.from('workflow_transitions').select('*').eq('workflow_id', definition.id),
   ]);
 
-  return {
+  const config: WorkflowConfig = {
     key: definition.key as string,
     entity: definition.entity_type as 'vacancy_request' | 'position' | 'candidate',
     steps: (steps ?? []) as StepConfig[],
     transitions: (transitions ?? []) as TransitionConfig[],
   };
+  workflowCache.set(workflowKey, { value: config, expiresAt: now + 5 * 60 * 1000 });
+  return config;
 });
 
 export const getFieldDefinitions = cache(async (entityType: string): Promise<FieldDefinitionRow[]> => {
+  const now = Date.now();
+  const cached = fieldDefinitionsCache.get(entityType);
+  if (cached && now < cached.expiresAt) {
+    return cached.value;
+  }
   const client = await db();
   const { data } = await client
     .from('workflow_field_definitions')
     .select('*')
     .eq('entity_type', entityType)
     .order('sort_order');
-  return (data ?? []) as FieldDefinitionRow[];
+  const rows = (data ?? []) as FieldDefinitionRow[];
+  fieldDefinitionsCache.set(entityType, { value: rows, expiresAt: now + 5 * 60 * 1000 });
+  return rows;
 });
 
 export interface FieldDefinitionRow {
@@ -227,14 +267,20 @@ export async function pendingAcknowledgement(actor: Actor): Promise<{ id: string
     .in('key', [...CONSENT_GATE_KEYS])
     .order('effective_from', { ascending: false });
 
-  for (const doc of published ?? []) {
-    const { data: ack } = await client
-      .from('legal_document_acks')
-      .select('id')
-      .eq('legal_document_id', doc.id)
-      .eq('user_id', actor.id)
-      .maybeSingle();
-    if (!ack) return { id: doc.id, title: doc.title, version: doc.version };
+  if (!published || published.length === 0) return null;
+
+  const docIds = published.map((d) => d.id as string);
+  const { data: acks } = await client
+    .from('legal_document_acks')
+    .select('legal_document_id')
+    .eq('user_id', actor.id)
+    .in('legal_document_id', docIds);
+
+  const ackedSet = new Set((acks ?? []).map((a) => a.legal_document_id as string));
+  for (const doc of published) {
+    if (!ackedSet.has(doc.id as string)) {
+      return { id: doc.id as string, title: doc.title as string, version: doc.version as string };
+    }
   }
   return null;
 }

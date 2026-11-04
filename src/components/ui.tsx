@@ -234,6 +234,7 @@ export function Tabs({
         <Link
           key={t.key}
           href={`${base}?tab=${t.key}`}
+          prefetch={true}
           className={`tab ${t.key === active ? 'on' : ''}`.trim()}
           role="tab"
           aria-selected={t.key === active}

@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { db } from './db';
-import { seesFacility, getWorkflow } from './session';
+import { seesFacility, getWorkflow, invalidateActorCache, invalidateWorkflowCache } from './session';
 import {
   isOpenPosition,
   ageingOf,
@@ -89,12 +89,34 @@ function withinScope(actor: Actor, facilityId: string | null | undefined, create
   return !!createdBy && createdBy === actor.id;
 }
 
+let facilitiesCache: { data: Facility[]; expiresAt: number } | null = null;
+
+export function invalidateFacilitiesCache(): void {
+  facilitiesCache = null;
+}
+
 export async function listFacilities(activeOnly = true): Promise<Facility[]> {
+  const now = Date.now();
+  if (!facilitiesCache || now > facilitiesCache.expiresAt) {
+    const client = await db();
+    let query = client.from('facilities').select('id, code, name, facility_type, city, is_active').order('name');
+    const { data } = await query;
+    facilitiesCache = { data: (data ?? []) as Facility[], expiresAt: now + 5 * 60 * 1000 };
+  }
+  const list = facilitiesCache.data;
+  return activeOnly ? list.filter((f) => f.is_active) : list;
+}
+
+/** Fast exact count of positions on hold in actor's scope without full table loads. */
+export async function countOnHold(actor: Actor): Promise<number> {
   const client = await db();
-  let query = client.from('facilities').select('id, code, name, facility_type, city, is_active').order('name');
-  if (activeOnly) query = query.eq('is_active', true);
-  const { data } = await query;
-  return (data ?? []) as Facility[];
+  let query = client.from('positions').select('id', { count: 'exact', head: true }).eq('status', 'hold');
+  if (!actor.isGlobal) {
+    if (actor.facilityIds.length === 0) return 0;
+    query = query.in('facility_id', actor.facilityIds);
+  }
+  const { count } = await query;
+  return count ?? 0;
 }
 
 // ---------------------------------------------------------------------------
@@ -216,9 +238,31 @@ export async function listRequests(
 // dedupes by argument identity within one request, and `actor` comes from the
 // already-cached getActor(), so these collapse N duplicate reads into one.
 // ---------------------------------------------------------------------------
-export const listRequestsAll = cache(async (actor: Actor): Promise<RequestRow[]> =>
-  listRequests(actor, { status: 'all' }),
-);
+const requestsAllCache = new Map<string, { rows: RequestRow[]; expiresAt: number }>();
+const tasksCache = new Map<string, { tasks: TaskListItem[]; expiresAt: number }>();
+
+export function invalidatePolicyCache(): void {
+  requestsAllCache.clear();
+  tasksCache.clear();
+}
+
+export function invalidateServerCache(): void {
+  invalidateFacilitiesCache();
+  invalidatePolicyCache();
+  invalidateActorCache();
+  invalidateWorkflowCache();
+}
+
+export const listRequestsAll = cache(async (actor: Actor): Promise<RequestRow[]> => {
+  const now = Date.now();
+  const cached = requestsAllCache.get(actor.id);
+  if (cached && now < cached.expiresAt) {
+    return cached.rows;
+  }
+  const result = await listRequests(actor, { status: 'all' });
+  requestsAllCache.set(actor.id, { rows: result, expiresAt: now + 15 * 1000 });
+  return result;
+});
 
 /** Candidate counts need a second pass only when a search targets a name. */
 export type CandidateRow = Candidate & { documents: CandidateDocument[] };
@@ -456,6 +500,11 @@ export async function getMetrics(actor: Actor, fyTag: string): Promise<{ metrics
 // the personal queue
 // ---------------------------------------------------------------------------
 async function getTasksImpl(actor: Actor): Promise<TaskListItem[]> {
+  const now = Date.now();
+  const cached = tasksCache.get(actor.id);
+  if (cached && now < cached.expiresAt) {
+    return cached.tasks;
+  }
   const client = await db();
   const roleFilters: string[] = [`assigned_user_id.eq.${actor.id}`, `requested_by.eq.${actor.id}`];
   if (!['Employee', 'Admin'].includes(actor.role)) {
@@ -559,7 +608,9 @@ async function getTasksImpl(actor: Actor): Promise<TaskListItem[]> {
       requestId,
     });
   }
-  return out.sort((a, b) => (a.slaState === b.slaState ? 0 : a.slaState === 'overdue' ? -1 : 1));
+  const result = out.sort((a, b) => (a.slaState === b.slaState ? 0 : a.slaState === 'overdue' ? -1 : 1));
+  tasksCache.set(actor.id, { tasks: result, expiresAt: now + 15 * 1000 });
+  return result;
 }
 
 /** Cached so the layout, the dashboard and getMetrics resolve the queue once. */

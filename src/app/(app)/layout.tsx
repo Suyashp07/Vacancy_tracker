@@ -8,15 +8,15 @@ import { Avatar } from '@/components/ui';
 import { APP_NAME, APP_SUBTITLE, ROLE_LABEL, navFor } from '@/lib/constants';
 import { fiscalYearLabel, fiscalYearTag } from '@/lib/format';
 import { requireActor, pendingAcknowledgement } from '@/server/session';
-import { getNotifications, getOnHold, getTasks, unreadCount } from '@/server/policy';
+import { countOnHold, getNotifications, getTasks, unreadCount } from '@/server/policy';
 import { signOut } from '@/server/actions';
 
 export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const actor = await requireActor();
 
-  const [tasks, held, notifications, unread, ack] = await Promise.all([
+  const [tasks, heldCount, notifications, unread, ack] = await Promise.all([
     getTasks(actor),
-    getOnHold(actor),
+    countOnHold(actor),
     getNotifications(actor, 12),
     unreadCount(actor),
     pendingAcknowledgement(actor),
@@ -36,7 +36,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
           <div className="brand-sub">{APP_SUBTITLE}</div>
         </div>
 
-        <Nav allowed={navFor(actor.role)} counts={{ my_actions: tasks.length, on_hold: held.length }} />
+        <Nav allowed={navFor(actor.role)} counts={{ my_actions: tasks.length, on_hold: heldCount }} />
 
         <div className="side-foot">
           <div className="identity">

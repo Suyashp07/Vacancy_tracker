@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation';
 import { z } from 'zod';
 import { db, adminDb, call } from './db';
 import { getActor, requireActor, pendingAcknowledgement } from './session';
+import { invalidateServerCache } from './policy';
 import {
   attemptRequestTransition,
   attemptPositionTransition,
@@ -127,6 +128,7 @@ export async function createVacancyRequest(_prev: ActionState, form: FormData): 
         }),
       },
     });
+    invalidateServerCache();
     revalidatePath('/dashboard');
     revalidatePath('/requests');
     return done(`${created.number} submitted for vacancy approval.`, `/requests/${created.id}`);
@@ -149,6 +151,7 @@ export async function actOnRequest(
     comment: (formText(formData, 'comment') ?? '') || null,
   });
   if (result.ok) {
+    invalidateServerCache();
     revalidatePath('/dashboard');
     revalidatePath('/requests');
     revalidatePath('/my-actions');
@@ -191,6 +194,7 @@ export async function holdRequestPositions(
     formText(formData, 'hold_end_date_expected') ?? null,
   );
   if (result.ok) {
+    invalidateServerCache();
     revalidatePath('/dashboard');
     revalidatePath(`/requests/${requestId}`);
     revalidatePath('/on-hold');
@@ -203,6 +207,7 @@ export async function resume(positionId: string, requestId: string, formData: Fo
   await requireActor();
   const result = await resumePosition(positionId, formText(formData, 'comment') ?? undefined);
   if (result.ok) {
+    invalidateServerCache();
     revalidatePath('/dashboard');
     revalidatePath(`/requests/${requestId}`);
     revalidatePath('/on-hold');
@@ -224,6 +229,7 @@ export async function decide(
     comment: formText(formData, 'comment'),
   });
   if (result.ok) {
+    invalidateServerCache();
     revalidatePath('/dashboard');
     revalidatePath('/my-actions');
     revalidatePath(`/requests/${requestId}`);
@@ -244,6 +250,7 @@ export async function confirmJoin(candidateId: string, requestId: string, formDa
   if (!date) return fail('Enter the date the person actually joined.');
   const result = await confirmJoining(candidateId, date);
   if (result.ok) {
+    invalidateServerCache();
     revalidatePath('/dashboard');
     revalidatePath('/requests');
     revalidatePath('/my-actions');
@@ -467,6 +474,7 @@ export async function setUserRole(userId: string, form: FormData): Promise<Actio
   const client = await db();
   try {
     await call(client, 'admin_set_user_role', { p_user_id: userId, p_actor: actor.id, p_role: role });
+    invalidateServerCache();
     revalidatePath('/admin');
     return done(`Role set to ${ROLE_LABEL[role as Role] ?? role}. The change is in the audit log.`);
   } catch (error) {
@@ -480,6 +488,7 @@ export async function setUserActive(userId: string, active: boolean): Promise<Ac
   const client = await db();
   try {
     await call(client, 'admin_set_user_active', { p_user_id: userId, p_actor: actor.id, p_active: active });
+    invalidateServerCache();
     revalidatePath('/admin');
     return done(active ? 'Account enabled.' : 'Account disabled. Their history stays in the audit log.');
   } catch (error) {
@@ -505,6 +514,8 @@ export async function createUser(_prev: ActionState, form: FormData): Promise<Ac
       },
       p_actor: actor.id,
     });
+
+    invalidateServerCache();
 
     let inviteMsg = '';
     try {
@@ -553,6 +564,7 @@ export async function runRetentionPurge(): Promise<ActionState> {
   const client = await db();
   try {
     const res = await call<{ purged: number; batch: string }>(client, 'purge_due_retention', { p_limit: 50 });
+    invalidateServerCache();
     revalidatePath('/admin');
     if (!res || res.purged === 0) {
       return done('Retention purge ran. No expired personal records are currently due for deletion.');
@@ -581,6 +593,7 @@ export async function setRetention(policyId: string, form: FormData): Promise<Ac
       p_basis: 'dpdp_compliance',
       p_purpose: purpose,
     });
+    invalidateServerCache();
     revalidatePath('/admin');
     return done(`Retention set to ${Math.floor(days)} days. Records already scheduled keep their original date.`);
   } catch (error) {
@@ -690,6 +703,7 @@ export async function signIn(formData: FormData): Promise<ActionState> {
 }
 
 export async function signOut(): Promise<void> {
+  invalidateServerCache();
   const client = await db();
   await client.auth.signOut();
   redirect('/login');
@@ -812,6 +826,7 @@ function clean<T extends Record<string, unknown>>(input: T): T {
 }
 
 function revalidateAfterPosition(requestId: string): void {
+  invalidateServerCache();
   revalidatePath('/dashboard');
   revalidatePath('/requests');
   revalidatePath('/on-hold');
